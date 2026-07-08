@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+	--color-background: #ffffff;
+	--color-surface: #274d73;
+	--color-surface-alt: #234668;
+	--color-surface-alt: #24496f;
+	--color-sidebar: #ffffff;
+
+	--color-primary: #2b547e;
+	--color-primary-foreground: #ffffff;
+
+	--color-secondary: #0f172a;
+	--color-secondary-soft: #e8eef5;
+	--color-secondary-bright: #3b82f6;
+	--color-secondary-foreground: #ffffff;
+
+	--color-accent: #d4af37;
+	--color-highlight: #dc2626;
+
+	--color-foreground: #111827;
+	--color-muted: #64748b;
+	--color-muted-dark: #334155;
+
+	--color-border: rgba(43, 84, 126, 0.18);
+
+	--color-success: #15803d;
+	--color-success-background: #dcfce7;
+
+	--color-warning: #b45309;
+	--color-warning-background: #fef3c7;
+
+	--color-error: #dc2626;
+	--color-error-background: #fee2e2;
+
+	--font-heading: 'Libre Baskerville', serif;
+	--font-body: 'Inter', system-ui, sans-serif;
+
+	--radius-vintage: 0.75rem;
+	--shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.14);
+}
+
+@layer base {
+	:root {
+		color-scheme: light;
+	}
+
+	html {
+		min-height: 100%;
+		background:
+			radial-gradient(circle at top right, rgba(43, 84, 126, 0.12), transparent 34rem),
+			linear-gradient(135deg, #ffffff 0%, #f8fafc 52%, #eef4fa 100%);
+	}
+
+	body {
+		background: transparent;
+		color: var(--color-foreground);
+	}
+
+	#root {
+		min-height: 100vh;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: var(--font-heading);
+		color: var(--color-foreground);
+	}
+
+	a {
+		color: var(--color-accent);
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: white;
+	}
+
+	button,
+	input,
+	select,
+	textarea {
+		font: inherit;
+	}
+
+	::selection {
+		background: var(--color-accent);
+		color: var(--color-primary);
+	}
+}
+
+@layer components {
+	.admin-shell {
+		@apply bg-background text-foreground min-h-screen;
+	}
+
+	.admin-sidebar {
+		@apply border-border bg-background/95 shadow-soft border-r;
+	}
+
+	.admin-card {
+		@apply rounded-vintage border-border bg-surface/80 shadow-soft border backdrop-blur;
+	}
+
+	.admin-card-alt {
+		@apply rounded-vintage border-highlight/40 bg-surface-alt/70 shadow-soft border backdrop-blur;
+	}
+
+	.admin-eyebrow {
+		@apply text-highlight text-xs font-bold tracking-[0.32em] uppercase;
+	}
+
+	.admin-muted {
+		@apply text-muted;
+	}
+
+	.admin-button-primary {
+		@apply rounded-vintage bg-accent text-primary shadow-soft px-4 py-3 font-bold transition hover:bg-white;
+	}
+
+	.admin-button-secondary {
+		@apply rounded-vintage border-highlight/60 text-accent hover:border-accent border bg-black/40 px-4 py-3 font-semibold transition hover:text-white;
+	}
+
+	.admin-nav-item {
+		@apply rounded-vintage text-muted hover:bg-surface-alt flex items-center gap-3 px-4 py-3 text-sm font-medium transition hover:text-white;
+	}
+
+	.admin-nav-item-active {
+		@apply bg-surface-alt shadow-soft text-white;
+	}
+}
