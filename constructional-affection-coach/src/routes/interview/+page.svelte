@@ -15,6 +15,8 @@
 	import { downloadProgramPdf } from '$lib/pdf/download-program';
 	import { savedProgram } from '$lib/stores/interview-program';
 
+	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 	const handleDownload = () => {
 		if (!targetOutcome || !constructionalAssets || !programInitialization) return;
 
@@ -174,11 +176,25 @@ Does that look right?`
 	};
 
 	const callInterviewApi = async (body: unknown) => {
-		const response = await fetch('/api/interview', {
+		const response = await fetch(`${API_BASE_URL}/api/interview`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(body)
 		});
+
+		const contentType = response.headers.get('content-type') ?? '';
+
+		if (!contentType.includes('application/json')) {
+			const responseText = await response.text();
+
+			console.error('Expected JSON but received:', {
+				status: response.status,
+				contentType,
+				responseText: responseText.slice(0, 500)
+			});
+
+			throw new Error('The interview service returned an unexpected response.');
+		}
 
 		const result = (await response.json()) as InterviewResponse;
 
@@ -465,12 +481,6 @@ Does that look right?`
 							</div>
 						{/each}
 					</div>
-
-					{#if isCreatingProgram}
-						<div class="mt-8 flex justify-end gap-3">
-							<button onclick={restartInterview} class="admin-button-primary"> Start Over </button>
-						</div>
-					{/if}
 
 					{#if phase === 'program_initialization' && !hasUserAgreement && targetOutcome}
 						<div class="mt-8 flex justify-end gap-3">
