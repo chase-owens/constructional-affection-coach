@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Download from '$lib/assets/icons/Download.svelte';
+	import OutOfScopeCard from '$lib/components/OutOfScopeCard.svelte';
 	import ProgramInitializationCard from '$lib/components/ProgramInitializationCard.svelte';
 	import TargetOutcomeSummaryCard from '$lib/components/TargetOutcomeSummaryCard.svelte';
 	import type {
@@ -31,6 +32,7 @@
 		constructionalAssets: ConstructionalAssets;
 		interactionChain: InteractionChain;
 		programInitialization: ProgramInitialization;
+		outsideScope: boolean;
 		error?: string;
 	};
 
@@ -145,6 +147,7 @@ Does that look right?`
 	let phase = $state<InterviewPhase>('target_outcome');
 	let currentPhaseIndex = $derived(getPhaseIndex(phase));
 	let targetOutcome = $state<TargetOutcome | null>(null);
+	let isOutOfCaScope = $state(false);
 	let constructionalAssets = $state<ConstructionalAssets | null>(null);
 	let interactionChain = $state<InteractionChain | null>(null);
 	let hasUserAgreement = $state(false);
@@ -154,6 +157,21 @@ Does that look right?`
 	let isCreatingProgram = $state(false);
 
 	let messages = $state<Message[]>([getPhaseInitializer('target_outcome')]);
+
+	const handleRestartInterview = () => {
+		phase = 'target_outcome';
+		isOutOfCaScope = false;
+		targetOutcome = null;
+		constructionalAssets = null;
+		interactionChain = null;
+		programInitialization = null;
+		hasUserAgreement = false;
+		answer = '';
+		isProcessing = false;
+		isCreatingProgram = false;
+
+		messages = [getPhaseInitializer('target_outcome')];
+	};
 
 	const callInterviewApi = async (body: unknown) => {
 		const response = await fetch('/api/interview', {
@@ -173,13 +191,17 @@ Does that look right?`
 	};
 
 	const goToNextPhase = async (result: InterviewResponse) => {
-		if (result.targetOutcome) targetOutcome = result.targetOutcome;
+		if (result.outsideScope) isOutOfCaScope = result.outsideScope;
+		if (result.targetOutcome) {
+			targetOutcome = result.targetOutcome;
+			isOutOfCaScope = result.targetOutcome.scope !== 'within_constructional_affection';
+		}
 		if (result.constructionalAssets) constructionalAssets = result.constructionalAssets;
 		if (result.interactionChain) interactionChain = result.interactionChain;
 		if (result.programInitialization) programInitialization = result.programInitialization;
 
 		const nextPhase = phaseOrder[currentPhaseIndex + 1];
-		if (!nextPhase) return;
+		if (!nextPhase || isOutOfCaScope) return;
 
 		const previousMessage = messages[messages.length - 1];
 
@@ -280,208 +302,222 @@ Does that look right?`
 				<a href="/" class="admin-button-primary hover:bg-white"> Exit Interview </a>{/if}
 		</header>
 
-		<div class="grid gap-6 lg:grid-cols-[280px_1fr]">
-			<aside class="rounded-vintage border border-border bg-white p-6 shadow-soft">
-				<p class="admin-eyebrow text-highlight">Step {currentPhaseIndex + 1} of 5</p>
-				<h2 class="mt-2 font-body text-2xl font-bold text-primary">{phaseTitle[phase]}</h2>
+		{#if isOutOfCaScope}
+			<OutOfScopeCard onRestartInterview={handleRestartInterview} />
+		{:else}
+			<div class="grid gap-6 lg:grid-cols-[280px_1fr]">
+				<aside class="rounded-vintage border border-border bg-white p-6 shadow-soft">
+					<p class="admin-eyebrow text-highlight">Step {currentPhaseIndex + 1} of 5</p>
+					<h2 class="mt-2 font-body text-2xl font-bold text-primary">{phaseTitle[phase]}</h2>
 
-				<div class="mt-8 space-y-5">
-					{#each phaseOrder as phaseItem, index}
-						<div class="flex items-center gap-4">
+					<div class="mt-8 space-y-5">
+						{#each phaseOrder as phaseItem, index}
+							<div class="flex items-center gap-4">
+								<div
+									class={[
+										'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold',
+										index < currentPhaseIndex
+											? 'border-accent bg-accent text-primary'
+											: index === currentPhaseIndex
+												? 'border-accent bg-primary text-accent'
+												: 'border-border bg-white text-muted'
+									]}
+								>
+									{index < currentPhaseIndex ? '✓' : index + 1}
+								</div>
+
+								<p
+									class={['font-bold', index === currentPhaseIndex ? 'text-primary' : 'text-muted']}
+								>
+									{phaseTitle[phaseItem]}
+								</p>
+							</div>
+						{/each}
+					</div>
+
+					<div class="mt-10 rounded-vintage border border-border bg-secondary-soft p-4">
+						<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/70">
+							What to expect
+						</p>
+						<p class="mt-3 text-sm leading-6 text-muted-dark">
+							We’ll define the goal, identify what already works, map the chain, then build your
+							starting program.
+						</p>
+					</div>
+				</aside>
+
+				<main
+					class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10"
+				>
+					<div class="mb-8 text-center">
+						<p class="admin-eyebrow">Guided Constructional Interview</p>
+						<h1 class="mt-3 text-4xl font-bold text-primary">
+							Let’s build the interaction you want.
+						</h1>
+					</div>
+
+					{#if programInitialization}<button
+							class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
+							onclick={handleDownload}><Download class="size-6 cursor-pointer" /></button
+						>{/if}
+
+					<div class="space-y-5">
+						{#if hasUserAgreement && targetOutcome}
+							<TargetOutcomeSummaryCard {targetOutcome} />
+						{/if}
+
+						{#if hasUserAgreement && constructionalAssets}
 							<div
-								class={[
-									'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold',
-									index < currentPhaseIndex
-										? 'border-accent bg-accent text-primary'
-										: index === currentPhaseIndex
-											? 'border-accent bg-primary text-accent'
-											: 'border-border bg-white text-muted'
-								]}
+								class="mb-8 rounded-vintage border border-accent/40 bg-white p-5 text-primary shadow-soft"
 							>
-								{index < currentPhaseIndex ? '✓' : index + 1}
+								<p class="admin-eyebrow mb-3 text-primary/70">What We Can Build From</p>
+
+								<div class="grid gap-4 md:grid-cols-2">
+									<div>
+										<h3 class="font-bold">Social interaction</h3>
+										<ul class="mt-2 space-y-1 text-sm text-muted-dark">
+											<li>Touch: {constructionalAssets.socialReinforcers.touch}</li>
+											<li>Talk: {constructionalAssets.socialReinforcers.talk}</li>
+											<li>Eye contact: {constructionalAssets.socialReinforcers.eyeContact}</li>
+											<li>Closeness: {constructionalAssets.socialReinforcers.proximity}</li>
+										</ul>
+									</div>
+
+									<div>
+										<h3 class="font-bold">Relevant skills</h3>
+										<ul class="mt-2 space-y-2 text-sm text-muted-dark">
+											{#each constructionalAssets.relevantSkills as skill}
+												<li>
+													<span class="font-bold text-primary">{skill.name}</span>
+													{#if skill.context}
+														<span> — {skill.context}</span>
+													{/if}
+												</li>
+											{/each}
+										</ul>
+									</div>
+								</div>
+
+								{#if constructionalAssets.conditionsWhereTargetPatternOccurs.length}
+									<div class="mt-5 border-t border-border pt-4">
+										<h3 class="font-bold">Where it already happens</h3>
+
+										<ul class="mt-2 space-y-2 text-sm text-muted-dark">
+											{#each constructionalAssets.conditionsWhereTargetPatternOccurs as condition}
+												<li>
+													<span class="font-bold text-primary">{condition.behaviorObserved}</span>
+													<span> — {condition.description}</span>
+												</li>
+											{/each}
+										</ul>
+									</div>
+								{/if}
 							</div>
+						{/if}
 
-							<p class={['font-bold', index === currentPhaseIndex ? 'text-primary' : 'text-muted']}>
-								{phaseTitle[phaseItem]}
-							</p>
-						</div>
-					{/each}
-				</div>
+						{#if hasUserAgreement && programInitialization}
+							<ProgramInitializationCard {programInitialization} />
+						{/if}
 
-				<div class="mt-10 rounded-vintage border border-border bg-secondary-soft p-4">
-					<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/70">
-						What to expect
-					</p>
-					<p class="mt-3 text-sm leading-6 text-muted-dark">
-						We’ll define the goal, identify what already works, map the chain, then build your
-						starting program.
-					</p>
-				</div>
-			</aside>
+						{#if isCreatingProgram}
+							<div
+								class="mx-auto mt-8 max-w-2xl rounded-vintage border border-accent/40 bg-secondary-soft p-8 text-center shadow-soft"
+							>
+								<div
+									class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent"
+								></div>
 
-			<main
-				class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10"
-			>
-				<div class="mb-8 text-center">
-					<p class="admin-eyebrow">Guided Constructional Interview</p>
-					<h1 class="mt-3 text-4xl font-bold text-primary">
-						Let’s build the interaction you want.
-					</h1>
-				</div>
+								<p class="admin-eyebrow mt-6">Building Your Program</p>
 
-				{#if programInitialization}<button
-						class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
-						onclick={handleDownload}><Download class="size-6 cursor-pointer" /></button
-					>{/if}
+								<h2 class="mt-3 text-2xl font-bold text-primary">
+									Turning the interview into a starting plan...
+								</h2>
 
-				<div class="space-y-5">
-					{#if hasUserAgreement && targetOutcome}
-						<TargetOutcomeSummaryCard {targetOutcome} />
-					{/if}
+								<p class="mt-3 text-sm leading-6 text-muted-dark">
+									I’m using the goal, what already works, and the interaction chain to choose the
+									first step and build the progression.
+								</p>
+							</div>
+						{/if}
 
-					{#if hasUserAgreement && constructionalAssets}
-						<div
-							class="mb-8 rounded-vintage border border-accent/40 bg-white p-5 text-primary shadow-soft"
-						>
-							<p class="admin-eyebrow mb-3 text-primary/70">What We Can Build From</p>
+						{#each messages as message}
+							<div
+								class={['flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']}
+							>
+								{#if message.role === 'coach'}
+									<div
+										class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-secondary-soft text-primary"
+									>
+										🐾
+									</div>
+								{/if}
 
-							<div class="grid gap-4 md:grid-cols-2">
-								<div>
-									<h3 class="font-bold">Social interaction</h3>
-									<ul class="mt-2 space-y-1 text-sm text-muted-dark">
-										<li>Touch: {constructionalAssets.socialReinforcers.touch}</li>
-										<li>Talk: {constructionalAssets.socialReinforcers.talk}</li>
-										<li>Eye contact: {constructionalAssets.socialReinforcers.eyeContact}</li>
-										<li>Closeness: {constructionalAssets.socialReinforcers.proximity}</li>
-									</ul>
-								</div>
-
-								<div>
-									<h3 class="font-bold">Relevant skills</h3>
-									<ul class="mt-2 space-y-2 text-sm text-muted-dark">
-										{#each constructionalAssets.relevantSkills as skill}
-											<li>
-												<span class="font-bold text-primary">{skill.name}</span>
-												{#if skill.context}
-													<span> — {skill.context}</span>
-												{/if}
-											</li>
-										{/each}
-									</ul>
+								<div
+									class={[
+										'max-w-[78%] rounded-vintage border p-4 leading-7',
+										message.role === 'coach'
+											? 'border-border bg-secondary-soft text-foreground'
+											: 'border-accent/50 bg-primary text-white'
+									]}
+								>
+									<p class="text-sm font-semibold">{message.content}</p>
 								</div>
 							</div>
-
-							{#if constructionalAssets.conditionsWhereTargetPatternOccurs.length}
-								<div class="mt-5 border-t border-border pt-4">
-									<h3 class="font-bold">Where it already happens</h3>
-
-									<ul class="mt-2 space-y-2 text-sm text-muted-dark">
-										{#each constructionalAssets.conditionsWhereTargetPatternOccurs as condition}
-											<li>
-												<span class="font-bold text-primary">{condition.behaviorObserved}</span>
-												<span> — {condition.description}</span>
-											</li>
-										{/each}
-									</ul>
-								</div>
-							{/if}
-						</div>
-					{/if}
-
-					{#if hasUserAgreement && programInitialization}
-						<ProgramInitializationCard {programInitialization} />
-					{/if}
+						{/each}
+					</div>
 
 					{#if isCreatingProgram}
-						<div
-							class="mx-auto mt-8 max-w-2xl rounded-vintage border border-accent/40 bg-secondary-soft p-8 text-center shadow-soft"
-						>
-							<div
-								class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent"
-							></div>
-
-							<p class="admin-eyebrow mt-6">Building Your Program</p>
-
-							<h2 class="mt-3 text-2xl font-bold text-primary">
-								Turning the interview into a starting plan...
-							</h2>
-
-							<p class="mt-3 text-sm leading-6 text-muted-dark">
-								I’m using the goal, what already works, and the interaction chain to choose the
-								first step and build the progression.
-							</p>
+						<div class="mt-8 flex justify-end gap-3">
+							<button onclick={restartInterview} class="admin-button-primary"> Start Over </button>
 						</div>
 					{/if}
 
-					{#each messages as message}
-						<div class={['flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']}>
-							{#if message.role === 'coach'}
-								<div
-									class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-secondary-soft text-primary"
-								>
-									🐾
-								</div>
-							{/if}
-
-							<div
-								class={[
-									'max-w-[78%] rounded-vintage border p-4 leading-7',
-									message.role === 'coach'
-										? 'border-border bg-secondary-soft text-foreground'
-										: 'border-accent/50 bg-primary text-white'
-								]}
-							>
-								<p class="text-sm font-semibold">{message.content}</p>
-							</div>
-						</div>
-					{/each}
-				</div>
-
-				{#if phase === 'program_initialization' && !hasUserAgreement && targetOutcome}
-					<div class="mt-8 flex justify-end gap-3">
-						<button
-							onclick={rejectTargetOutcome}
-							disabled={isProcessing}
-							class="admin-button-secondary"
-						>
-							No, revise the goal
-						</button>
-
-						<button
-							onclick={confirmTargetOutcomeAndInitializeProgram}
-							disabled={isProcessing}
-							class="admin-button-primary"
-						>
-							Yes, build my program
-						</button>
-					</div>
-				{:else if !hasUserAgreement}
-					<div class="mt-8 rounded-vintage border border-border bg-background p-2 shadow-soft">
-						<div class="flex items-end gap-3">
-							<textarea
-								bind:value={answer}
-								onkeydown={handleKeyDown}
+					{#if phase === 'program_initialization' && !hasUserAgreement && targetOutcome}
+						<div class="mt-8 flex justify-end gap-3">
+							<button
+								onclick={rejectTargetOutcome}
 								disabled={isProcessing}
-								rows="1"
-								class="min-h-12 flex-1 resize-none bg-transparent px-4 py-3 text-foreground placeholder:text-muted outline-none disabled:opacity-60"
-								placeholder={isProcessing ? 'Thinking...' : 'Type your answer here...'}></textarea>
+								class="admin-button-secondary"
+							>
+								No, revise the goal
+							</button>
 
 							<button
-								onclick={submit}
+								onclick={confirmTargetOutcomeAndInitializeProgram}
 								disabled={isProcessing}
-								class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 bg-accent font-bold text-primary shadow-soft transition hover:bg-white disabled:opacity-60 cursor-pointer"
-								aria-label="Continue"
+								class="admin-button-primary"
 							>
-								{isProcessing ? '…' : '➤'}
+								Yes, build my program
 							</button>
 						</div>
-					</div>
+					{:else if !hasUserAgreement}
+						<div class="mt-8 rounded-vintage border border-border bg-background p-2 shadow-soft">
+							<div class="flex items-end gap-3">
+								<textarea
+									bind:value={answer}
+									onkeydown={handleKeyDown}
+									disabled={isProcessing}
+									rows="1"
+									class="min-h-12 flex-1 resize-none bg-transparent px-4 py-3 text-foreground placeholder:text-muted outline-none disabled:opacity-60"
+									placeholder={isProcessing ? 'Thinking...' : 'Type your answer here...'}
+								></textarea>
 
-					<p class="mt-4 text-center text-xs text-muted">
-						Your answers are only used to build your program.
-					</p>
-				{/if}
-			</main>
-		</div>
+								<button
+									onclick={submit}
+									disabled={isProcessing}
+									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 bg-accent font-bold text-primary shadow-soft transition hover:bg-white disabled:opacity-60 cursor-pointer"
+									aria-label="Continue"
+								>
+									{isProcessing ? '…' : '➤'}
+								</button>
+							</div>
+						</div>
+
+						<p class="mt-4 text-center text-xs text-muted">
+							Your answers are only used to build your program.
+						</p>
+					{/if}
+				</main>
+			</div>{/if}
 	</div>
 </section>
