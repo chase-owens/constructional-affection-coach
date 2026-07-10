@@ -1,23 +1,24 @@
-node_modules
-
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
-
-# OS
+# macOS
 .DS_Store
-Thumbs.db
 
-# Env
+# Environment
 .env
 .env.*
-!.env.example
-!.env.test
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# Node
+**/node_modules/
+
+# Build
+**/dist/
+**/.svelte-kit/
+**/.vite/
+
+# CDK
+**/cdk.out/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
