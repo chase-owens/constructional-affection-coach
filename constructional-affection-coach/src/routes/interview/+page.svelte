@@ -145,30 +145,23 @@ Does that look right?`
 		await initializeProgram();
 	};
 
-	const localProgram = $savedProgram;
 	const getPhaseIndex = (phase: InterviewPhase) =>
 		phaseOrder.findIndex((phaseItem) => phaseItem === phase);
 
-	let phase = $state<InterviewPhase>(
-		localProgram?.programInitialization ? "complete" : "target_outcome"
-	);
+	let phase = $state<InterviewPhase>("target_outcome");
 	let currentPhaseIndex = $derived(getPhaseIndex(phase));
-	let targetOutcome = $state<TargetOutcome | null>(localProgram?.targetOutcome ?? null);
+	let targetOutcome = $state<TargetOutcome | null>(null);
 	let isOutOfCaScope = $state(false);
-	let constructionalAssets = $state<ConstructionalAssets | null>(
-		localProgram?.constructionalAssets ?? null
-	);
-	let interactionChain = $state<InteractionChain | null>(localProgram?.interactionChain ?? null);
-	let hasUserAgreement = $state(Boolean(localProgram?.programInitialization) ?? false);
-	let programInitialization = $state<ProgramInitialization | null>(
-		localProgram?.programInitialization ?? null
-	);
+	let constructionalAssets = $state<ConstructionalAssets | null>(null);
+	let interactionChain = $state<InteractionChain | null>(null);
+	let hasUserAgreement = $state(false);
+	let programInitialization = $state<ProgramInitialization | null>(null);
 	let answer = $state("");
 	let isProcessing = $state(false);
 	let isCreatingProgram = $state(false);
 
 	let messages = $state<Message[]>([getPhaseInitializer("target_outcome")]);
-	let interviewId = localProgram?.interviewId ?? crypto.randomUUID();
+	let interviewId = crypto.randomUUID();
 
 	const handleRestartInterview = () => {
 		savedProgram.set(null);
@@ -186,6 +179,17 @@ Does that look right?`
 		isCreatingProgram = false;
 
 		messages = [getPhaseInitializer("target_outcome")];
+	};
+
+	const restoreCompletedInterview = () => {
+		if (!$savedProgram) return;
+		targetOutcome = $savedProgram.targetOutcome;
+		constructionalAssets = $savedProgram.constructionalAssets;
+		interactionChain = $savedProgram.interactionChain;
+		programInitialization = $savedProgram.programInitialization;
+		hasUserAgreement = !!$savedProgram.programInitialization;
+		interviewId = $savedProgram.interviewId;
+		phase = "complete";
 	};
 
 	const callInterviewApi = async (body: unknown) => {
@@ -339,6 +343,12 @@ Does that look right?`
 
 		goto("/");
 	};
+
+	if ($savedProgram?.programInitialization) {
+		restoreCompletedInterview();
+	} else {
+		handleRestartInterview();
+	}
 </script>
 
 <section class="admin-shell min-h-screen px-4 py-8 bg-primary">

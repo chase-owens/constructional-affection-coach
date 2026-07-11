@@ -11,7 +11,7 @@ import type {
 const STORAGE_KEY = 'constructional-affection-program';
 
 type InterviewProgram = {
-	interviewId: string;
+	interviewId: `${string}-${string}-${string}-${string}-${string}`;
 	targetOutcome: TargetOutcome | null;
 	constructionalAssets: ConstructionalAssets | null;
 	interactionChain: InteractionChain | null;
