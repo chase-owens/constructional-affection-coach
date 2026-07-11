@@ -1,10 +1,10 @@
-import OpenAI from 'openai';
-import { CONSTRUCTIONAL_ASSETS_INSTRUCTIONS } from './instructions';
-import { constructionalAssetsPhaseResultSchema } from '$lib/schemas/constructional-assets';
+import OpenAI from "openai";
+import { CONSTRUCTIONAL_ASSETS_INSTRUCTIONS } from "./instructions";
+import { constructionalAssetsPhaseResultSchema } from "../../../schemas";
 
 export type InterviewMessage = {
-	role: 'coach' | 'user';
-	content: string;
+  role: "coach" | "user";
+  content: string;
 };
 
 const constructionalAssetsPrompt = `
@@ -53,34 +53,39 @@ Return only JSON.
 `;
 
 export class ConstructionalAssetsController {
-	constructor(private readonly openai: OpenAI) {}
+  constructor(private readonly openai: OpenAI) {}
 
-	async interview(messages: InterviewMessage[]) {
-		const response = await this.openai.responses.create({
-			model: 'gpt-4.1-mini',
-			input: [
-				{
-					role: 'system' as const,
-					content: constructionalAssetsPrompt
-				},
-				...messages.map((message) => ({
-					role: message.role === 'user' ? ('user' as const) : ('assistant' as const),
-					content: message.content
-				}))
-			],
-			text: {
-				format: {
-					type: 'json_object'
-				}
-			}
-		});
+  async interview(messages: InterviewMessage[]) {
+    const response = await this.openai.responses.create({
+      model: "gpt-4.1-mini",
+      input: [
+        {
+          role: "system" as const,
+          content: constructionalAssetsPrompt,
+        },
+        ...messages.map((message) => ({
+          role:
+            message.role === "user"
+              ? ("user" as const)
+              : ("assistant" as const),
+          content: message.content,
+        })),
+      ],
+      text: {
+        format: {
+          type: "json_object",
+        },
+      },
+    });
 
-		const parsedJson = JSON.parse(response.output_text);
-		console.log(response.output_text);
+    const parsedJson = JSON.parse(response.output_text);
+    console.log(response.output_text);
 
-		const normalizedJson =
-			'phaseComplete' in parsedJson ? parsedJson : { ...parsedJson, phaseComplete: false };
+    const normalizedJson =
+      "phaseComplete" in parsedJson
+        ? parsedJson
+        : { ...parsedJson, phaseComplete: false };
 
-		return constructionalAssetsPhaseResultSchema.parse(normalizedJson);
-	}
+    return constructionalAssetsPhaseResultSchema.parse(normalizedJson);
+  }
 }

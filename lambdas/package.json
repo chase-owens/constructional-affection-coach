@@ -1,0 +1,25 @@
+{
+  "name": "lambdas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Chase Owens <chasejonathanowens@gmail.com>",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.1085.0",
+    "esbuild": "^0.28.1",
+    "openai": "^6.46.0",
+    "ts-node": "^10.9.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.162",
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
+}

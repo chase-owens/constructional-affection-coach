@@ -1,7 +1,11 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
-import type { TargetOutcome, ConstructionalAssets, ProgramInitialization } from '$lib/domain';
+import type {
+	TargetOutcome,
+	ConstructionalAssets,
+	ProgramInitialization
+} from '../../../../lambdas/src/domain';
 import type { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
