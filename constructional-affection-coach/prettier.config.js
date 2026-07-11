@@ -1,7 +1,7 @@
 /** @type {import("prettier").Config} */
 const config = {
 	useTabs: true,
-	singleQuote: true,
+	singleQuote: false,
 	trailingComma: 'none',
 	printWidth: 100,
 	plugins: ['prettier-plugin-svelte', 'prettier-plugin-tailwindcss'],
