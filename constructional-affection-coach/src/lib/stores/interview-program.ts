@@ -1,10 +1,24 @@
 // src/lib/stores/interview-program.ts
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
+import type {
+	ConstructionalAssets,
+	InteractionChain,
+	ProgramInitialization,
+	TargetOutcome
+} from '../../../../lambdas/src/domain';
 
 const STORAGE_KEY = 'constructional-affection-program';
 
-export const savedProgram = writable<unknown>(
+type InterviewProgram = {
+	interviewId: string;
+	targetOutcome: TargetOutcome | null;
+	constructionalAssets: ConstructionalAssets | null;
+	interactionChain: InteractionChain | null;
+	programInitialization: ProgramInitialization | null;
+};
+
+export const savedProgram = writable<InterviewProgram | null>(
 	browser ? JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') : null
 );
 

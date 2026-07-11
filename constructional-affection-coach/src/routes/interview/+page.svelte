@@ -1,19 +1,21 @@
 <script lang="ts">
-	import Download from '$lib/assets/icons/Download.svelte';
-	import OutOfScopeCard from '$lib/components/OutOfScopeCard.svelte';
-	import ProgramInitializationCard from '$lib/components/ProgramInitializationCard.svelte';
-	import TargetOutcomeSummaryCard from '$lib/components/TargetOutcomeSummaryCard.svelte';
+	import Download from "$lib/assets/icons/Download.svelte";
+	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
+	import ProgramInitializationCard from "$lib/components/ProgramInitializationCard.svelte";
+	import TargetOutcomeSummaryCard from "$lib/components/TargetOutcomeSummaryCard.svelte";
 	import type {
 		TargetOutcome,
 		InterviewPhase,
 		ConstructionalAssets,
 		InteractionChain,
 		ProgramInitialization
-	} from '../../../../lambdas/src/domain';
-	import { startInteractionChainPhase, startTargetOutcomePhase } from '$lib/interview';
-	import { startConstructionalAssetsPhase } from '$lib/interview/constructional-assets';
-	import { downloadProgramPdf } from '$lib/pdf/download-program';
-	import { savedProgram } from '$lib/stores/interview-program';
+	} from "../../../../lambdas/src/domain";
+	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
+	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
+	import { downloadProgramPdf } from "$lib/pdf/download-program";
+	import { savedProgram } from "$lib/stores/interview-program";
+	import mockInterview from "$lib/data/interviewMock";
+	import { goto } from "$app/navigation";
 
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -31,64 +33,64 @@
 		coachMessage?: string;
 		phaseComplete: boolean;
 		targetOutcome?: TargetOutcome;
-		constructionalAssets: ConstructionalAssets;
-		interactionChain: InteractionChain;
-		programInitialization: ProgramInitialization;
-		outsideScope: boolean;
+		constructionalAssets?: ConstructionalAssets;
+		interactionChain?: InteractionChain;
+		programInitialization?: ProgramInitialization;
+		outsideScope?: boolean;
 		error?: string;
 	};
 
 	type Message = {
-		role: 'coach' | 'user';
+		role: "coach" | "user";
 		content: string;
 	};
 
 	const phaseOrder: InterviewPhase[] = [
-		'target_outcome',
-		'interaction_chain',
-		'constructional_assets',
-		'program_initialization',
-		'complete'
+		"target_outcome",
+		"interaction_chain",
+		"constructional_assets",
+		"program_initialization",
+		"complete"
 	];
 
 	const phaseTitle: Record<InterviewPhase, string> = {
 		target_outcome: "What's the Goal?",
-		interaction_chain: 'Where Are We Now?',
-		constructional_assets: 'What Already Works?',
-		program_initialization: 'Where Do We Go From Here?',
-		complete: 'Complete'
+		interaction_chain: "Where Are We Now?",
+		constructional_assets: "What Already Works?",
+		program_initialization: "Where Do We Go From Here?",
+		complete: "Complete"
 	};
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
-			case 'target_outcome':
+			case "target_outcome":
 				return {
-					role: 'coach',
+					role: "coach",
 					content: startTargetOutcomePhase()
 				};
 
-			case 'interaction_chain':
+			case "interaction_chain":
 				return {
-					role: 'coach',
+					role: "coach",
 					content: startInteractionChainPhase()
 				};
 
-			case 'constructional_assets':
+			case "constructional_assets":
 				return {
-					role: 'coach',
+					role: "coach",
 					content: startConstructionalAssetsPhase()
 				};
 
-			case 'program_initialization':
+			case "program_initialization":
 				return {
-					role: 'coach',
-					content: 'Thanks, I have enough to build the starting plan.'
+					role: "coach",
+					content: "Thanks, I have enough to build the starting plan."
 				};
 
-			case 'complete':
+			case "complete":
 				return {
-					role: 'coach',
-					content: 'Way to go'
+					role: "coach",
+					content: "Way to go"
 				};
 		}
 	};
@@ -100,21 +102,21 @@
 		constructionalAssets = null;
 		targetOutcome = null;
 
-		phase = 'target_outcome';
+		phase = "target_outcome";
 
 		messages = [
 			{
-				role: 'coach',
+				role: "coach",
 				content:
 					"No problem. Let's redefine the goal. Assuming this process is successful, what would you want to see happening instead?"
 			}
 		];
 
-		answer = '';
+		answer = "";
 	};
 
 	const getTargetOutcomeAgreementMessage = (targetOutcome: TargetOutcome) => ({
-		role: 'coach' as const,
+		role: "coach" as const,
 		content: `Before I build your starting program, I want to make sure this is the interaction you want to work toward:
 
 Context: ${targetOutcome.primaryContext}
@@ -130,70 +132,81 @@ Does that look right?`
 		messages = [
 			...messages,
 			{
-				role: 'user',
-				content: 'Yes, that is the interaction I want to work toward.'
+				role: "user",
+				content: "Yes, that is the interaction I want to work toward."
 			},
 			{
-				role: 'coach',
+				role: "coach",
 				content:
-					'Great. I’ll use that goal, what already works, and the interaction chain to build your starting program.'
+					"Great. I'll use that goal, what already works, and the interaction chain to build your starting program."
 			}
 		];
 
 		await initializeProgram();
 	};
 
+	const localProgram = $savedProgram;
 	const getPhaseIndex = (phase: InterviewPhase) =>
 		phaseOrder.findIndex((phaseItem) => phaseItem === phase);
 
-	let phase = $state<InterviewPhase>('target_outcome');
+	let phase = $state<InterviewPhase>(
+		localProgram?.programInitialization ? "complete" : "target_outcome"
+	);
 	let currentPhaseIndex = $derived(getPhaseIndex(phase));
-	let targetOutcome = $state<TargetOutcome | null>(null);
+	let targetOutcome = $state<TargetOutcome | null>(localProgram?.targetOutcome ?? null);
 	let isOutOfCaScope = $state(false);
-	let constructionalAssets = $state<ConstructionalAssets | null>(null);
-	let interactionChain = $state<InteractionChain | null>(null);
-	let hasUserAgreement = $state(false);
-	let programInitialization = $state<ProgramInitialization | null>(null);
-	let answer = $state('');
+	let constructionalAssets = $state<ConstructionalAssets | null>(
+		localProgram?.constructionalAssets ?? null
+	);
+	let interactionChain = $state<InteractionChain | null>(localProgram?.interactionChain ?? null);
+	let hasUserAgreement = $state(Boolean(localProgram?.programInitialization) ?? false);
+	let programInitialization = $state<ProgramInitialization | null>(
+		localProgram?.programInitialization ?? null
+	);
+	let answer = $state("");
 	let isProcessing = $state(false);
 	let isCreatingProgram = $state(false);
 
-	let messages = $state<Message[]>([getPhaseInitializer('target_outcome')]);
+	let messages = $state<Message[]>([getPhaseInitializer("target_outcome")]);
+	let interviewId = localProgram?.interviewId ?? crypto.randomUUID();
 
 	const handleRestartInterview = () => {
-		phase = 'target_outcome';
+		savedProgram.set(null);
+		interviewId = crypto.randomUUID();
+
+		phase = "target_outcome";
 		isOutOfCaScope = false;
 		targetOutcome = null;
 		constructionalAssets = null;
 		interactionChain = null;
 		programInitialization = null;
 		hasUserAgreement = false;
-		answer = '';
+		answer = "";
 		isProcessing = false;
 		isCreatingProgram = false;
 
-		messages = [getPhaseInitializer('target_outcome')];
+		messages = [getPhaseInitializer("target_outcome")];
 	};
 
 	const callInterviewApi = async (body: unknown) => {
 		const response = await fetch(`${API_BASE_URL}/interview`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(body)
 		});
 
-		const contentType = response.headers.get('content-type') ?? '';
+		const contentType = response.headers.get("content-type") ?? "";
 
-		if (!contentType.includes('application/json')) {
+		if (!contentType.includes("application/json")) {
 			const responseText = await response.text();
 
-			console.error('Expected JSON but received:', {
+			console.error("Expected JSON but received:", {
 				status: response.status,
 				contentType,
 				responseText: responseText.slice(0, 500)
 			});
 
-			throw new Error('The interview service returned an unexpected response.');
+			throw new Error("The interview service returned an unexpected response.");
 		}
 
 		const result = (await response.json()) as InterviewResponse;
@@ -210,7 +223,7 @@ Does that look right?`
 		if (result.outsideScope) isOutOfCaScope = result.outsideScope;
 		if (result.targetOutcome) {
 			targetOutcome = result.targetOutcome;
-			isOutOfCaScope = result.targetOutcome.scope !== 'within_constructional_affection';
+			isOutOfCaScope = result.targetOutcome.scope !== "within_constructional_affection";
 		}
 		if (result.constructionalAssets) constructionalAssets = result.constructionalAssets;
 		if (result.interactionChain) interactionChain = result.interactionChain;
@@ -223,7 +236,7 @@ Does that look right?`
 
 		phase = nextPhase;
 
-		if (nextPhase === 'program_initialization' && targetOutcome) {
+		if (nextPhase === "program_initialization" && targetOutcome) {
 			messages = [previousMessage, getTargetOutcomeAgreementMessage(targetOutcome)];
 		} else {
 			messages = [previousMessage, getPhaseInitializer(nextPhase)];
@@ -237,17 +250,19 @@ Does that look right?`
 
 		try {
 			const result = await callInterviewApi({
-				phase: 'program_initialization',
+				interviewId,
+				phase: "program_initialization",
 				targetOutcome,
 				constructionalAssets,
 				interactionChain
 			});
 
 			savedProgram.set({
+				interviewId,
 				targetOutcome,
 				constructionalAssets,
 				interactionChain,
-				programInitialization
+				programInitialization: result?.programInitialization ?? null
 			});
 
 			if (!result) return;
@@ -259,8 +274,23 @@ Does that look right?`
 		}
 	};
 
+	const generateMockProgram = async () => {
+		if (isProcessing || isCreatingProgram) return;
+
+		targetOutcome = mockInterview.targetOutcome;
+		constructionalAssets = mockInterview.constructionalAssets;
+		interactionChain = mockInterview.interactionChain;
+
+		phase = "program_initialization";
+		hasUserAgreement = true;
+		programInitialization = null;
+		messages = [];
+
+		await initializeProgram();
+	};
+
 	const handleKeyDown = async (event: KeyboardEvent) => {
-		if (event.key === 'Enter' && !event.shiftKey) {
+		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
 
 			if (!isProcessing && answer.trim()) {
@@ -274,13 +304,14 @@ Does that look right?`
 		if (!trimmed || isProcessing) return;
 
 		isProcessing = true;
-		answer = '';
+		answer = "";
 
-		const nextMessages = [...messages, { role: 'user' as const, content: trimmed }];
+		const nextMessages = [...messages, { role: "user" as const, content: trimmed }];
 		messages = nextMessages;
 
 		try {
 			const result = await callInterviewApi({
+				interviewId,
 				phase,
 				messages: nextMessages,
 				targetOutcome,
@@ -291,7 +322,7 @@ Does that look right?`
 			if (!result) return;
 
 			if (result.coachMessage) {
-				messages = [...nextMessages, { role: 'coach', content: result.coachMessage }];
+				messages = [...nextMessages, { role: "coach", content: result.coachMessage }];
 			}
 
 			if (result.phaseComplete) {
@@ -301,6 +332,12 @@ Does that look right?`
 		} finally {
 			isProcessing = false;
 		}
+	};
+
+	const handleExitInterview = () => {
+		handleRestartInterview();
+
+		goto("/");
 	};
 </script>
 
@@ -314,8 +351,9 @@ Does that look right?`
 				</div>
 			</a>
 
-			{#if !programInitialization}
-				<a href="/" class="admin-button-primary hover:bg-white"> Exit Interview </a>{/if}
+			<button onclick={handleExitInterview} class="admin-button-primary hover:bg-white">
+				Exit Interview
+			</button>
 		</header>
 
 		{#if isOutOfCaScope}
@@ -331,19 +369,19 @@ Does that look right?`
 							<div class="flex items-center gap-4">
 								<div
 									class={[
-										'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold',
+										"flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold",
 										index < currentPhaseIndex
-											? 'border-accent bg-accent text-primary'
+											? "border-accent bg-accent text-primary"
 											: index === currentPhaseIndex
-												? 'border-accent bg-primary text-accent'
-												: 'border-border bg-white text-muted'
+												? "border-accent bg-primary text-accent"
+												: "border-border bg-white text-muted"
 									]}
 								>
-									{index < currentPhaseIndex ? '✓' : index + 1}
+									{index < currentPhaseIndex ? "✓" : index + 1}
 								</div>
 
 								<p
-									class={['font-bold', index === currentPhaseIndex ? 'text-primary' : 'text-muted']}
+									class={["font-bold", index === currentPhaseIndex ? "text-primary" : "text-muted"]}
 								>
 									{phaseTitle[phaseItem]}
 								</p>
@@ -360,6 +398,27 @@ Does that look right?`
 							starting program.
 						</p>
 					</div>
+
+					{#if import.meta.env.DEV && !programInitialization}
+						<button
+							type="button"
+							class="admin-button-secondary mt-5"
+							onclick={generateMockProgram}
+							disabled={isProcessing}
+						>
+							Generate mock program
+						</button>
+					{/if}
+					{#if programInitialization}
+						<button
+							type="button"
+							class="admin-button-primary mt-5"
+							onclick={handleRestartInterview}
+							disabled={isProcessing}
+						>
+							Restart Interview
+						</button>
+					{/if}
 				</aside>
 
 				<main
@@ -458,9 +517,9 @@ Does that look right?`
 
 						{#each messages as message}
 							<div
-								class={['flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']}
+								class={["flex gap-3", message.role === "user" ? "justify-end" : "justify-start"]}
 							>
-								{#if message.role === 'coach'}
+								{#if message.role === "coach"}
 									<div
 										class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-secondary-soft text-primary"
 									>
@@ -470,10 +529,10 @@ Does that look right?`
 
 								<div
 									class={[
-										'max-w-[78%] rounded-vintage border p-4 leading-7',
-										message.role === 'coach'
-											? 'border-border bg-secondary-soft text-foreground'
-											: 'border-accent/50 bg-primary text-white'
+										"max-w-[78%] rounded-vintage border p-4 leading-7",
+										message.role === "coach"
+											? "border-border bg-secondary-soft text-foreground"
+											: "border-accent/50 bg-primary text-white"
 									]}
 								>
 									<p class="text-sm font-semibold">{message.content}</p>
@@ -482,7 +541,7 @@ Does that look right?`
 						{/each}
 					</div>
 
-					{#if phase === 'program_initialization' && !hasUserAgreement && targetOutcome}
+					{#if phase === "program_initialization" && !hasUserAgreement && targetOutcome}
 						<div class="mt-8 flex justify-end gap-3">
 							<button
 								onclick={rejectTargetOutcome}
@@ -509,7 +568,7 @@ Does that look right?`
 									disabled={isProcessing}
 									rows="1"
 									class="min-h-12 flex-1 resize-none bg-transparent px-4 py-3 text-foreground placeholder:text-muted outline-none disabled:opacity-60"
-									placeholder={isProcessing ? 'Thinking...' : 'Type your answer here...'}
+									placeholder={isProcessing ? "Thinking..." : "Type your answer here..."}
 								></textarea>
 
 								<button
@@ -518,7 +577,7 @@ Does that look right?`
 									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 bg-accent font-bold text-primary shadow-soft transition hover:bg-white disabled:opacity-60 cursor-pointer"
 									aria-label="Continue"
 								>
-									{isProcessing ? '…' : '➤'}
+									{isProcessing ? "…" : "➤"}
 								</button>
 							</div>
 						</div>

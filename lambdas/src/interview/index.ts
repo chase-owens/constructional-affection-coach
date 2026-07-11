@@ -160,7 +160,7 @@ export const handler = async (
       });
     }
 
-    if (!Array.isArray(request.messages)) {
+    if (request.messages && !Array.isArray(request.messages)) {
       return jsonResponse(400, {
         error: "messages must be an array.",
       });
