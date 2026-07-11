@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ProgramInitialization } from '$lib/domain';
+	import type { ProgramInitialization } from '../../../../lambdas/src/domain';
 
 	const { programInitialization }: { programInitialization: ProgramInitialization } = $props();
 </script>

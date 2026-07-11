@@ -9,7 +9,7 @@
 		ConstructionalAssets,
 		InteractionChain,
 		ProgramInitialization
-	} from '$lib/domain';
+	} from '../../../../lambdas/src/domain';
 	import { startInteractionChainPhase, startTargetOutcomePhase } from '$lib/interview';
 	import { startConstructionalAssetsPhase } from '$lib/interview/constructional-assets';
 	import { downloadProgramPdf } from '$lib/pdf/download-program';
@@ -176,7 +176,7 @@ Does that look right?`
 	};
 
 	const callInterviewApi = async (body: unknown) => {
-		const response = await fetch(`${API_BASE_URL}/api/interview`, {
+		const response = await fetch(`${API_BASE_URL}/interview`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(body)
