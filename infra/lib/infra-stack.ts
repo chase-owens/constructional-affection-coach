@@ -8,9 +8,41 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigatewayv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import path from "path";
+import {
+  NodejsFunction,
+  NodejsFunctionProps,
+} from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 
+const lambdaProjectRoot = path.join(__dirname, "../../lambdas");
+
+const createNodeLambda = (
+  scope: Construct,
+  id: string,
+  props: NodejsFunctionProps,
+  tableName = "ca-program-table",
+) =>
+  new NodejsFunction(scope, id, {
+    runtime: lambda.Runtime.NODEJS_22_X,
+    architecture: lambda.Architecture.ARM_64,
+    memorySize: 256,
+    projectRoot: lambdaProjectRoot,
+    depsLockFilePath: path.join(lambdaProjectRoot, "package-lock.json"),
+    handler: "handler",
+    environment: { TABLE_NAME: tableName },
+    timeout: cdk.Duration.seconds(60),
+    bundling: {
+      minify: true,
+      sourceMap: true,
+    },
+    ...props,
+  });
+
 export class InfraStack extends cdk.Stack {
+  public readonly interviewsTable: dynamodb.Table;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -65,6 +97,38 @@ export class InfraStack extends cdk.Stack {
       },
     );
 
+    // Create table
+    this.interviewsTable = new dynamodb.Table(this, "CaProgramTable", {
+      tableName: "ca-program-table",
+      partitionKey: {
+        name: "interviewId",
+        type: dynamodb.AttributeType.STRING,
+      },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // Create Lambdas to read and write from table
+    const getInterviewsLambda = createNodeLambda(this, "GetInterviews", {
+      functionName: "ca-get-interviews",
+      entry: path.join(
+        __dirname,
+        "../../lambdas/src/interview/get-interviews/index.ts",
+      ),
+    });
+
+    const createInterviewLambda = createNodeLambda(this, "CreateInterview", {
+      functionName: "ca-create-interview",
+      entry: path.join(
+        __dirname,
+        "../../lambdas/src/interview/create-interview/index.ts",
+      ),
+    });
+
+    this.interviewsTable.grantWriteData(createInterviewLambda);
+    this.interviewsTable.grantReadData(getInterviewsLambda);
+
+    // Grant lambdas read/write access to table
     const interviewFunction = new nodejs.NodejsFunction(
       this,
       "CaInterviewFunction",
@@ -72,9 +136,9 @@ export class InfraStack extends cdk.Stack {
         functionName: "ca-coach-interview",
         runtime: lambda.Runtime.NODEJS_22_X,
 
-        entry: "../lambdas/src/interview/index.ts",
-        projectRoot: "../lambdas",
-        depsLockFilePath: "../lambdas/package-lock.json",
+        entry: path.join(lambdaProjectRoot, "src/interview/index.ts"),
+        projectRoot: lambdaProjectRoot,
+        depsLockFilePath: path.join(lambdaProjectRoot, "package-lock.json"),
 
         handler: "handler",
         timeout: cdk.Duration.seconds(60),
@@ -95,6 +159,7 @@ export class InfraStack extends cdk.Stack {
         allowMethods: [
           apigatewayv2.CorsHttpMethod.POST,
           apigatewayv2.CorsHttpMethod.OPTIONS,
+          apigatewayv2.CorsHttpMethod.GET,
         ],
         allowHeaders: ["Content-Type"],
       },
@@ -106,6 +171,24 @@ export class InfraStack extends cdk.Stack {
       integration: new integrations.HttpLambdaIntegration(
         "CaInterviewIntegration",
         interviewFunction,
+      ),
+    });
+
+    api.addRoutes({
+      path: "/interviews",
+      methods: [apigatewayv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration(
+        "CreateInterviewIntegration",
+        createInterviewLambda,
+      ),
+    });
+
+    api.addRoutes({
+      path: "/interviews",
+      methods: [apigatewayv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration(
+        "GetInterviewLambda",
+        getInterviewsLambda,
       ),
     });
 

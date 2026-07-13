@@ -17,6 +17,7 @@ import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
 import { runProgramInitialization } from "./program-initialization";
 import { runTargetOutcomeInterview } from "./target-outcome";
+import { logger } from "../shared/logger";
 
 const secretsManager = new SecretsManagerClient({});
 
@@ -37,6 +38,7 @@ type InterviewPhase =
   | "complete";
 
 type InterviewRequest = {
+  interviewId: `${string}-${string}-${string}-${string}-${string}`;
   phase: InterviewPhase;
   messages: InterviewMessage[];
   targetOutcome?: TargetOutcome | null;
@@ -145,6 +147,9 @@ const runInterviewPhase = async (openai: OpenAI, request: InterviewRequest) => {
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
+  const requestId = event.requestContext.requestId;
+  const startedAt = Date.now();
+
   try {
     if (!event.body) {
       return jsonResponse(400, {
@@ -169,8 +174,20 @@ export const handler = async (
     const openai = await getOpenAiClient();
     const result = await runInterviewPhase(openai, request);
 
+    logger.info("interview.request.completed", {
+      requestId,
+      interviewId: request.interviewId,
+      phase: request.phase,
+      phaseComplete: result.phaseComplete ?? false,
+    });
+
     return jsonResponse(200, result);
   } catch (error) {
+    logger.error("interview.request.failed", {
+      requestId,
+      durationMs: Date.now() - startedAt,
+      errorName: error instanceof Error ? error.name : "unknown error",
+    });
     console.error("Interview Lambda failed:", error);
 
     return jsonResponse(500, {

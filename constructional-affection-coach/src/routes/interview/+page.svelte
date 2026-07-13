@@ -16,6 +16,7 @@
 	import { savedProgram } from "$lib/stores/interview-program";
 	import mockInterview from "$lib/data/interviewMock";
 	import { goto } from "$app/navigation";
+	import { createInterview } from "$lib/api/createInterview";
 
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -236,21 +237,22 @@ Does that look right?`
 		const nextPhase = phaseOrder[currentPhaseIndex + 1];
 		if (!nextPhase || isOutOfCaScope) return;
 
-		const previousMessage = messages[messages.length - 1];
+		const previousMessage = messages.at(-1);
 
 		phase = nextPhase;
 
-		if (nextPhase === "program_initialization" && targetOutcome) {
-			messages = [previousMessage, getTargetOutcomeAgreementMessage(targetOutcome)];
-		} else {
-			messages = [previousMessage, getPhaseInitializer(nextPhase)];
-		}
+		const initializer =
+			nextPhase === "program_initialization" && targetOutcome
+				? getTargetOutcomeAgreementMessage(targetOutcome)
+				: getPhaseInitializer(nextPhase);
+
+		messages = previousMessage ? [previousMessage, initializer] : [initializer];
 	};
 
 	const initializeProgram = async () => {
-		messages = [];
 		isProcessing = true;
 		isCreatingProgram = true;
+		messages = [];
 
 		try {
 			const result = await callInterviewApi({
@@ -261,15 +263,21 @@ Does that look right?`
 				interactionChain
 			});
 
+			if (!result?.programInitialization) return;
+
 			savedProgram.set({
 				interviewId,
 				targetOutcome,
 				constructionalAssets,
 				interactionChain,
-				programInitialization: result?.programInitialization ?? null
+				programInitialization: result.programInitialization
 			});
 
-			if (!result) return;
+			try {
+				await createInterview({ interviewId, program: result.programInitialization });
+			} catch (err) {
+				console.log("Failed to save interview to DynamoDB", err);
+			}
 
 			await goToNextPhase(result);
 		} finally {
@@ -288,7 +296,6 @@ Does that look right?`
 		phase = "program_initialization";
 		hasUserAgreement = true;
 		programInitialization = null;
-		messages = [];
 
 		await initializeProgram();
 	};
