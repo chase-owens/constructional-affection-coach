@@ -15,11 +15,6 @@ export const runProgramInitialization = async (
   },
 ) => {
   const controller = new ProgramInitializationController(openai);
-  const result = await controller.initialize(input);
 
-  return controller.initialize({
-    targetOutcome: input.targetOutcome,
-    constructionalAssets: input.constructionalAssets,
-    interactionChain: input.interactionChain,
-  });
+  return controller.initialize(input);
 };

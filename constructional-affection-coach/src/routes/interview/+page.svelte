@@ -16,6 +16,7 @@
 	import { savedProgram } from "$lib/stores/interview-program";
 	import mockInterview from "$lib/data/interviewMock";
 	import { goto } from "$app/navigation";
+	import { createInterview } from "$lib/api/createInterview";
 
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -248,7 +249,6 @@ Does that look right?`
 	};
 
 	const initializeProgram = async () => {
-		messages = [];
 		isProcessing = true;
 		isCreatingProgram = true;
 
@@ -261,15 +261,21 @@ Does that look right?`
 				interactionChain
 			});
 
+			if (!result?.programInitialization) return;
+
 			savedProgram.set({
 				interviewId,
 				targetOutcome,
 				constructionalAssets,
 				interactionChain,
-				programInitialization: result?.programInitialization ?? null
+				programInitialization: result.programInitialization
 			});
 
-			if (!result) return;
+			try {
+				await createInterview({ interviewId, program: result.programInitialization });
+			} catch (err) {
+				console.log("Failed to save interview to DynamoDB", err);
+			}
 
 			await goToNextPhase(result);
 		} finally {
@@ -288,7 +294,6 @@ Does that look right?`
 		phase = "program_initialization";
 		hasUserAgreement = true;
 		programInitialization = null;
-		messages = [];
 
 		await initializeProgram();
 	};
