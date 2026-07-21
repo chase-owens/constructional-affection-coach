@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { ProgramInitializationController } from "./controllers/program-initialization";
+import { ProgramInitializationController } from "./controllers/program-initialization/program-initialization-controller";
 import {
   ConstructionalAssets,
   InteractionChain,
@@ -14,6 +14,7 @@ export const runProgramInitialization = async (
     interactionChain: InteractionChain;
   },
 ) => {
+  console.log("calling controller");
   const controller = new ProgramInitializationController(openai);
 
   return controller.initialize(input);

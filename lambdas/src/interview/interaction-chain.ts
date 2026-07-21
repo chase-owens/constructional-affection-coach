@@ -9,7 +9,6 @@ export const runInteractionChainInterview = async (
   messages: InterviewMessage[],
 ) => {
   const controller = new InteractionChainController(openai);
-  const result = await controller.interview(messages);
 
   return controller.interview(messages);
 };

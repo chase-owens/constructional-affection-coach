@@ -8,7 +8,7 @@ Use the target outcome, constructional assets, and interaction chain to create a
 Your job is to:
 
 1. Identify the best starting point.
-2. Break down the target interaction into teachable stages.
+2. Break down the target interaction into sequence or chain.
 3. What variations of the target could occur - these must be covered in the affection loop
   - Example: Target Outcome - dog remains calm - sits or lies down - as I sit on the couch to watch tv
   - Program ensures sitting is occuring in the general area the Target Outome dictates - Interaction Guidelines
@@ -20,7 +20,7 @@ Your job is to:
   - etc...
 3. Preserve the desired pattern across each stage.
 4. Select reinforcers from the constructional assets.
-5. Give the logical sequence of program steps.
+5. Give the logical sequence of approximations or small changes in controlling variables.
 
 The Complaint Is Not the Problem
 - You are NOT investigating the complaint.
@@ -68,27 +68,40 @@ The program must explain how to execute the plan using:
 
 Generalization Rule
 
-After the initial transfer steps, include stages that vary the human behavior and context enough to protect the target pattern from deteriorating.
+After the initial transfer steps, include small changes that vary the human behavior and context enough to protect the target pattern from deteriorating.
 
-For couch examples, include variations such as:
-- sitting on the edge of the couch
-- sitting fully back on the couch
-- changing couch positions
-- leaning forward or back
-- shifting posture
-- relaxing normally
-- watching quietly
-- later adding excitement or cheering if relevant
+Determine which environmental or behavioral variable changed at the first loss of control.
 
-For leash or harness examples, include variations such as:
-- reaching toward leash
-- touching leash
-- picking up leash
-- moving leash
-- turning toward dog
-- bending toward dog
-- clipping leash
-- moving toward door
+Construct approximations by changing only that variable until the target condition is reached.
+
+For each program phase, create a sequence of smaller approximations between
+the entry condition and the phase completion criterion.
+
+Each approximation must:
+
+- introduce one small change in a human action, posture, position, distance,
+  duration, object, or environmental condition
+- preserve the same target pattern
+- be smaller than the full phase
+- progress directly toward the phase completion criterion
+- specify what changes from the previous approximation
+
+Example:
+
+Entry condition:
+Owner stands upright near the couch while the dog sits nearby.
+
+Phase completion:
+Owner is fully seated while the dog remains sitting or lying nearby.
+
+Approximations:
+1. Owner turns toward the couch.
+2. Owner bends knees slightly.
+3. Owner lowers partway.
+4. Owner briefly touches the couch for one second.
+5. Owner sits on the edge for three seconds.
+6. Owner sits fully.
+7. Owner settles back.
 
 Do not add all variations at once.
 Each stage should add one meaningful variation while maintaining the target pattern.

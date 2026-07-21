@@ -4,11 +4,12 @@
 	import ProgramInitializationCard from "$lib/components/ProgramInitializationCard.svelte";
 	import TargetOutcomeSummaryCard from "$lib/components/TargetOutcomeSummaryCard.svelte";
 	import type {
+		ConstructionalProgram,
 		TargetOutcome,
 		InterviewPhase,
 		ConstructionalAssets,
 		InteractionChain,
-		ProgramInitialization
+		LegacyProgramInitialization
 	} from "../../../../lambdas/src/domain";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
 	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
@@ -16,17 +17,18 @@
 	import { savedProgram } from "$lib/stores/interview-program";
 	import mockInterview from "$lib/data/interviewMock";
 	import { goto } from "$app/navigation";
-	import { createInterview } from "$lib/api/createInterview";
+	import ConstructionalAssetsCard from "$lib/components/ConstructionalAssetsCard.svelte";
+	import { onMount } from "svelte";
+	import { interviewClient } from "$lib/api/interviewClient";
+	import { resolve } from "$app/paths";
 
-	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+	type InterviewIdType = `${string}-${string}-${string}-${string}-${string}`;
 
 	const handleDownload = () => {
-		if (!targetOutcome || !constructionalAssets || !programInitialization) return;
+		if (!constructionalProgram) return;
 
 		downloadProgramPdf({
-			targetOutcome,
-			constructionalAssets,
-			programInitialization
+			constructionalProgram
 		});
 	};
 
@@ -36,7 +38,10 @@
 		targetOutcome?: TargetOutcome;
 		constructionalAssets?: ConstructionalAssets;
 		interactionChain?: InteractionChain;
-		programInitialization?: ProgramInitialization;
+
+		programInitialization?: LegacyProgramInitialization;
+		constructionalProgram?: ConstructionalProgram;
+
 		outsideScope?: boolean;
 		error?: string;
 	};
@@ -98,7 +103,6 @@
 
 	const rejectTargetOutcome = () => {
 		hasUserAgreement = false;
-		programInitialization = null;
 		interactionChain = null;
 		constructionalAssets = null;
 		targetOutcome = null;
@@ -120,11 +124,11 @@
 		role: "coach" as const,
 		content: `Before I build your starting program, I want to make sure this is the interaction you want to work toward:
 
-Context: ${targetOutcome.primaryContext}
+      Context: ${targetOutcome.primaryContext}
 
-Goal: ${targetOutcome.desiredInteractionPattern}
+      Goal: ${targetOutcome.desiredInteractionPattern}
 
-Does that look right?`
+      Does that look right?`
 	});
 
 	const confirmTargetOutcomeAndInitializeProgram = async () => {
@@ -156,73 +160,88 @@ Does that look right?`
 	let constructionalAssets = $state<ConstructionalAssets | null>(null);
 	let interactionChain = $state<InteractionChain | null>(null);
 	let hasUserAgreement = $state(false);
-	let programInitialization = $state<ProgramInitialization | null>(null);
+	let constructionalProgram = $state<ConstructionalProgram | null>(null);
 	let answer = $state("");
 	let isProcessing = $state(false);
 	let isCreatingProgram = $state(false);
+	let isInitializingInterview = $state(true);
 
 	let messages = $state<Message[]>([getPhaseInitializer("target_outcome")]);
-	let interviewId = crypto.randomUUID();
+	let interviewId = $state<InterviewIdType | null>(null);
 
-	const handleRestartInterview = () => {
+	const resetInterviewState = () => {
 		savedProgram.set(null);
-		interviewId = crypto.randomUUID();
 
+		interviewId = null;
+		constructionalProgram = null;
 		phase = "target_outcome";
 		isOutOfCaScope = false;
 		targetOutcome = null;
 		constructionalAssets = null;
 		interactionChain = null;
-		programInitialization = null;
 		hasUserAgreement = false;
 		answer = "";
 		isProcessing = false;
 		isCreatingProgram = false;
-
 		messages = [getPhaseInitializer("target_outcome")];
+	};
+
+	const startNewInterview = async () => {
+		resetInterviewState();
+
+		const newInterviewId = crypto.randomUUID();
+
+		await interviewClient.create({
+			interviewId: newInterviewId
+		});
+
+		interviewId = newInterviewId;
+	};
+
+	const handleRestartInterview = async () => {
+		if (isInitializingInterview) return;
+
+		isInitializingInterview = true;
+
+		try {
+			await startNewInterview();
+		} catch (err) {
+			console.error("Failed to create interview", err);
+		} finally {
+			isInitializingInterview = false;
+		}
 	};
 
 	const restoreCompletedInterview = () => {
 		if (!$savedProgram) return;
-		targetOutcome = $savedProgram.targetOutcome;
-		constructionalAssets = $savedProgram.constructionalAssets;
+		constructionalProgram = $savedProgram.constructionalProgram;
+
+		targetOutcome = constructionalProgram?.targetOutcome ?? $savedProgram.targetOutcome ?? null;
+
+		constructionalAssets =
+			constructionalProgram?.constructionalAssets ?? $savedProgram.constructionalAssets;
+
 		interactionChain = $savedProgram.interactionChain;
-		programInitialization = $savedProgram.programInitialization;
-		hasUserAgreement = !!$savedProgram.programInitialization;
+		hasUserAgreement = !!$savedProgram;
 		interviewId = $savedProgram.interviewId;
 		phase = "complete";
 	};
 
-	const callInterviewApi = async (body: unknown) => {
-		const response = await fetch(`${API_BASE_URL}/interview`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(body)
-		});
+	// initialize page on load
+	onMount(async () => {
+		try {
+			if ($savedProgram?.constructionalProgram) {
+				restoreCompletedInterview();
+				return;
+			}
 
-		const contentType = response.headers.get("content-type") ?? "";
-
-		if (!contentType.includes("application/json")) {
-			const responseText = await response.text();
-
-			console.error("Expected JSON but received:", {
-				status: response.status,
-				contentType,
-				responseText: responseText.slice(0, 500)
-			});
-
-			throw new Error("The interview service returned an unexpected response.");
+			await startNewInterview();
+		} catch (err) {
+			console.error("Failed to initialize interview", err);
+		} finally {
+			isInitializingInterview = false;
 		}
-
-		const result = (await response.json()) as InterviewResponse;
-
-		if (!response.ok) {
-			console.error(result);
-			return null;
-		}
-
-		return result;
-	};
+	});
 
 	const goToNextPhase = async (result: InterviewResponse) => {
 		if (result.outsideScope) isOutOfCaScope = result.outsideScope;
@@ -232,7 +251,7 @@ Does that look right?`
 		}
 		if (result.constructionalAssets) constructionalAssets = result.constructionalAssets;
 		if (result.interactionChain) interactionChain = result.interactionChain;
-		if (result.programInitialization) programInitialization = result.programInitialization;
+		if (result.constructionalProgram) constructionalProgram = result.constructionalProgram;
 
 		const nextPhase = phaseOrder[currentPhaseIndex + 1];
 		if (!nextPhase || isOutOfCaScope) return;
@@ -250,36 +269,39 @@ Does that look right?`
 	};
 
 	const initializeProgram = async () => {
+		const currentInterviewId = interviewId;
+
+		if (!currentInterviewId) {
+			throw new Error("Interview has not been initialized.");
+		}
+
 		isProcessing = true;
 		isCreatingProgram = true;
 		messages = [];
 
 		try {
-			const result = await callInterviewApi({
-				interviewId,
+			await interviewClient.submitPhase(currentInterviewId, {
 				phase: "program_initialization",
 				targetOutcome,
 				constructionalAssets,
 				interactionChain
 			});
 
-			if (!result?.programInitialization) return;
+			const completedInterview = await interviewClient.pollComplete(currentInterviewId);
+
+			constructionalProgram = completedInterview.program;
 
 			savedProgram.set({
-				interviewId,
+				interviewId: currentInterviewId,
 				targetOutcome,
 				constructionalAssets,
 				interactionChain,
-				programInitialization: result.programInitialization
+				constructionalProgram
 			});
 
-			try {
-				await createInterview({ interviewId, program: result.programInitialization });
-			} catch (err) {
-				console.log("Failed to save interview to DynamoDB", err);
-			}
-
-			await goToNextPhase(result);
+			phase = "complete";
+		} catch (err) {
+			console.error("Program initialization failed", err);
 		} finally {
 			isProcessing = false;
 			isCreatingProgram = false;
@@ -287,7 +309,7 @@ Does that look right?`
 	};
 
 	const generateMockProgram = async () => {
-		if (isProcessing || isCreatingProgram) return;
+		if (isProcessing || isCreatingProgram || isInitializingInterview) return;
 
 		targetOutcome = mockInterview.targetOutcome;
 		constructionalAssets = mockInterview.constructionalAssets;
@@ -295,7 +317,6 @@ Does that look right?`
 
 		phase = "program_initialization";
 		hasUserAgreement = true;
-		programInitialization = null;
 
 		await initializeProgram();
 	};
@@ -312,17 +333,27 @@ Does that look right?`
 
 	const submit = async () => {
 		const trimmed = answer.trim();
-		if (!trimmed || isProcessing) return;
+
+		if (!trimmed || isProcessing || isInitializingInterview) {
+			return;
+		}
+
+		const currentInterviewId = interviewId;
+
+		if (!currentInterviewId) {
+			console.error("Interview has not been initialized.");
+			return;
+		}
 
 		isProcessing = true;
 		answer = "";
 
 		const nextMessages = [...messages, { role: "user" as const, content: trimmed }];
+
 		messages = nextMessages;
 
 		try {
-			const result = await callInterviewApi({
-				interviewId,
+			const result = await interviewClient.submitPhase(currentInterviewId, {
 				phase,
 				messages: nextMessages,
 				targetOutcome,
@@ -330,38 +361,41 @@ Does that look right?`
 				interactionChain
 			});
 
-			if (!result) return;
-
 			if (result.coachMessage) {
-				messages = [...nextMessages, { role: "coach", content: result.coachMessage }];
+				messages = [
+					...nextMessages,
+					{
+						role: "coach",
+						content: result.coachMessage
+					}
+				];
 			}
 
 			if (result.phaseComplete) {
 				await goToNextPhase(result);
-				return;
 			}
+		} catch (err) {
+			console.error("Interview phase submission failed", err);
 		} finally {
 			isProcessing = false;
 		}
 	};
 
 	const handleExitInterview = () => {
-		handleRestartInterview();
+		savedProgram.set(null);
 
-		goto("/");
+		goto(resolve("/"));
 	};
 
-	if ($savedProgram?.programInitialization) {
-		restoreCompletedInterview();
-	} else {
-		handleRestartInterview();
-	}
+	const phases = $derived(constructionalProgram?.transferPlan.phases);
+	const startingPoint = $derived(constructionalProgram?.initialization.readinessCriterion);
+	const terminalOutcome = $derived(constructionalProgram?.targetOutcome.desiredInteractionPattern);
 </script>
 
 <section class="admin-shell min-h-screen px-4 py-8 bg-primary">
 	<div class="mx-auto max-w-7xl">
 		<header class="mb-8 flex items-center justify-between">
-			<a href="/" class="flex items-center gap-3 text-primary hover:text-primary">
+			<a href={resolve("/")} class="flex items-center gap-3 text-primary hover:text-primary">
 				<img src="/images/logo.png" alt="Constructional Affection" class="h-12 w-12" />
 				<div class="text-sm font-bold text-black tracking-[0.25em] uppercase">
 					Constructional<br />Affection
@@ -382,7 +416,7 @@ Does that look right?`
 					<h2 class="mt-2 font-body text-2xl font-bold text-primary">{phaseTitle[phase]}</h2>
 
 					<div class="mt-8 space-y-5">
-						{#each phaseOrder as phaseItem, index}
+						{#each phaseOrder as phaseItem, index (phaseItem)}
 							<div class="flex items-center gap-4">
 								<div
 									class={[
@@ -416,22 +450,22 @@ Does that look right?`
 						</p>
 					</div>
 
-					{#if import.meta.env.DEV && !programInitialization}
+					{#if import.meta.env.DEV && !constructionalProgram}
 						<button
 							type="button"
 							class="admin-button-secondary mt-5"
 							onclick={generateMockProgram}
-							disabled={isProcessing}
+							disabled={isProcessing || isInitializingInterview}
 						>
 							Generate mock program
 						</button>
 					{/if}
-					{#if programInitialization}
+					{#if constructionalProgram}
 						<button
 							type="button"
 							class="admin-button-primary mt-5"
 							onclick={handleRestartInterview}
-							disabled={isProcessing}
+							disabled={isProcessing || isInitializingInterview}
 						>
 							Restart Interview
 						</button>
@@ -448,7 +482,7 @@ Does that look right?`
 						</h1>
 					</div>
 
-					{#if programInitialization}<button
+					{#if constructionalProgram}<button
 							class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
 							onclick={handleDownload}><Download class="size-6 cursor-pointer" /></button
 						>{/if}
@@ -459,56 +493,11 @@ Does that look right?`
 						{/if}
 
 						{#if hasUserAgreement && constructionalAssets}
-							<div
-								class="mb-8 rounded-vintage border border-accent/40 bg-white p-5 text-primary shadow-soft"
-							>
-								<p class="admin-eyebrow mb-3 text-primary/70">What We Can Build From</p>
-
-								<div class="grid gap-4 md:grid-cols-2">
-									<div>
-										<h3 class="font-bold">Social interaction</h3>
-										<ul class="mt-2 space-y-1 text-sm text-muted-dark">
-											<li>Touch: {constructionalAssets.socialReinforcers.touch}</li>
-											<li>Talk: {constructionalAssets.socialReinforcers.talk}</li>
-											<li>Eye contact: {constructionalAssets.socialReinforcers.eyeContact}</li>
-											<li>Closeness: {constructionalAssets.socialReinforcers.proximity}</li>
-										</ul>
-									</div>
-
-									<div>
-										<h3 class="font-bold">Relevant skills</h3>
-										<ul class="mt-2 space-y-2 text-sm text-muted-dark">
-											{#each constructionalAssets.relevantSkills as skill}
-												<li>
-													<span class="font-bold text-primary">{skill.name}</span>
-													{#if skill.context}
-														<span> — {skill.context}</span>
-													{/if}
-												</li>
-											{/each}
-										</ul>
-									</div>
-								</div>
-
-								{#if constructionalAssets.conditionsWhereTargetPatternOccurs.length}
-									<div class="mt-5 border-t border-border pt-4">
-										<h3 class="font-bold">Where it already happens</h3>
-
-										<ul class="mt-2 space-y-2 text-sm text-muted-dark">
-											{#each constructionalAssets.conditionsWhereTargetPatternOccurs as condition}
-												<li>
-													<span class="font-bold text-primary">{condition.behaviorObserved}</span>
-													<span> — {condition.description}</span>
-												</li>
-											{/each}
-										</ul>
-									</div>
-								{/if}
-							</div>
+							<ConstructionalAssetsCard {constructionalAssets} />
 						{/if}
 
-						{#if hasUserAgreement && programInitialization}
-							<ProgramInitializationCard {programInitialization} />
+						{#if hasUserAgreement && startingPoint && terminalOutcome && phases}
+							<ProgramInitializationCard {phases} {startingPoint} {terminalOutcome} />
 						{/if}
 
 						{#if isCreatingProgram}
@@ -532,7 +521,7 @@ Does that look right?`
 							</div>
 						{/if}
 
-						{#each messages as message}
+						{#each messages as message (message.content)}
 							<div
 								class={["flex gap-3", message.role === "user" ? "justify-end" : "justify-start"]}
 							>
@@ -582,7 +571,7 @@ Does that look right?`
 								<textarea
 									bind:value={answer}
 									onkeydown={handleKeyDown}
-									disabled={isProcessing}
+									disabled={isProcessing || isInitializingInterview}
 									rows="1"
 									class="min-h-12 flex-1 resize-none bg-transparent px-4 py-3 text-foreground placeholder:text-muted outline-none disabled:opacity-60"
 									placeholder={isProcessing ? "Thinking..." : "Type your answer here..."}
@@ -590,7 +579,7 @@ Does that look right?`
 
 								<button
 									onclick={submit}
-									disabled={isProcessing}
+									disabled={isProcessing || isInitializingInterview}
 									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 bg-accent font-bold text-primary shadow-soft transition hover:bg-white disabled:opacity-60 cursor-pointer"
 									aria-label="Continue"
 								>

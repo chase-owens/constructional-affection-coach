@@ -9,6 +9,7 @@ import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigatewayv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as logs from "aws-cdk-lib/aws-logs";
 import path from "path";
 import {
   NodejsFunction,
@@ -32,7 +33,7 @@ const createNodeLambda = (
     depsLockFilePath: path.join(lambdaProjectRoot, "package-lock.json"),
     handler: "handler",
     environment: { TABLE_NAME: tableName },
-    timeout: cdk.Duration.seconds(60),
+    timeout: cdk.Duration.seconds(120),
     bundling: {
       minify: true,
       sourceMap: true,
@@ -108,32 +109,52 @@ export class InfraStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
+    const startProgramLambda = createNodeLambda(this, "StartProgramLambda", {
+      functionName: "ca-start-program-interviews",
+      entry: path.join(lambdaProjectRoot, "src/interview/start-program.ts"),
+      memorySize: 1024,
+      environment: {
+        TABLE_NAME: this.interviewsTable.tableName,
+        OPENAI_SECRET_ARN: openAiSecret.secretArn,
+      },
+    });
+
     // Create Lambdas to read and write from table
     const getInterviewsLambda = createNodeLambda(this, "GetInterviews", {
       functionName: "ca-get-interviews",
       entry: path.join(
-        __dirname,
-        "../../lambdas/src/interview/get-interviews/index.ts",
+        lambdaProjectRoot,
+        "src/interview/get-interviews/index.ts",
+      ),
+    });
+
+    const getInterviewLambda = createNodeLambda(this, "GetInterview", {
+      functionName: "ca-get-interview",
+      entry: path.join(
+        lambdaProjectRoot,
+        "src/interview/get-interview/index.ts",
       ),
     });
 
     const createInterviewLambda = createNodeLambda(this, "CreateInterview", {
       functionName: "ca-create-interview",
       entry: path.join(
-        __dirname,
-        "../../lambdas/src/interview/create-interview/index.ts",
+        lambdaProjectRoot,
+        "src/interview/create-interview/index.ts",
       ),
     });
 
     this.interviewsTable.grantWriteData(createInterviewLambda);
     this.interviewsTable.grantReadData(getInterviewsLambda);
+    this.interviewsTable.grantReadData(getInterviewLambda);
+    this.interviewsTable.grantReadWriteData(startProgramLambda);
 
     // Grant lambdas read/write access to table
     const interviewFunction = new nodejs.NodejsFunction(
       this,
       "CaInterviewFunction",
       {
-        functionName: "ca-coach-interview",
+        functionName: "ca-interview-orchestrator",
         runtime: lambda.Runtime.NODEJS_22_X,
 
         entry: path.join(lambdaProjectRoot, "src/interview/index.ts"),
@@ -141,10 +162,13 @@ export class InfraStack extends cdk.Stack {
         depsLockFilePath: path.join(lambdaProjectRoot, "package-lock.json"),
 
         handler: "handler",
-        timeout: cdk.Duration.seconds(60),
+        timeout: cdk.Duration.seconds(120),
         memorySize: 1024,
 
-        environment: { OPENAI_SECRET_ARN: openAiSecret.secretArn },
+        environment: {
+          OPENAI_SECRET_ARN: openAiSecret.secretArn,
+          PROGRAM_WORKER_FUNCTION_NAME: startProgramLambda.functionName,
+        },
       },
     );
 
@@ -165,8 +189,31 @@ export class InfraStack extends cdk.Stack {
       },
     });
 
+    const apiAccessLogs = new logs.LogGroup(this, "CaApiAccessLogs", {
+      logGroupName: "/aws/apigateway/constructional-affection-coach",
+      retention: logs.RetentionDays.ONE_WEEK,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const defaultStage = api.defaultStage!.node
+      .defaultChild as apigatewayv2.CfnStage;
+
+    defaultStage.accessLogSettings = {
+      destinationArn: apiAccessLogs.logGroupArn,
+      format: JSON.stringify({
+        requestId: "$context.requestId",
+        routeKey: "$context.routeKey",
+        status: "$context.status",
+        integrationStatus: "$context.integration.status",
+        integrationLatency: "$context.integrationLatency",
+        integrationErrorMessage: "$context.integrationErrorMessage",
+        errorMessage: "$context.error.message",
+        responseLength: "$context.responseLength",
+      }),
+    };
+
     api.addRoutes({
-      path: "/interview",
+      path: "/interviews/{interviewId}/phase",
       methods: [apigatewayv2.HttpMethod.POST],
       integration: new integrations.HttpLambdaIntegration(
         "CaInterviewIntegration",
@@ -187,12 +234,23 @@ export class InfraStack extends cdk.Stack {
       path: "/interviews",
       methods: [apigatewayv2.HttpMethod.GET],
       integration: new integrations.HttpLambdaIntegration(
-        "GetInterviewLambda",
+        "GetInterviewsIntegration",
         getInterviewsLambda,
       ),
     });
 
+    api.addRoutes({
+      path: "/interviews/{interviewId}",
+      methods: [apigatewayv2.HttpMethod.GET],
+      integration: new integrations.HttpLambdaIntegration(
+        "GetInterviewIntegration",
+        getInterviewLambda,
+      ),
+    });
+
     openAiSecret.grantRead(interviewFunction);
+    openAiSecret.grantRead(startProgramLambda);
+    startProgramLambda.grantInvoke(interviewFunction);
 
     new cdk.CfnOutput(this, "ApiUrl", { value: api.apiEndpoint });
   }

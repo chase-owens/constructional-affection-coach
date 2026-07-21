@@ -1,7 +1,15 @@
 <script lang="ts">
-	import type { ConstructionalAssets } from '../../../../lambdas/src/domain';
+	import type { ConstructionalAssets, ReinforcerStatus } from "../../../../lambdas/src/domain";
 
 	const { constructionalAssets }: { constructionalAssets: ConstructionalAssets } = $props();
+
+	const reinforcerStatusTitle: Record<ReinforcerStatus, string> = {
+		not_reinforcing: "Not Reinforcing",
+		sometimes_reinforcing: "Sometimes Reinforcing",
+		unclear: "Unclear",
+		clearly_reinforcing: "Clearly Reinforcing",
+		over_arousing: "Over Arousing"
+	};
 </script>
 
 <div class="mb-8 rounded-vintage border border-accent/40 bg-white p-5 text-primary shadow-soft">
@@ -9,19 +17,23 @@
 
 	<div class="grid gap-4 md:grid-cols-2">
 		<div>
-			<h3 class="font-bold">Social interaction</h3>
+			<h3 class="font-bold">Relevant Reinforcers</h3>
 			<ul class="mt-2 space-y-1 text-sm text-muted-dark">
-				<li>Touch: {constructionalAssets.socialReinforcers.touch}</li>
-				<li>Talk: {constructionalAssets.socialReinforcers.talk}</li>
-				<li>Eye contact: {constructionalAssets.socialReinforcers.eyeContact}</li>
-				<li>Closeness: {constructionalAssets.socialReinforcers.proximity}</li>
+				<li>Touch: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.touch]}</li>
+				<li>Talk: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.talk]}</li>
+				<li>
+					Eye contact: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.eyeContact]}
+				</li>
+				<li>
+					Closeness: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.proximity]}
+				</li>
 			</ul>
 		</div>
 
 		<div>
-			<h3 class="font-bold">Relevant skills</h3>
+			<h3 class="font-bold">Relevant Repertoire</h3>
 			<ul class="mt-2 space-y-2 text-sm text-muted-dark">
-				{#each constructionalAssets.relevantSkills as skill}
+				{#each constructionalAssets.relevantSkills as skill (skill.name)}
 					<li>
 						<span class="font-bold text-primary">{skill.name}</span>
 						{#if skill.context}
@@ -38,7 +50,7 @@
 			<h3 class="font-bold">Where it already happens</h3>
 
 			<ul class="mt-2 space-y-2 text-sm text-muted-dark">
-				{#each constructionalAssets.conditionsWhereTargetPatternOccurs as condition}
+				{#each constructionalAssets.conditionsWhereTargetPatternOccurs as condition (condition.behaviorObserved)}
 					<li>
 						<span class="font-bold text-primary">{condition.behaviorObserved}</span>
 						<span> — {condition.description}</span>

@@ -1,81 +1,224 @@
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 
-import type {
-	TargetOutcome,
-	ConstructionalAssets,
-	ProgramInitialization
-} from '../../../../lambdas/src/domain';
-import type { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
+import type { ConstructionalProgram } from "../../../../lambdas/src/domain";
+import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (pdfMake as any).addVirtualFileSystem(pdfFonts);
 
-type Args = {
-	targetOutcome: TargetOutcome;
-	constructionalAssets: ConstructionalAssets;
-	programInitialization: ProgramInitialization;
+type DownloadProgramPdfArgs = {
+	constructionalProgram: ConstructionalProgram;
 };
 
-export const downloadProgramPdf = ({
-	targetOutcome,
-	constructionalAssets,
-	programInitialization
-}: Args) => {
-	const stageContent: Content[] = programInitialization.programStages.flatMap(
-		(stage): Content[] => [
-			{ text: `Step ${stage.index + 1}: ${stage.title}`, style: 'stepTitle' },
-			{ text: `Entry: ${stage.entryCondition}`, style: 'body' },
-			{ text: `Target: ${stage.targetPattern}`, style: 'body' },
-			{ text: `Move on when: ${stage.successCriterion}`, style: 'body' },
-			{ text: `Use: ${stage.reinforcers.join(', ')}`, style: 'body' },
-			...(stage.notes ? [{ text: stage.notes, style: 'muted' } satisfies Content] : []),
-			{ text: ' ', margin: [0, 4, 0, 4] }
-		]
-	);
+const buildPhaseContent = (constructionalProgram: ConstructionalProgram): Content[] =>
+	constructionalProgram.transferPlan.phases.flatMap((phase, phaseIndex): Content[] => {
+		const approximationContent: Content[] = phase.approximations.flatMap(
+			(approximation, approximationIndex): Content[] => [
+				{
+					text: `Approximation ${approximationIndex + 1}`,
+					style: "approximationTitle"
+				},
+				{
+					text: `Conditions: ${approximation.conditions.join(", ")}`,
+					style: "body"
+				},
+				{
+					text: `Change: ${approximation.changeFromPrevious.dimension} — ${approximation.changeFromPrevious.adjustment}`,
+					style: "body"
+				},
+				{
+					text: `Target pattern: ${approximation.targetPattern}`,
+					style: "body"
+				},
+				{
+					text: `Reinforcer: ${approximation.reinforcer}`,
+					style: "body"
+				},
+				{
+					text: `Evidence of control: ${approximation.controlCriterion.evidenceOfControl}`,
+					style: "body"
+				},
+				{
+					text: `Advance when: ${approximation.controlCriterion.sufficientToAdvance}`,
+					style: "body"
+				},
+				{ text: " ", margin: [0, 2, 0, 2] }
+			]
+		);
+
+		return [
+			{
+				text: `Phase ${phaseIndex + 1}: ${phase.title}`,
+				style: "phaseTitle"
+			},
+			{
+				text: `Entry condition: ${phase.entryCondition}`,
+				style: "body"
+			},
+			{
+				text: `Target pattern: ${phase.targetPattern}`,
+				style: "body"
+			},
+			{
+				text: `Complete this phase when: ${phase.terminalCriterion}`,
+				style: "body"
+			},
+			{
+				text: `Reinforcers: ${phase.reinforcers.join(", ")}`,
+				style: "body"
+			},
+			...(phase.notes
+				? [
+						{
+							text: phase.notes,
+							style: "muted"
+						} satisfies Content
+					]
+				: []),
+			...approximationContent,
+			{ text: " ", margin: [0, 5, 0, 5] }
+		];
+	});
+
+export const downloadProgramPdf = ({ constructionalProgram }: DownloadProgramPdfArgs) => {
+	const { targetOutcome, constructionalAssets, controlAnalysis, initialization, transferPlan } =
+		constructionalProgram;
+
+	const phaseContent = buildPhaseContent(constructionalProgram);
 
 	const docDefinition: TDocumentDefinitions = {
 		pageMargins: [48, 48, 48, 48],
 
 		content: [
-			{ text: 'Constructional Affection Program', style: 'title' },
-
-			{ text: 'Goal', style: 'section' },
-			{ text: targetOutcome.desiredInteractionPattern ?? '', style: 'body' },
 			{
-				text: `Context: ${targetOutcome.primaryContext ?? 'Not specified'}`,
-				style: 'muted'
+				text: "Constructional Affection Program",
+				style: "title"
 			},
 
-			{ text: 'What We Can Build From', style: 'section' },
 			{
-				ul: constructionalAssets.relevantSkills.map((skill) => `${skill.name} — ${skill.context}`)
+				text: "Target Outcome",
+				style: "section"
+			},
+			{
+				text:
+					targetOutcome.desiredInteractionPattern ??
+					targetOutcome.clarifiedOutcome ??
+					targetOutcome.rawAnswer,
+				style: "body"
+			},
+			{
+				text: `Context: ${targetOutcome.primaryContext ?? "Not specified"}`,
+				style: "muted"
 			},
 
-			{ text: 'Starting Point', style: 'section' },
-			{ text: programInitialization.startingPoint, style: 'body' },
+			{
+				text: "What We Can Build From",
+				style: "section"
+			},
+			{
+				ul: constructionalAssets.relevantSkills.map((skill) =>
+					skill.context ? `${skill.name} — ${skill.context}` : skill.name
+				)
+			},
 
-			{ text: 'Program Steps', style: 'section' },
+			{
+				text: "Control Analysis",
+				style: "section"
+			},
+			{
+				text: `Target pattern: ${controlAnalysis.targetPattern}`,
+				style: "body"
+			},
+			{
+				text: `Starting conditions: ${controlAnalysis.initialConditions.description}`,
+				style: "body"
+			},
+			{
+				text: `Behavior observed: ${controlAnalysis.initialConditions.behaviorObserved}`,
+				style: "body"
+			},
+			{
+				text: `Relevant reinforcer: ${controlAnalysis.initialConditions.relevantReinforcer || "Not specified"}`,
+				style: "body"
+			},
+			{
+				text: `Transition point: ${controlAnalysis.transitionPoint.changedCondition}`,
+				style: "body"
+			},
+			{
+				text: `Disturbing pattern: ${controlAnalysis.disturbingPattern}`,
+				style: "body"
+			},
 
-			...stageContent,
+			{
+				text: "Starting Point",
+				style: "section"
+			},
+			{
+				text: initialization.initialApproximation.targetPattern,
+				style: "body"
+			},
+			{
+				text: `Begin under these conditions: ${initialization.initialApproximation.conditions.join(", ")}`,
+				style: "body"
+			},
+			{
+				text: `Ready to progress when: ${initialization.readinessCriterion}`,
+				style: "body"
+			},
 
-			{ text: 'Why This Starting Point', style: 'section' },
-			{ text: programInitialization.rationale, style: 'body' }
+			{
+				text: "Program Phases",
+				style: "section"
+			},
+
+			...phaseContent,
+
+			{
+				text: "Terminal Criterion",
+				style: "section"
+			},
+			{
+				text: transferPlan.terminalCriterion,
+				style: "body"
+			}
 		],
 
 		styles: {
-			title: { fontSize: 22, bold: true, margin: [0, 0, 0, 20] },
-			section: { fontSize: 15, bold: true, margin: [0, 18, 0, 8] },
-			stepTitle: { fontSize: 13, bold: true, margin: [0, 12, 0, 6] },
-			body: { fontSize: 10, lineHeight: 1.3, margin: [0, 0, 0, 5] },
+			title: {
+				fontSize: 22,
+				bold: true,
+				margin: [0, 0, 0, 20]
+			},
+			section: {
+				fontSize: 15,
+				bold: true,
+				margin: [0, 18, 0, 8]
+			},
+			phaseTitle: {
+				fontSize: 13,
+				bold: true,
+				margin: [0, 12, 0, 6]
+			},
+			approximationTitle: {
+				fontSize: 11,
+				bold: true,
+				margin: [12, 8, 0, 4]
+			},
+			body: {
+				fontSize: 10,
+				lineHeight: 1.3,
+				margin: [0, 0, 0, 5]
+			},
 			muted: {
 				fontSize: 9,
 				italics: true,
-				color: '#475569',
+				color: "#475569",
 				margin: [0, 0, 0, 6]
 			}
 		}
 	};
 
-	pdfMake.createPdf(docDefinition).download('constructional-affection-program.pdf');
+	pdfMake.createPdf(docDefinition).download("constructional-affection-program.pdf");
 };
