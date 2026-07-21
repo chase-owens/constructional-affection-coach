@@ -1,25 +1,29 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import { ProgramInitialization } from "../../domain";
+import {
+  ConstructionalProgram,
+  LegacyProgramInitialization,
+} from "../../domain";
 import jsonResponse from "../../util/jsonResponse";
 import { logger } from "../../shared/logger";
 import { error } from "console";
 
 const dynamoClient = new DynamoDBClient({});
-const documentClient = DynamoDBDocumentClient.from(dynamoClient);
+const documentClient = DynamoDBDocumentClient.from(dynamoClient, {
+  marshallOptions: { removeUndefinedValues: true },
+});
 
 type CreateInterviewPayload = {
   interviewId: `${string}-${string}-${string}-${string}-${string}`;
-  program: ProgramInitialization;
 };
 
 export const handler = async (event: any) => {
   const requestId = event.requestContext.requestId;
   const startedAt = Date.now();
 
-  if (event.requestContext?.http?.method === "OPTIONS") {
-    return jsonResponse(200, { ok: true });
-  }
+  // if (event.requestContext?.http?.method === "OPTIONS") {
+  //   return jsonResponse(200, { ok: true });
+  // }
 
   const tableName = process.env.TABLE_NAME;
 
@@ -32,22 +36,26 @@ export const handler = async (event: any) => {
   try {
     const payload = JSON.parse(event.body || "{}") as CreateInterviewPayload;
 
-    if (!payload.interviewId || !payload.program) {
-      return jsonResponse(500, {
-        message: "program and interviewId are required",
-      });
+    const interviewId = payload.interviewId.trim();
+
+    if (!interviewId) {
+      return jsonResponse(400, { message: "interviewId is required" });
     }
 
-    const createdAt = new Date().toISOString();
+    const now = new Date().toISOString();
 
     await documentClient.send(
       new PutCommand({
         TableName: tableName,
         Item: {
           interviewId: payload.interviewId.trim(),
-          program: payload.program,
-          createdAt,
+          status: "pending",
+          createdAt: now,
+          updatedAt: now,
         },
+
+        // this ensures we don't overwrite existing interviews
+        ConditionExpression: "attribute_not_exists(interviewId)",
       }),
     );
 
@@ -55,19 +63,29 @@ export const handler = async (event: any) => {
       interviewId: payload.interviewId,
       requestId,
       druationMs: Date.now() - startedAt,
-      stageCount: payload.program.programStages?.length ?? 0,
     });
 
-    return jsonResponse(200, { success: true });
+    return jsonResponse(201, { interviewId, status: "pending" });
   } catch (err) {
-    logger.error("interview.persistence.failed", {
+    if (
+      err instanceof Error &&
+      err.name === "ConditionalCheckFailedException"
+    ) {
+      return jsonResponse(409, {
+        message: "Interview already exists",
+      });
+    }
+
+    logger.error("interview.creation.failed", {
       requestId,
       durationMs: Date.now() - startedAt,
-      errorName: error instanceof Error ? error.name : "UnknownError",
+      errorName: err instanceof Error ? err.name : "UnknownError",
       errorMessage:
-        error instanceof Error ? error.message : "Unknown persistence error",
+        err instanceof Error ? err.message : "Unknown persistence error",
     });
 
-    return jsonResponse(500, { message: "Failed to save program" });
+    return jsonResponse(500, {
+      message: "Failed to create interview",
+    });
   }
 };

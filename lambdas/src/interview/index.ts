@@ -1,12 +1,8 @@
-import {
-  GetSecretValueCommand,
-  SecretsManagerClient,
-} from "@aws-sdk/client-secrets-manager";
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
-import OpenAI from "openai";
+import type OpenAI from "openai";
 
 import type {
   ConstructionalAssets,
@@ -15,15 +11,12 @@ import type {
 } from "../domain";
 import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
-import { runProgramInitialization } from "./program-initialization";
 import { runTargetOutcomeInterview } from "./target-outcome";
 import { logger } from "../shared/logger";
+import { getOpenAiClient } from "./get-openai-client";
+import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 
-const secretsManager = new SecretsManagerClient({});
-
-type OpenAiSecret = {
-  OPENAI_API_KEY: string;
-};
+const lambdaClient = new LambdaClient({});
 
 type InterviewMessage = {
   role: "coach" | "user";
@@ -44,42 +37,6 @@ type InterviewRequest = {
   targetOutcome?: TargetOutcome | null;
   constructionalAssets?: ConstructionalAssets | null;
   interactionChain?: InteractionChain | null;
-};
-
-let openAiClient: OpenAI | null = null;
-
-const getOpenAiClient = async (): Promise<OpenAI> => {
-  if (openAiClient) {
-    return openAiClient;
-  }
-
-  const secretArn = process.env.OPENAI_SECRET_ARN;
-
-  if (!secretArn) {
-    throw new Error("OPENAI_SECRET_ARN is not configured.");
-  }
-
-  const response = await secretsManager.send(
-    new GetSecretValueCommand({
-      SecretId: secretArn,
-    }),
-  );
-
-  if (!response.SecretString) {
-    throw new Error("OpenAI secret does not contain a SecretString.");
-  }
-
-  const secret = JSON.parse(response.SecretString) as OpenAiSecret;
-
-  if (!secret.OPENAI_API_KEY) {
-    throw new Error("Secret is missing OPENAI_API_KEY.");
-  }
-
-  openAiClient = new OpenAI({
-    apiKey: secret.OPENAI_API_KEY,
-  });
-
-  return openAiClient;
 };
 
 const jsonResponse = (
@@ -118,24 +75,6 @@ const runInterviewPhase = async (openai: OpenAI, request: InterviewRequest) => {
       return runConstructionalAssetsInterview(openai, request.messages);
     }
 
-    case "program_initialization": {
-      if (
-        !request.targetOutcome ||
-        !request.constructionalAssets ||
-        !request.interactionChain
-      ) {
-        throw new Error(
-          "targetOutcome, constructionalAssets, and interactionChain are required for program initialization.",
-        );
-      }
-
-      return runProgramInitialization(openai, {
-        targetOutcome: request.targetOutcome,
-        constructionalAssets: request.constructionalAssets,
-        interactionChain: request.interactionChain,
-      });
-    }
-
     case "complete":
       return {
         phaseComplete: true,
@@ -151,6 +90,14 @@ export const handler = async (
   const startedAt = Date.now();
 
   try {
+    const interviewId = event.pathParameters?.interviewId;
+
+    if (!interviewId) {
+      return jsonResponse(400, {
+        message: "interviewId is required",
+      });
+    }
+
     if (!event.body) {
       return jsonResponse(400, {
         error: "Request body is required.",
@@ -171,14 +118,58 @@ export const handler = async (
       });
     }
 
+    if (request.phase === "program_initialization") {
+      if (
+        !request.targetOutcome ||
+        !request.constructionalAssets ||
+        !request.interactionChain
+      ) {
+        return jsonResponse(400, {
+          message:
+            "target outcome, constructional assets, and interaction chain are required for program initialization",
+        });
+      }
+
+      const workerFunctionName = process.env.PROGRAM_WORKER_FUNCTION_NAME;
+
+      if (!workerFunctionName) {
+        throw new Error("PROGRAM_WORKER_FUNCTION_NAME is not configured");
+      }
+
+      await lambdaClient.send(
+        new InvokeCommand({
+          FunctionName: workerFunctionName,
+          InvocationType: "Event",
+          Payload: Buffer.from(
+            JSON.stringify({
+              interviewId,
+              targetOutcome: request.targetOutcome,
+              constructionalAssets: request.constructionalAssets,
+              interactionChain: request.interactionChain,
+            }),
+          ),
+        }),
+      );
+
+      logger.info("program.worker.invoked", {
+        requestId,
+        interviewId,
+      });
+
+      return jsonResponse(202, {
+        interviewId,
+        status: "pending",
+      });
+    }
+
     const openai = await getOpenAiClient();
     const result = await runInterviewPhase(openai, request);
 
     logger.info("interview.request.completed", {
       requestId,
-      interviewId: request.interviewId,
+      interviewId,
       phase: request.phase,
-      phaseComplete: result.phaseComplete ?? false,
+      phaseComplete: result?.phaseComplete ?? false,
     });
 
     return jsonResponse(200, result);

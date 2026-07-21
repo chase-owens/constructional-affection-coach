@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
 
 @theme {
 	--color-background: #ffffff;
@@ -34,8 +34,8 @@
 	--color-error: #dc2626;
 	--color-error-background: #fee2e2;
 
-	--font-heading: 'Libre Baskerville', serif;
-	--font-body: 'Inter', system-ui, sans-serif;
+	--font-heading: "Libre Baskerville", serif;
+	--font-body: "Inter", system-ui, sans-serif;
 
 	--radius-vintage: 0.75rem;
 	--shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.14);

@@ -9,7 +9,6 @@ export const runTargetOutcomeInterview = async (
   messages: InterviewMessage[],
 ) => {
   const controller = new TargetOutcomeController(openai);
-  const result = await controller.interview(messages);
 
   return controller.interview(messages);
 };

@@ -1,24 +1,24 @@
-import { browser } from '$app/environment';
-import { writable } from 'svelte/store';
+import { browser } from "$app/environment";
+import { writable } from "svelte/store";
 import type {
 	ConstructionalAssets,
+	ConstructionalProgram,
 	InteractionChain,
-	ProgramInitialization,
 	TargetOutcome
-} from '../../../../lambdas/src/domain';
+} from "../../../../lambdas/src/domain";
 
-const STORAGE_KEY = 'constructional-affection-program';
+const STORAGE_KEY = "constructional-affection-program";
 
 type InterviewProgram = {
 	interviewId: `${string}-${string}-${string}-${string}-${string}`;
 	targetOutcome: TargetOutcome | null;
 	constructionalAssets: ConstructionalAssets | null;
 	interactionChain: InteractionChain | null;
-	programInitialization: ProgramInitialization | null;
+	constructionalProgram: ConstructionalProgram | null;
 };
 
 export const savedProgram = writable<InterviewProgram | null>(
-	browser ? JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') : null
+	browser ? JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") : null
 );
 
 savedProgram.subscribe((value) => {

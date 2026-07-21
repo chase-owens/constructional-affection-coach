@@ -2,73 +2,93 @@ import type {
 	ConstructionalAssets,
 	InteractionChain,
 	TargetOutcome
-} from '../../../../lambdas/src/domain';
+} from "../../../../lambdas/src/domain";
 
 const mockInterview = {
 	targetOutcome: {
 		rawAnswer:
-			"my dog would be calm when I sit on the couch to watch tv. she'd sit or lie on the floor or on the couch with me",
+			"When I sit on the couch to watch TV, my dog would be sitting or lying down on the floor next to the couch or on the couch with me, allowed to shift positions but not jump on me.",
 		clarifiedOutcome:
-			'When watching TV on the couch in the living room, the dog is sitting or lying down quietly on the floor or on the couch with the person.',
+			"When you sit on the couch watching TV, your dog is either sitting or lying down beside you on the floor or on the couch, shifting position occasionally while remaining settled.",
 		desiredInteractionPattern:
-			'The person sits on the couch to watch TV in the living room while the dog calmly sits or lies on the floor or couch beside them.',
-		primaryContext: 'Watching TV on the couch in the living room',
-		scope: 'within_constructional_affection',
+			"Dog sits or lies down next to or on the couch with the person as they watch TV, with occasional shifting while remaining seated or lying down.",
+		primaryContext: "Sitting on the couch watching TV at home",
+		scope: "within_constructional_affection",
 		isPositive: true,
 		isObservable: true,
 		notes:
-			"The dog's calm posture is defined as sitting or lying near the person while watching TV."
+			"The pattern includes allowed movement such as shifting position while preserving sitting or lying down near the person."
 	},
+
 	constructionalAssets: {
 		socialReinforcers: {
-			touch: 'clearly_reinforcing',
-			talk: 'clearly_reinforcing',
-			eyeContact: 'sometimes_reinforcing',
-			proximity: 'clearly_reinforcing'
+			touch: "clearly_reinforcing",
+			talk: "clearly_reinforcing",
+			eyeContact: "unclear",
+			proximity: "unclear"
 		},
+
 		relevantSkills: [
 			{
-				name: 'sit',
-				context: 'when asked, when food is present, or when the person stands with hands clasped',
-				notes: 'Responds reliably to the cue and some situational signals'
+				name: "Sit and lie down on command",
+				context: "When food is present or when the person stands upright with hands clasped",
+				notes: "The dog reliably follows these cues in certain contexts."
 			}
 		],
+
 		conditionsWhereTargetPatternOccurs: [
 			{
-				description: 'When given a sit cue or when food is present',
-				behaviorObserved: 'She sits calmly',
-				notes: 'Sitting already occurs reliably in these conditions'
+				description: "Standing upright with hands clasped",
+				behaviorObserved: "Sits",
+				notes: "Occurs without the need for food, indicating some existing control."
 			}
 		],
-		notes: 'Touch, talking, and proximity can be incorporated into the interaction.'
+
+		notes:
+			"The dog clearly enjoys petting, scratches, belly rubs, and praise, which can support the desired interaction."
 	},
+
 	interactionChain: {
 		steps: [
 			{
 				index: 0,
-				actor: 'person',
-				description: 'Walk toward the couch.',
-				change: 'The person approaches the couch.',
-				expectedDogBehavior: 'The dog stands or remains calmly nearby.',
+				actor: "person",
+				description: "Walk toward the couch.",
+				change: "The person moves closer to the sitting area.",
+				expectedDogBehavior: "The dog remains calm and stays away from the couch.",
 				targetPatternPresent: true,
 				requiresTransfer: false,
-				notes: 'The dog is still calm at this point.'
+				notes: "The target pattern is still present while the person approaches."
 			},
 			{
 				index: 1,
-				actor: 'person',
-				description: 'Turn around and begin sitting on the couch.',
-				change: "The person's movement predicts sitting down.",
-				expectedDogBehavior: 'The dog becomes excited, runs up, and jumps onto the couch.',
+				actor: "person",
+				description: "Turn around to face the couch.",
+				change: "The person's orientation changes toward sitting.",
+				expectedDogBehavior: "The dog remains calm and stays in place.",
+				targetPatternPresent: true,
+				requiresTransfer: false,
+				notes: "The dog remains under control as the person turns toward the couch."
+			},
+			{
+				index: 2,
+				actor: "person",
+				description: "Begin to bend the knees toward the couch.",
+				change: "The person's posture and height begin changing toward sitting.",
+				expectedDogBehavior:
+					"The dog begins moving toward the couch, jumping, or initiating play biting.",
 				targetPatternPresent: false,
 				requiresTransfer: true,
-				notes: 'This is the earliest point where the interaction shifts away from the target.'
+				notes:
+					"This is the earliest identified change where the target pattern begins to deteriorate."
 			}
 		],
+
 		constructionStartIndex: 1,
-		targetOutcomeIndex: 0,
+		targetOutcomeIndex: 2,
+
 		notes:
-			'The starting arrangement should be built around the moment just before the person turns to sit.'
+			"The interaction is stable until the person begins bending toward the couch. The transfer should begin from the successful turning condition and gradually introduce smaller changes in posture and height."
 	}
 } satisfies {
 	targetOutcome: TargetOutcome;
