@@ -1,12 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import {
-  ConstructionalProgram,
-  LegacyProgramInitialization,
-} from "../../domain";
 import jsonResponse from "../../util/jsonResponse";
 import { logger } from "../../shared/logger";
-import { error } from "console";
 
 const dynamoClient = new DynamoDBClient({});
 const documentClient = DynamoDBDocumentClient.from(dynamoClient, {

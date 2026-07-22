@@ -1,11 +1,3 @@
-export type LegacyApproximation = {
-  index: number;
-  dimension: string;
-  adjustment: string;
-  targetPattern: string;
-  successCriterion: string;
-};
-
 export type ProgramPhase = {
   id: string;
   order: number;
