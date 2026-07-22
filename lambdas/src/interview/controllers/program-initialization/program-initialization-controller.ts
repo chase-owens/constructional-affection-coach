@@ -4,11 +4,8 @@ import type {
   ConstructionalAssets,
   ConstructionalProgram,
   InteractionChain,
-  LegacyProgramInitialization,
   TargetOutcome,
 } from "../../../domain";
-import { programInitializationPhaseResultSchema } from "../../../schemas";
-import { buildConstructionalProgram } from "./build-constructional-program";
 import type { ValidationIssue } from "../../program-initialization";
 
 type ProgramInitializationInput = {
@@ -27,36 +24,29 @@ Return ONLY valid JSON in this shape:
 
 {
   "phaseComplete": true,
-  "programInitialization": {
-    "startingPoint": "...",
-    "terminalTargetPattern": "...",
-    "programStages": [
-      {
-        "index": 0,
-        "title": "...",
-        "targetPattern": "...",
-        "entryCondition": "...",
-        "successCriterion": "...",
-        "reinforcers": ["..."],
-        "approximations": [
-          {
-            "index": 0,
-            "dimension": "...",
-            "adjustment": "...",
-            "targetPattern": "...",
-            "successCriterion": "..."
-          }
-        ],
-        "notes": "..."
-      }
-    ],
-    "rationale": "...",
-    "notes": "..."
-  },
   "constructionalProgram": {
     "schemaVersion": "1.0",
-    "targetOutcome": {},
-    "constructionalAssets": {},
+    "targetOutcome": {
+      "rawAnswer": "...",
+      "clarifiedOutcome": "...",
+      "desiredInteractionPattern": "...",
+      "primaryContext": "...",
+      "scope": "within_constructional_affection",
+      "isPositive": true,
+      "isObservable": true,
+      "notes": "..."
+    },
+    "constructionalAssets": {
+      "socialReinforcers": {
+        "touch": "unclear",
+        "talk": "unclear",
+        "eyeContact": "unclear",
+        "proximity": "unclear"
+      },
+      "relevantSkills": [],
+      "conditionsWhereTargetPatternOccurs": [],
+      "notes": "..."
+    },
     "controlAnalysis": {
       "targetPattern": "...",
       "initialConditions": {
@@ -77,16 +67,67 @@ Return ONLY valid JSON in this shape:
       }
     },
     "initialization": {
-      "startingPoint": "...",
-      "terminalTargetPattern": "...",
-      "programStages": []
+      "initialApproximation": {
+        "id": "...",
+        "order": 0,
+        "conditions": ["..."],
+        "changeFromPrevious": {
+          "dimension": "...",
+          "adjustment": "..."
+        },
+        "targetPattern": "...",
+        "reinforcer": "...",
+        "controlCriterion": {
+          "evidenceOfControl": "...",
+          "sufficientToAdvance": "..."
+        },
+        "recovery": {
+          "reduceApproximationTo": "...",
+          "previousSuccessfulApproximationId": "..."
+        }
+      },
+      "readinessCriterion": "..."
     },
     "transferPlan": {
-      "phases": [],
+      "phases": [
+        {
+          "id": "...",
+          "order": 0,
+          "title": "...",
+          "entryCondition": "...",
+          "targetPattern": "...",
+          "terminalCriterion": "...",
+          "reinforcers": ["..."],
+          "notes": "...",
+          "approximations": [
+            {
+              "id": "...",
+              "order": 0,
+              "conditions": ["..."],
+              "changeFromPrevious": {
+                "dimension": "...",
+                "adjustment": "..."
+              },
+              "targetPattern": "...",
+              "reinforcer": "...",
+              "controlCriterion": {
+                "evidenceOfControl": "...",
+                "sufficientToAdvance": "..."
+              },
+              "recovery": {
+                "reduceApproximationTo": "...",
+                "previousSuccessfulApproximationId": "..."
+              }
+            }
+          ]
+        }
+      ],
       "terminalCriterion": "..."
     }
   }
 }
+
+Use the supplied targetOutcome and constructionalAssets without changing their meaning.
 
 Do not output markdown.
 Do not output explanations.
@@ -96,9 +137,7 @@ Return only JSON.
 
 type ProgramInitializationResult = {
   phaseComplete: true;
-  coachMessage?: string;
-  programInitialization: LegacyProgramInitialization;
-  constructionalProgram: ConstructionalProgram;
+  constructionalProgram: unknown;
 };
 
 export class ProgramInitializationController {
@@ -168,38 +207,27 @@ export class ProgramInitializationController {
 
     const parsedJson: unknown = JSON.parse(response.output_text);
 
-    console.log("Legacy program response:", response.output_text);
+    if (
+      typeof parsedJson !== "object" ||
+      parsedJson === null ||
+      !("constructionalProgram" in parsedJson)
+    ) {
+      return {
+        phaseComplete: true,
+        constructionalProgram: undefined,
+      };
+    }
 
-    const normalizedJson =
-      typeof parsedJson === "object" &&
-      parsedJson !== null &&
-      "phaseComplete" in parsedJson
-        ? parsedJson
-        : {
-            ...(typeof parsedJson === "object" && parsedJson !== null
-              ? parsedJson
-              : {}),
-            phaseComplete: false,
-          };
+    const result = parsedJson as {
+      phaseComplete?: unknown;
+      constructionalProgram?: unknown;
+    };
 
-    const legacyResult =
-      programInitializationPhaseResultSchema.parse(normalizedJson);
-
-    const constructionalProgram = buildConstructionalProgram({
-      targetOutcome: input.targetOutcome,
-      constructionalAssets: input.constructionalAssets,
-      interactionChain: input.interactionChain,
-      programInitialization: legacyResult.programInitialization,
-    });
-
-    console.log(
-      "Constructional program:",
-      JSON.stringify(constructionalProgram),
-    );
+    console.info("program.controller.completed");
 
     return {
-      ...legacyResult,
-      constructionalProgram,
+      phaseComplete: true,
+      constructionalProgram: result.constructionalProgram,
     };
   }
 }
