@@ -8,8 +8,7 @@
 		TargetOutcome,
 		InterviewPhase,
 		ConstructionalAssets,
-		InteractionChain,
-		LegacyProgramInitialization
+		InteractionChain
 	} from "../../../../lambdas/src/domain";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
 	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
@@ -21,51 +20,11 @@
 	import { onMount } from "svelte";
 	import { interviewClient } from "$lib/api/interviewClient";
 	import { resolve } from "$app/paths";
-
-	type InterviewIdType = `${string}-${string}-${string}-${string}-${string}`;
-
-	const handleDownload = () => {
-		if (!constructionalProgram) return;
-
-		downloadProgramPdf({
-			constructionalProgram
-		});
-	};
-
-	type InterviewResponse = {
-		coachMessage?: string;
-		phaseComplete: boolean;
-		targetOutcome?: TargetOutcome;
-		constructionalAssets?: ConstructionalAssets;
-		interactionChain?: InteractionChain;
-
-		programInitialization?: LegacyProgramInitialization;
-		constructionalProgram?: ConstructionalProgram;
-
-		outsideScope?: boolean;
-		error?: string;
-	};
-
-	type Message = {
-		role: "coach" | "user";
-		content: string;
-	};
-
-	const phaseOrder: InterviewPhase[] = [
-		"target_outcome",
-		"interaction_chain",
-		"constructional_assets",
-		"program_initialization",
-		"complete"
-	];
-
-	const phaseTitle: Record<InterviewPhase, string> = {
-		target_outcome: "What's the Goal?",
-		interaction_chain: "Where Are We Now?",
-		constructional_assets: "What Already Works?",
-		program_initialization: "Where Do We Go From Here?",
-		complete: "Complete"
-	};
+	import { getTargetOutcomeAgreementMessage } from "$lib/interview/getTargetOutcomeAgreementMessage";
+	import type { InterviewIdType, InterviewResponse, Message } from "$lib/interview/types";
+	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
+	import { getPhaseIndex } from "$lib/interview/getPhaseIndex";
+	import { handleDownload } from "$lib/interview/downloadProgramPdf";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
@@ -120,17 +79,6 @@
 		answer = "";
 	};
 
-	const getTargetOutcomeAgreementMessage = (targetOutcome: TargetOutcome) => ({
-		role: "coach" as const,
-		content: `Before I build your starting program, I want to make sure this is the interaction you want to work toward:
-
-      Context: ${targetOutcome.primaryContext}
-
-      Goal: ${targetOutcome.desiredInteractionPattern}
-
-      Does that look right?`
-	});
-
 	const confirmTargetOutcomeAndInitializeProgram = async () => {
 		hasUserAgreement = true;
 
@@ -150,9 +98,6 @@
 		await initializeProgram();
 	};
 
-	const getPhaseIndex = (phase: InterviewPhase) =>
-		phaseOrder.findIndex((phaseItem) => phaseItem === phase);
-
 	let phase = $state<InterviewPhase>("target_outcome");
 	let currentPhaseIndex = $derived(getPhaseIndex(phase));
 	let targetOutcome = $state<TargetOutcome | null>(null);
@@ -169,6 +114,7 @@
 	let messages = $state<Message[]>([getPhaseInitializer("target_outcome")]);
 	let interviewId = $state<InterviewIdType | null>(null);
 
+	// new interview and rehydrate interview helpers
 	const resetInterviewState = () => {
 		savedProgram.set(null);
 
@@ -227,7 +173,7 @@
 		phase = "complete";
 	};
 
-	// initialize page on load
+	// initialize interview state on load
 	onMount(async () => {
 		try {
 			if ($savedProgram?.constructionalProgram) {
@@ -484,7 +430,8 @@
 
 					{#if constructionalProgram}<button
 							class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
-							onclick={handleDownload}><Download class="size-6 cursor-pointer" /></button
+							onclick={() => handleDownload(constructionalProgram!)}
+							><Download class="size-6 cursor-pointer" /></button
 						>{/if}
 
 					<div class="space-y-5">

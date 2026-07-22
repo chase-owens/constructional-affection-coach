@@ -4,9 +4,18 @@ import type {
   InteractionChain,
   TargetOutcome,
 } from "../domain";
-import { getOpenAiClient } from "./get-openai-client";
-import { runProgramInitialization } from "./program-initialization";
+import { getOpenAiClient } from "../interview/get-openai-client";
+import {
+  runProgramInitialization,
+  ValidationIssue,
+} from "../interview/program-initialization";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { constructionalProgramSchema } from "../schemas/constructional-program";
+import {
+  ProgramGenerationError,
+  ProgramValidationError,
+} from "../program/errors";
+import type { ZodError } from "zod";
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },
@@ -17,6 +26,24 @@ type StartProgramEvent = {
   targetOutcome: TargetOutcome;
   constructionalAssets: ConstructionalAssets;
   interactionChain: InteractionChain;
+};
+
+type ProgramWorkerError = Error & {
+  code?: string;
+};
+
+const MAX_GENERATION_ATTEMPTS = 2;
+
+const getErrorCode = (error: unknown) => {
+  if (
+    error instanceof Error &&
+    "code" in error &&
+    typeof (error as ProgramWorkerError).code === "string"
+  ) {
+    return (error as ProgramWorkerError).code!;
+  }
+
+  return "PROGRAM_GENERATION_FAILED";
 };
 
 const getTableName = () => {
@@ -83,6 +110,7 @@ const markComplete = async (interviewId: string, program: unknown) => {
 
 const markFailed = async (interviewId: string, error: unknown) => {
   const now = new Date().toISOString();
+  const errorCode = getErrorCode(error);
 
   await documentClient.send(
     new UpdateCommand({
@@ -102,7 +130,7 @@ const markFailed = async (interviewId: string, error: unknown) => {
 
       ExpressionAttributeValues: {
         ":status": "failed",
-        ":errorCode": "PROGRAM_GENERATION_FAILED",
+        ":errorCode": errorCode,
         ":updatedAt": now,
         ":failedAt": now,
       },
@@ -111,6 +139,7 @@ const markFailed = async (interviewId: string, error: unknown) => {
 
   console.error("program.worker.failed", {
     interviewId,
+    errorCode,
     errorName: error instanceof Error ? error.name : "UnknownError",
     errorMessage:
       error instanceof Error
@@ -136,26 +165,69 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
 
     const openai = await getOpenAiClient();
 
-    const result = await runProgramInitialization(openai, {
-      targetOutcome,
-      constructionalAssets,
-      interactionChain,
-    });
+    let validationIssues: ValidationIssue[] | undefined;
+    let lastValidationError: ZodError | undefined;
 
-    if (!result.constructionalProgram) {
-      throw new Error(
-        "Program generation completed without a constructional program.",
+    for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
+      const result = await runProgramInitialization(openai, {
+        targetOutcome,
+        constructionalAssets,
+        interactionChain,
+        validationIssues,
+      });
+
+      if (!result.constructionalProgram) {
+        throw new ProgramGenerationError(
+          "Program generation completed without a constructional program.",
+        );
+      }
+
+      const parsedProgram = constructionalProgramSchema.safeParse(
+        result.constructionalProgram,
       );
+
+      if (parsedProgram.success) {
+        await markComplete(interviewId, parsedProgram.data);
+
+        console.info("program.persistence.completed", {
+          interviewId,
+          attempt,
+        });
+
+        return;
+      }
+
+      lastValidationError = parsedProgram.error;
+      validationIssues = parsedProgram.error.issues;
+
+      console.warn("program.validation.failed", {
+        interviewId,
+        attempt,
+        issues: validationIssues.map((issue) => ({
+          path: issue.path.map(String).join("."),
+          code: issue.code,
+          message: issue.message,
+        })),
+      });
+
+      continue;
     }
 
-    await markComplete(interviewId, result.constructionalProgram);
+    if (lastValidationError) {
+      throw new ProgramValidationError(lastValidationError);
+    }
 
-    console.info("program.persistence.completed", {
-      interviewId,
-    });
+    throw new ProgramGenerationError(
+      "Program generation exhausted all attempts without producing a valid program.",
+    );
   } catch (err) {
+    console.error("Program worker failed", {
+      interviewId,
+      err,
+    });
+
     await markFailed(interviewId, err);
 
-    throw err;
+    return;
   }
 };

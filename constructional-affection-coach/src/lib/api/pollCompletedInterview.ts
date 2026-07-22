@@ -15,7 +15,7 @@ export const pollForCompletedInterview = async (
 	interviewId: string
 ): Promise<CompletedInterview> => {
 	const pollingIntervalMs = 2_000;
-	const timeoutMs = 60_000;
+	const timeoutMs = 180_000;
 	const startedAt = Date.now();
 
 	while (Date.now() - startedAt < timeoutMs) {
