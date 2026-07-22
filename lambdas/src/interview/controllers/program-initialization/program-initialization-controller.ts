@@ -9,11 +9,13 @@ import type {
 } from "../../../domain";
 import { programInitializationPhaseResultSchema } from "../../../schemas";
 import { buildConstructionalProgram } from "./build-constructional-program";
+import type { ValidationIssue } from "../../program-initialization";
 
 type ProgramInitializationInput = {
   targetOutcome: TargetOutcome;
   constructionalAssets: ConstructionalAssets;
   interactionChain: InteractionChain;
+  validationIssues?: ValidationIssue[];
 };
 
 const programInitializationPrompt = `
@@ -51,7 +53,7 @@ Return ONLY valid JSON in this shape:
     "rationale": "...",
     "notes": "..."
   },
-  constructionalProgram": {
+  "constructionalProgram": {
     "schemaVersion": "1.0",
     "targetOutcome": {},
     "constructionalAssets": {},
@@ -106,6 +108,31 @@ export class ProgramInitializationController {
     input: ProgramInitializationInput,
   ): Promise<ProgramInitializationResult> {
     console.log("THE actual controller top");
+
+    const validationFeedback = input.validationIssues?.length
+      ? `
+          The constructional program built from your previous programInitialization
+          failed schema validation.
+
+          Revise the complete programInitialization so the resulting constructional
+          program resolves every issue below:
+
+          ${input.validationIssues
+            .map((issue) => {
+              const path =
+                issue.path.length > 0
+                  ? issue.path.map(String).join(".")
+                  : "root";
+
+              return `- ${path}: ${issue.message}`;
+            })
+            .join("\n")}
+
+          Return the complete corrected result.
+          Do not return only the corrected properties.
+          `
+      : "";
+
     const response = await this.openai.responses.create({
       model: "gpt-4.1-mini",
       input: [
@@ -115,7 +142,21 @@ export class ProgramInitializationController {
         },
         {
           role: "user" as const,
-          content: JSON.stringify(input),
+          content: `
+            Interview data:
+
+            ${JSON.stringify(
+              {
+                targetOutcome: input.targetOutcome,
+                constructionalAssets: input.constructionalAssets,
+                interactionChain: input.interactionChain,
+              },
+              null,
+              2,
+            )}
+
+            ${validationFeedback}
+            `,
         },
       ],
       text: {

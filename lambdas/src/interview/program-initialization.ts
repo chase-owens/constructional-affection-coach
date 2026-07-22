@@ -5,6 +5,9 @@ import {
   InteractionChain,
   TargetOutcome,
 } from "../domain";
+import type { ZodError } from "zod";
+
+export type ValidationIssue = ZodError["issues"][number];
 
 export const runProgramInitialization = async (
   openai: OpenAI,
@@ -12,6 +15,7 @@ export const runProgramInitialization = async (
     targetOutcome: TargetOutcome;
     constructionalAssets: ConstructionalAssets;
     interactionChain: InteractionChain;
+    validationIssues?: ValidationIssue[];
   },
 ) => {
   console.log("calling controller");

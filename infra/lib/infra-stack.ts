@@ -111,7 +111,7 @@ export class InfraStack extends cdk.Stack {
 
     const startProgramLambda = createNodeLambda(this, "StartProgramLambda", {
       functionName: "ca-start-program-interviews",
-      entry: path.join(lambdaProjectRoot, "src/interview/start-program.ts"),
+      entry: path.join(lambdaProjectRoot, "src/program/start-program.ts"),
       memorySize: 1024,
       environment: {
         TABLE_NAME: this.interviewsTable.tableName,
