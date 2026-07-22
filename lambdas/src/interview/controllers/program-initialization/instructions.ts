@@ -41,6 +41,14 @@ Transfer Rule
 
 Each stage should transfer the existing calm pattern to one new condition.
 
+Terminal Transfer Rule
+
+Do not stop constructing the program when the owner first reaches the terminal location or posture.
+
+The program is complete only when the target interaction pattern remains under stable control throughout the entire terminal context.
+
+Continue introducing naturally occurring changes that occur after arrival at the terminal context, such as shifts in posture, movement, increased duration, interaction with objects, or normal human behavior, until the complete target outcome is reliably maintained.
+
 For each stage, identify:
 
 - entryCondition: what already works before this stage begins
@@ -65,6 +73,8 @@ The program must explain how to execute the plan using:
 - begin with very short intervals
 - gradually increase duration
 - then transfer the calm pattern to the target situation
+
+
 
 Generalization Rule
 
@@ -102,6 +112,12 @@ Approximations:
 5. Owner sits on the edge for three seconds.
 6. Owner sits fully.
 7. Owner settles back.
+8. Owner shifts position while seated.
+9. Owner reaches for the remote.
+10. Owner turns on the television.
+11. Owner watches television for one minute.
+12. Owner changes sitting position.
+13. Owner remains seated while interacting naturally with the environment.
 
 Do not add all variations at once.
 Each stage should add one meaningful variation while maintaining the target pattern.
