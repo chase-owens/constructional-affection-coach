@@ -11,7 +11,6 @@
 	} from "../../../../lambdas/src/schemas";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
 	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
-	import { downloadProgramPdf } from "$lib/pdf/download-program";
 	import { savedProgram } from "$lib/stores/interview-program";
 	import mockInterview from "$lib/data/interviewMock-workout";
 	import { goto } from "$app/navigation";
@@ -138,7 +137,8 @@
 		const newInterviewId = crypto.randomUUID();
 
 		await interviewClient.create({
-			interviewId: newInterviewId
+			interviewId: newInterviewId,
+			userId: null
 		});
 
 		interviewId = newInterviewId;
