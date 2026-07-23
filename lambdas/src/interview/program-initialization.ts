@@ -4,7 +4,7 @@ import {
   ConstructionalAssets,
   InteractionChain,
   TargetOutcome,
-} from "../domain";
+} from "../schemas";
 import type { ZodError } from "zod";
 
 export type ValidationIssue = ZodError["issues"][number];

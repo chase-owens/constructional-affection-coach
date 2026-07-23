@@ -3,7 +3,7 @@ import type {
 	ConstructionalProgram,
 	InteractionChain,
 	TargetOutcome
-} from "../../../../../lambdas/src/domain";
+} from "../../../../../lambdas/src/schemas";
 
 export type InterviewIdType = `${string}-${string}-${string}-${string}-${string}`;
 

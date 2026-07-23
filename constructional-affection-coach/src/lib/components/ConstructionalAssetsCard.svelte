@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ConstructionalAssets, ReinforcerStatus } from "../../../../lambdas/src/domain";
+	import type { ConstructionalAssets, ReinforcerStatus } from "../../../../lambdas/src/schemas";
 
 	const { constructionalAssets }: { constructionalAssets: ConstructionalAssets } = $props();
 

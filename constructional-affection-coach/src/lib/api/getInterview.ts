@@ -1,5 +1,5 @@
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
-import type { ConstructionalProgram } from "../../../../lambdas/src/domain";
+import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 type InterviewStatus = "pending" | "processing" | "complete" | "failed";
 

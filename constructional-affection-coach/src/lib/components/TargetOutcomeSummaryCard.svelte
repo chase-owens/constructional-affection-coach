@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TargetOutcome } from "../../../../lambdas/src/domain";
+	import type { TargetOutcome } from "../../../../lambdas/src/schemas";
 
 	const { targetOutcome }: { targetOutcome: TargetOutcome } = $props();
 </script>

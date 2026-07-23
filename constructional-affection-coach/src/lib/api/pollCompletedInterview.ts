@@ -1,4 +1,4 @@
-import type { ConstructionalProgram } from "../../../../lambdas/src/domain";
+import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 import { getInterview, type PersistedInterview } from "./getInterview";
 
 const wait = (durationMs: number) =>
