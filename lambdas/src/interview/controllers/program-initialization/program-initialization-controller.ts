@@ -2,10 +2,9 @@ import OpenAI from "openai";
 import { PROGRAM_INITIALIZATION_INSTRUCTIONS } from "./instructions";
 import type {
   ConstructionalAssets,
-  ConstructionalProgram,
   InteractionChain,
   TargetOutcome,
-} from "../../../domain";
+} from "../../../schemas";
 import type { ValidationIssue } from "../../program-initialization";
 
 type ProgramInitializationInput = {
@@ -67,24 +66,11 @@ Return ONLY valid JSON in this shape:
       }
     },
     "initialization": {
-      "initialApproximation": {
-        "id": "...",
-        "order": 0,
+      "startingInteraction": {
         "conditions": ["..."],
-        "changeFromPrevious": {
-          "dimension": "...",
-          "adjustment": "..."
-        },
         "targetPattern": "...",
         "reinforcer": "...",
-        "controlCriterion": {
-          "evidenceOfControl": "...",
-          "sufficientToAdvance": "..."
-        },
-        "recovery": {
-          "reduceApproximationTo": "...",
-          "previousSuccessfulApproximationId": "..."
-        }
+        "controlCriterion": "..."
       },
       "readinessCriterion": "..."
     },

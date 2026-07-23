@@ -2,7 +2,6 @@ import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
 import jsonResponse from "../../util/jsonResponse";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { ConstructionalProgram } from "../../domain";
 
 const client = new DynamoDBClient();
 const docClient = DynamoDBDocumentClient.from(client);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ProgramPhase } from "../../../../lambdas/src/domain";
+	import type { ProgramPhase } from "../../../../lambdas/src/schemas";
 
 	const {
 		phases,
@@ -186,15 +186,6 @@
 													</p>
 												</div>
 											</div>
-
-											{#if approximation.recovery.previousSuccessfulApproximationId}
-												<p
-													class="mt-3 rounded-vintage bg-primary/5 px-3 py-2 text-xs leading-relaxed text-muted-dark"
-												>
-													If the target pattern deteriorates, return to the previous successful
-													approximation before trying this change again.
-												</p>
-											{/if}
 										</article>
 									</li>
 								{/each}

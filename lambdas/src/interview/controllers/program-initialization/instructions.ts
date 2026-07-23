@@ -37,16 +37,37 @@ Good:
 Bad:
 "Owner stands near couch."
 
+Control Before Transfer Rule
+
+Every program must begin by establishing the target pattern under conditions already shown to support it.
+
+This is Step 0.
+
+Step 0 is not a transfer approximation. It is the constructional starting interaction that is already available in the person's and dog's repertoire.
+
+The user should run this interaction until the target pattern is stable and reliably maintained.
+
+Only after control is demonstrated under the starting conditions should the program introduce the first small change in conditions.
+
+The sequence must be:
+
+1. Establish control under the starting conditions.
+2. Confirm the target pattern is stable.
+3. Change one controlling variable.
+4. Establish the target pattern under the new condition.
+5. Continue transferring control one variable at a time.
+
 Transfer Rule
 
 Each stage should transfer the existing calm pattern to one new condition.
+The first approximation must differ from Step 0 by one small change.
+The initial approximation must be the smallest observable change that moves from the starting interaction toward the interaction-chain transition point.
+Do not treat Step 0 itself as the first approximation.
 
 Terminal Transfer Rule
 
 Do not stop constructing the program when the owner first reaches the terminal location or posture.
-
 The program is complete only when the target interaction pattern remains under stable control throughout the entire terminal context.
-
 Continue introducing naturally occurring changes that occur after arrival at the terminal context, such as shifts in posture, movement, increased duration, interaction with objects, or normal human behavior, until the complete target outcome is reliably maintained.
 
 For each stage, identify:
@@ -75,7 +96,6 @@ The program must explain how to execute the plan using:
 - then transfer the calm pattern to the target situation
 
 
-
 Generalization Rule
 
 After the initial transfer steps, include small changes that vary the human behavior and context enough to protect the target pattern from deteriorating.
@@ -96,33 +116,81 @@ Each approximation must:
 - progress directly toward the phase completion criterion
 - specify what changes from the previous approximation
 
+Relationship Between Phases
+
+The first approximation of every phase must introduce one observable change
+from that phase's entryCondition.
+
+Do not repeat the entryCondition as the first approximation.
+
+Every approximation must introduce a new observable change.
+
+Step 0 must never be repeated as an approximation.
+
+If the first approximation does not differ from Step 0, the program is incorrect.
+
 Example:
 
-Entry condition:
+Entry condition - Step 0
 Owner stands upright near the couch while the dog sits nearby.
 
 Phase completion:
 Owner is fully seated while the dog remains sitting or lying nearby.
 
-Approximations:
-1. Owner turns toward the couch.
-2. Owner bends knees slightly.
-3. Owner lowers partway.
-4. Owner briefly touches the couch for one second.
-5. Owner sits on the edge for three seconds.
-6. Owner sits fully.
-7. Owner settles back.
-8. Owner shifts position while seated.
-9. Owner reaches for the remote.
-10. Owner turns on the television.
-11. Owner watches television for one minute.
-12. Owner changes sitting position.
-13. Owner remains seated while interacting naturally with the environment.
+Step 0
+Owner stands upright facing the couch.
+Dog sits calmly nearby.
+
+↓
+
+Phase 1
+Transfer through lowering posture
+
+Approximation 1
+Shift weight toward couch.
+
+Approximation 2
+Slight knee bend.
+
+Approximation 3
+Half squat.
+
+Approximation 4
+Touch couch briefly.
+
+↓
+
+Phase 2
+Transfer to seated posture
+
+Approximation 1
+Sit on edge for one second.
+
+Approximation 2
+Sit on edge for five seconds.
+
+Approximation 3
+Sit fully.
+
+↓
+
+Phase 3
+Transfer across natural seated behavior
+
+Approximation 1
+Shift posture.
+
+Approximation 2
+Reach for remote.
+
+Approximation 3
+Watch television naturally.
 
 Do not add all variations at once.
 Each stage should add one meaningful variation while maintaining the target pattern.
 
 The output should tell the user not only where to start, but how to run the first loop.
+
 
 Do not troubleshoot the problem.
 Do not add punishment, corrections, extinction, or exposure flooding.
@@ -137,5 +205,19 @@ Example:
 - dog remains calm while owner sits briefly
 - dog remains calm while owner sits longer
 
-Return the starting point and the program stages.
+Return:
+
+1. A Step 0 starting interaction that establishes the target pattern under known successful conditions.
+2. A readiness criterion confirming that the target pattern is stable before transfer begins.
+3. A small number of meaningful program phases.
+
+Each phase should represent one larger transfer objective.
+
+Within each phase, include enough successive approximations to transfer control gradually from the phase entry condition to the phase completion condition.
+
+Do not create a new phase for every small change.
+
+Use approximations—not additional phases—for changes in degree, duration, posture, position, movement, distance, objects, or naturally occurring variations that belong to the same transfer objective.
+
+Each approximation should introduce one small change while preserving the target pattern. If the target pattern deteriorates, return to the previous successful approximation before advancing.
 `;

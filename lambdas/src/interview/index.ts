@@ -8,7 +8,7 @@ import type {
   ConstructionalAssets,
   InteractionChain,
   TargetOutcome,
-} from "../domain";
+} from "../schemas";
 import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
 import { runTargetOutcomeInterview } from "./target-outcome";

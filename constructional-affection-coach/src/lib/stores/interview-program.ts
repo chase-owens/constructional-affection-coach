@@ -5,7 +5,7 @@ import type {
 	ConstructionalProgram,
 	InteractionChain,
 	TargetOutcome
-} from "../../../../lambdas/src/domain";
+} from "../../../../lambdas/src/schemas";
 
 const STORAGE_KEY = "constructional-affection-program";
 

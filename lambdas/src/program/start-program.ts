@@ -3,7 +3,7 @@ import type {
   ConstructionalAssets,
   InteractionChain,
   TargetOutcome,
-} from "../domain";
+} from "../schemas";
 import { getOpenAiClient } from "../interview/get-openai-client";
 import {
   runProgramInitialization,

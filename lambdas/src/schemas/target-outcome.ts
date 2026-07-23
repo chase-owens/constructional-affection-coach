@@ -33,6 +33,8 @@ export const targetOutcomePhaseResultSchema = z.union([
   }),
 ]);
 
+export type TargetOutcome = z.infer<typeof targetOutcomeSchema>;
+
 export type TargetOutcomePhaseResult = z.infer<
   typeof targetOutcomePhaseResultSchema
 >;

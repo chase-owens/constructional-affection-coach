@@ -6,15 +6,14 @@
 	import type {
 		ConstructionalProgram,
 		TargetOutcome,
-		InterviewPhase,
 		ConstructionalAssets,
 		InteractionChain
-	} from "../../../../lambdas/src/domain";
+	} from "../../../../lambdas/src/schemas";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
 	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
 	import { downloadProgramPdf } from "$lib/pdf/download-program";
 	import { savedProgram } from "$lib/stores/interview-program";
-	import mockInterview from "$lib/data/interviewMock";
+	import mockInterview from "$lib/data/interviewMock-workout";
 	import { goto } from "$app/navigation";
 	import ConstructionalAssetsCard from "$lib/components/ConstructionalAssetsCard.svelte";
 	import { onMount } from "svelte";
@@ -25,6 +24,7 @@
 	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
 	import { getPhaseIndex } from "$lib/interview/getPhaseIndex";
 	import { handleDownload } from "$lib/interview/downloadProgramPdf";
+	import type { InterviewPhase } from "../../../../lambdas/src/domain";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {

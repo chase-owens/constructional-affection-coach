@@ -1,7 +1,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
-import type { ConstructionalProgram } from "../../../../lambdas/src/domain";
+import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,11 +156,11 @@ export const downloadProgramPdf = ({ constructionalProgram }: DownloadProgramPdf
 				style: "section"
 			},
 			{
-				text: initialization.initialApproximation.targetPattern,
+				text: initialization.startingInteraction.targetPattern,
 				style: "body"
 			},
 			{
-				text: `Begin under these conditions: ${initialization.initialApproximation.conditions.join(", ")}`,
+				text: `Begin under these conditions: ${initialization.startingInteraction.conditions.join(", ")}`,
 				style: "body"
 			},
 			{

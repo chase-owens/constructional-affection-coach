@@ -1,11 +1,14 @@
 import { z } from "zod";
-import { approximationSchema } from "./transfer-step";
 
-/**
- * Shape stored inside ConstructionalProgram.
- */
+export const startingInteractionSchema = z.object({
+  conditions: z.array(z.string()).min(1),
+  targetPattern: z.string(),
+  reinforcer: z.string(),
+  controlCriterion: z.string(),
+});
+
 export const programInitializationSchema = z.object({
-  initialApproximation: approximationSchema,
+  startingInteraction: startingInteractionSchema,
   readinessCriterion: z.string(),
 });
 
@@ -22,6 +25,8 @@ export const affectionLoopSchema = z.object({
   resetRule: z.string(),
   transferRule: z.string(),
 });
+
+export type StartingInteraction = z.infer<typeof startingInteractionSchema>;
 
 export type ProgramInitialization = z.infer<typeof programInitializationSchema>;
 
