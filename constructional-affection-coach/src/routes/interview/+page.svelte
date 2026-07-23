@@ -158,26 +158,29 @@
 		}
 	};
 
-	const restoreCompletedInterview = () => {
-		if (!$savedProgram) return;
-		constructionalProgram = $savedProgram.constructionalProgram;
+	const restoreCompletedInterview = async (interviewId: InterviewIdType) => {
+		const savedInterview = await interviewClient.get(interviewId);
 
-		targetOutcome = constructionalProgram?.targetOutcome ?? $savedProgram.targetOutcome ?? null;
+		if (!savedInterview.program) {
+			await startNewInterview();
+			return;
+		}
 
-		constructionalAssets =
-			constructionalProgram?.constructionalAssets ?? $savedProgram.constructionalAssets;
-
-		interactionChain = $savedProgram.interactionChain;
-		hasUserAgreement = !!$savedProgram;
-		interviewId = $savedProgram.interviewId;
+		constructionalProgram = savedInterview.program;
+		targetOutcome = savedInterview.program.targetOutcome;
+		constructionalAssets = savedInterview.program.constructionalAssets;
+		hasUserAgreement = true;
 		phase = "complete";
+
+		isCreatingProgram = false;
 	};
 
 	// initialize interview state on load
 	onMount(async () => {
 		try {
-			if ($savedProgram?.constructionalProgram) {
-				restoreCompletedInterview();
+			if ($savedProgram?.interviewId) {
+				isCreatingProgram = true;
+				restoreCompletedInterview($savedProgram.interviewId);
 				return;
 			}
 
@@ -216,6 +219,7 @@
 
 	const initializeProgram = async () => {
 		const currentInterviewId = interviewId;
+		const now = new Date().toISOString();
 
 		if (!currentInterviewId) {
 			throw new Error("Interview has not been initialized.");
@@ -239,10 +243,7 @@
 
 			savedProgram.set({
 				interviewId: currentInterviewId,
-				targetOutcome,
-				constructionalAssets,
-				interactionChain,
-				constructionalProgram
+				updatedAt: now
 			});
 
 			phase = "complete";
