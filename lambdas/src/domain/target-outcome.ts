@@ -1,3 +1,5 @@
+import type { TargetOutcome } from "../schemas";
+
 export const TARGET_OUTCOME_QUESTION =
   "Assuming this process is successful, what would the outcome be?";
 
@@ -14,21 +16,10 @@ export type TargetConditions = {
   targetPatternUnderThoseConditions: string;
 };
 
-export type TargetOutcome = {
-  rawAnswer: string;
-  clarifiedOutcome: string | null;
-  desiredInteractionPattern: string | null;
-  primaryContext: string | null;
-  scope: TargetOutcomeScope;
-  isPositive: boolean;
-  isObservable: boolean;
-  notes?: string;
-};
-
 export const DEFAULT_TARGET_OUTCOME: TargetOutcome = {
   rawAnswer: "",
-  clarifiedOutcome: null,
-  desiredInteractionPattern: null,
+  clarifiedOutcome: "",
+  desiredInteractionPattern: "",
   primaryContext: null,
   scope: "needs_clarification",
   isPositive: false,

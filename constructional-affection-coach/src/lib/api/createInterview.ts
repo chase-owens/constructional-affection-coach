@@ -1,9 +1,6 @@
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import { error } from "@sveltejs/kit";
-
-type CreateInterviewPayload = {
-	interviewId: `${string}-${string}-${string}-${string}-${string}`;
-};
+import type { CreateInterviewPayload } from "../../../../lambdas/src/interview/create-interview";
 
 export const createInterviewRecord = async (interview: CreateInterviewPayload) => {
 	const response = await fetch(`${PUBLIC_API_BASE_URL}/interviews`, {

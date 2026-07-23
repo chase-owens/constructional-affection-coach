@@ -8,8 +8,9 @@ const documentClient = DynamoDBDocumentClient.from(dynamoClient, {
   marshallOptions: { removeUndefinedValues: true },
 });
 
-type CreateInterviewPayload = {
+export type CreateInterviewPayload = {
   interviewId: `${string}-${string}-${string}-${string}-${string}`;
+  userId: string | null;
 };
 
 export const handler = async (event: any) => {
