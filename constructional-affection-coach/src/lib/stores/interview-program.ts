@@ -1,20 +1,11 @@
 import { browser } from "$app/environment";
 import { writable } from "svelte/store";
-import type {
-	ConstructionalAssets,
-	ConstructionalProgram,
-	InteractionChain,
-	TargetOutcome
-} from "../../../../lambdas/src/schemas";
 
 const STORAGE_KEY = "constructional-affection-program";
 
 type InterviewProgram = {
 	interviewId: `${string}-${string}-${string}-${string}-${string}`;
-	targetOutcome: TargetOutcome | null;
-	constructionalAssets: ConstructionalAssets | null;
-	interactionChain: InteractionChain | null;
-	constructionalProgram: ConstructionalProgram | null;
+	updatedAt: string;
 };
 
 export const savedProgram = writable<InterviewProgram | null>(

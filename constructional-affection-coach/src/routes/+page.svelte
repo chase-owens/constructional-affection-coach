@@ -151,7 +151,7 @@
 			</h2>
 
 			<a href={resolve("/interview")} class="admin-button-primary mt-8 inline-flex px-8 py-4">
-				Start the Interview <span class="ml-3">→</span>
+				Start the Interview <span class="ml-3 z-10">→</span>
 			</a>
 		</div>
 	</section>
