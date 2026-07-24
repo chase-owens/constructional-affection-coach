@@ -37,6 +37,7 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
+		"aws-amplify": "^6.19.0",
 		"openai": "^6.45.0",
 		"pdfmake": "^0.3.11",
 		"zod": "^4.4.3"

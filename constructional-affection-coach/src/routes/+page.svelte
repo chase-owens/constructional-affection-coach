@@ -72,7 +72,7 @@
 				<div class="mt-8 flex flex-col gap-3 sm:flex-row">
 					<a
 						href={resolve("/interview")}
-						class="admin-button-primary inline-flex items-center justify-center px-6 py-4"
+						class="admin-button-primary inline-flex items-center justify-center px-6 py-4 z-10"
 					>
 						Start the Interview <span class="ml-3">→</span>
 					</a>
