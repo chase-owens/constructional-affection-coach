@@ -34,31 +34,11 @@
 
 <main class="min-h-screen bg-background text-foreground">
 	<section class="relative overflow-hidden bg-primary text-primary-foreground">
-		<header class="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-10">
-			<a href={resolve("/")} class="flex items-center gap-3 text-white hover:text-white">
-				<img src="/images/logo.png" alt="Constructional Affection" class="h-12 w-12" />
-				<span class="text-sm font-bold tracking-[0.25em] uppercase">
-					Constructional<br />Affection
-				</span>
-			</a>
-
-			<nav class="hidden items-center gap-8 text-sm font-medium text-white/85 md:flex z-10">
-				<a href={resolve("/interview")} class="hover:text-accent">Start Interview</a>
-				<a href="https://constructionalaffection.com" class="hover:text-accent">
-					Existing Website
-				</a>
-			</nav>
-
-			<a href={resolve("/interview")} class="admin-button-primary hidden md:inline-flex z-10">
-				Start the Interview
-			</a>
-		</header>
-
 		<div
 			class="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pb-24 sm:pb-0 pt-10 lg:grid-cols-[1fr_0.95fr] lg:px-10 lg:pb-32"
 		>
 			<div class="relative max-w-2xl">
-				<p class="admin-eyebrow mb-5">Guided Constructional Interview</p>
+				<p class="admin-eyebrow mb-5">Guided Constructional Questionnaire</p>
 
 				<h1 class="text-5xl leading-[1.05] font-bold text-white sm:text-6xl lg:text-7xl">
 					Build the interaction you want with your dog.
@@ -72,7 +52,7 @@
 				<div class="mt-8 flex flex-col gap-3 sm:flex-row">
 					<a
 						href={resolve("/interview")}
-						class="admin-button-primary inline-flex items-center justify-center px-6 py-4"
+						class="admin-button-primary inline-flex items-center justify-center px-6 py-4 z-10"
 					>
 						Start the Interview <span class="ml-3">→</span>
 					</a>
@@ -155,15 +135,4 @@
 			</a>
 		</div>
 	</section>
-
-	<footer class="border-t border-border bg-primary px-6 py-8 text-white lg:px-10">
-		<div
-			class="mx-auto flex max-w-7xl flex-col gap-4 text-sm md:flex-row md:items-center md:justify-between"
-		>
-			<p>© 2026 Constructional Affection</p>
-			<a href="https://constructionalaffection.com" class="text-white/80 hover:text-accent">
-				Existing Website
-			</a>
-		</div>
-	</footer>
 </main>

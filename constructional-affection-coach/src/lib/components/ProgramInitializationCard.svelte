@@ -1,11 +1,7 @@
 <script lang="ts">
 	import type { ProgramPhase } from "../../../../lambdas/src/schemas";
 
-	const {
-		phases,
-		startingPoint,
-		terminalOutcome
-	}: { phases: ProgramPhase[]; startingPoint: string; terminalOutcome: string } = $props();
+	const { phases, startingPoint }: { phases: ProgramPhase[]; startingPoint: string } = $props();
 </script>
 
 <section
@@ -15,14 +11,14 @@
 		<p class="admin-eyebrow mb-3 text-primary/70">Your Starting Program</p>
 
 		<h2 class="max-w-4xl font-body text-xl font-bold sm:text-2xl">
-			Start here: {startingPoint}
+			Start with what is already reliably occurring and will build from here
 		</h2>
 
 		<div class="mt-5 rounded-vintage border border-accent/30 bg-accent/5 p-4">
-			<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/60">Terminal outcome</p>
+			<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/60">Starting Point</p>
 
 			<p class="mt-2 text-sm leading-relaxed text-muted-dark sm:text-base">
-				{terminalOutcome}
+				{startingPoint}
 			</p>
 		</div>
 	</header>

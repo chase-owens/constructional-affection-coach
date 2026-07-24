@@ -1,8 +1,5 @@
 <script lang="ts">
-	import Download from "$lib/assets/icons/Download.svelte";
 	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
-	import ProgramInitializationCard from "$lib/components/ProgramInitializationCard.svelte";
-	import TargetOutcomeSummaryCard from "$lib/components/TargetOutcomeSummaryCard.svelte";
 	import type {
 		ConstructionalProgram,
 		TargetOutcome,
@@ -14,7 +11,6 @@
 	import { savedProgram } from "$lib/stores/interview-program";
 	import mockInterview from "$lib/data/interviewMock-workout";
 	import { goto } from "$app/navigation";
-	import ConstructionalAssetsCard from "$lib/components/ConstructionalAssetsCard.svelte";
 	import { onMount } from "svelte";
 	import { interviewClient } from "$lib/api/interviewClient";
 	import { resolve } from "$app/paths";
@@ -22,8 +18,10 @@
 	import type { InterviewIdType, InterviewResponse, Message } from "$lib/interview/types";
 	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
 	import { getPhaseIndex } from "$lib/interview/getPhaseIndex";
-	import { handleDownload } from "$lib/interview/downloadProgramPdf";
 	import type { InterviewPhase } from "../../../../lambdas/src/domain";
+	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
+	import SideBar from "$lib/components/SideBar.svelte";
+	import { PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
@@ -144,6 +142,13 @@
 		interviewId = newInterviewId;
 	};
 
+	const loadCompletedMockInterview = () => {
+		isInitializingInterview = false;
+		interviewId = "28f09342-736b-40c9-9e49-1671e8422eb0";
+
+		restoreCompletedInterview("28f09342-736b-40c9-9e49-1671e8422eb0");
+	};
+
 	const handleRestartInterview = async () => {
 		if (isInitializingInterview) return;
 
@@ -160,6 +165,7 @@
 
 	const restoreCompletedInterview = async (interviewId: InterviewIdType) => {
 		const savedInterview = await interviewClient.get(interviewId);
+		console.log("🚀 ~ restoreCompletedInterview ~ savedInterview:", savedInterview);
 
 		if (!savedInterview.program) {
 			await startNewInterview();
@@ -177,12 +183,19 @@
 
 	// initialize interview state on load
 	onMount(async () => {
+		if (PUBLIC_USE_COMPLETED_MOCK === "true") {
+			loadCompletedMockInterview();
+			return;
+		}
+
 		try {
 			if ($savedProgram?.interviewId) {
 				isCreatingProgram = true;
 				restoreCompletedInterview($savedProgram.interviewId);
 				return;
 			}
+
+			console.log("restarting");
 
 			await startNewInterview();
 		} catch (err) {
@@ -333,120 +346,51 @@
 
 		goto(resolve("/"));
 	};
-
-	const phases = $derived(constructionalProgram?.transferPlan.phases);
-	const startingPoint = $derived(constructionalProgram?.initialization.readinessCriterion);
-	const terminalOutcome = $derived(constructionalProgram?.targetOutcome.desiredInteractionPattern);
 </script>
 
-<section class="admin-shell min-h-screen px-4 py-8 bg-primary">
-	<div class="mx-auto max-w-7xl">
-		<header class="mb-8 flex items-center justify-between">
-			<a href={resolve("/")} class="flex items-center gap-3 text-primary hover:text-primary">
-				<img src="/images/logo.png" alt="Constructional Affection" class="h-12 w-12" />
-				<div class="text-sm font-bold text-black tracking-[0.25em] uppercase">
-					Constructional<br />Affection
-				</div>
-			</a>
+<div class="mx-auto max-w-7xl">
+	{#if isOutOfCaScope}
+		<OutOfScopeCard onRestartInterview={handleRestartInterview} />
+	{:else}
+		<div class="grid gap-6 lg:grid-cols-[280px_1fr]">
+			<SideBar
+				{currentPhaseIndex}
+				currentPhaseTitle={phaseTitle[phase]}
+				isInterviewComplete={!!constructionalProgram}
+				areButtonsDisabled={isProcessing || isInitializingInterview}
+				onExitInterview={handleExitInterview}
+				onGenerateMockProgram={generateMockProgram}
+				onRestartInterview={handleRestartInterview}
+			/>
 
-			<button onclick={handleExitInterview} class="admin-button-primary hover:bg-white">
-				Exit Interview
-			</button>
-		</header>
-
-		{#if isOutOfCaScope}
-			<OutOfScopeCard onRestartInterview={handleRestartInterview} />
-		{:else}
-			<div class="grid gap-6 lg:grid-cols-[280px_1fr]">
-				<aside class="rounded-vintage border border-border bg-white p-6 shadow-soft">
-					<p class="admin-eyebrow text-highlight">Step {currentPhaseIndex + 1} of 5</p>
-					<h2 class="mt-2 font-body text-2xl font-bold text-primary">{phaseTitle[phase]}</h2>
-
-					<div class="mt-8 space-y-5">
-						{#each phaseOrder as phaseItem, index (phaseItem)}
-							<div class="flex items-center gap-4">
-								<div
-									class={[
-										"flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold",
-										index < currentPhaseIndex
-											? "border-accent bg-accent text-primary"
-											: index === currentPhaseIndex
-												? "border-accent bg-primary text-accent"
-												: "border-border bg-white text-muted"
-									]}
-								>
-									{index < currentPhaseIndex ? "✓" : index + 1}
-								</div>
-
-								<p
-									class={["font-bold", index === currentPhaseIndex ? "text-primary" : "text-muted"]}
-								>
-									{phaseTitle[phaseItem]}
-								</p>
-							</div>
-						{/each}
-					</div>
-
-					<div class="mt-10 rounded-vintage border border-border bg-secondary-soft p-4">
-						<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/70">
-							What to expect
-						</p>
-						<p class="mt-3 text-sm leading-6 text-muted-dark">
-							We’ll define the goal, identify what already works, map the chain, then build your
-							starting program.
-						</p>
-					</div>
-
-					{#if import.meta.env.DEV && !constructionalProgram}
-						<button
-							type="button"
-							class="admin-button-secondary mt-5"
-							onclick={generateMockProgram}
-							disabled={isProcessing || isInitializingInterview}
-						>
-							Generate mock program
-						</button>
-					{/if}
-					{#if constructionalProgram}
-						<button
-							type="button"
-							class="admin-button-primary mt-5"
-							onclick={handleRestartInterview}
-							disabled={isProcessing || isInitializingInterview}
-						>
-							Restart Interview
-						</button>
-					{/if}
-				</aside>
-
+			{#if constructionalProgram && interviewId}
+				<ProgramReadyView {constructionalProgram} {interviewId} />
+			{:else}
 				<main
 					class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10"
 				>
 					<div class="mb-8 text-center">
+						{#if constructionalProgram}
+							<img
+								class="block m-auto max-h-60 -mb-12 -mt-8"
+								src="/images/stars.png"
+								alt="celebration stars"
+							/>
+						{/if}
 						<p class="admin-eyebrow">Guided Constructional Interview</p>
-						<h1 class="mt-3 text-4xl font-bold text-primary">
+						<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
 							Let’s build the interaction you want.
 						</h1>
 					</div>
 
-					{#if constructionalProgram}<button
-							class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
-							onclick={() => handleDownload(constructionalProgram!)}
-							><Download class="size-6 cursor-pointer" /></button
-						>{/if}
-
 					<div class="space-y-5">
-						{#if hasUserAgreement && targetOutcome}
-							<TargetOutcomeSummaryCard {targetOutcome} />
-						{/if}
-
-						{#if hasUserAgreement && constructionalAssets}
+						<!-- {#if hasUserAgreement && constructionalAssets}
 							<ConstructionalAssetsCard {constructionalAssets} />
 						{/if}
 
 						{#if hasUserAgreement && startingPoint && terminalOutcome && phases}
 							<ProgramInitializationCard {phases} {startingPoint} {terminalOutcome} />
-						{/if}
+						{/if} -->
 
 						{#if isCreatingProgram}
 							<div
@@ -469,30 +413,30 @@
 							</div>
 						{/if}
 
-						{#each messages as message (message.content)}
-							<div
-								class={["flex gap-3", message.role === "user" ? "justify-end" : "justify-start"]}
-							>
-								{#if message.role === "coach"}
-									<div
-										class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-secondary-soft text-primary"
-									>
-										🐾
-									</div>
-								{/if}
-
+						{#if !constructionalProgram || isCreatingProgram}{#each messages as message (message.content)}
 								<div
-									class={[
-										"max-w-[78%] rounded-vintage border p-4 leading-7",
-										message.role === "coach"
-											? "border-border bg-secondary-soft text-foreground"
-											: "border-accent/50 bg-primary text-white"
-									]}
+									class={["flex gap-3", message.role === "user" ? "justify-end" : "justify-start"]}
 								>
-									<p class="text-sm font-semibold">{message.content}</p>
+									{#if message.role === "coach"}
+										<div
+											class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-secondary-soft text-primary"
+										>
+											🐾
+										</div>
+									{/if}
+
+									<div
+										class={[
+											"max-w-[78%] rounded-vintage border p-4 leading-7",
+											message.role === "coach"
+												? "border-border bg-secondary-soft text-foreground"
+												: "border-accent/50 bg-primary text-white"
+										]}
+									>
+										<p class="text-sm font-semibold">{message.content}</p>
+									</div>
 								</div>
-							</div>
-						{/each}
+							{/each}{/if}
 					</div>
 
 					{#if phase === "program_initialization" && !hasUserAgreement && targetOutcome}
@@ -541,6 +485,6 @@
 						</p>
 					{/if}
 				</main>
-			</div>{/if}
-	</div>
-</section>
+			{/if}
+		</div>{/if}
+</div>
