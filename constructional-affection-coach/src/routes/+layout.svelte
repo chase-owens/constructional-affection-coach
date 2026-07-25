@@ -1,6 +1,5 @@
 <script lang="ts">
 	import "../app.css";
-	import favicon from "$lib/assets/favicon.svg";
 	import { browser } from "$app/environment";
 	import { configureAmplify } from "$lib/auth/amplify";
 	import { auth } from "$lib/auth/auth.svelte";
@@ -60,7 +59,32 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<title>Constructional Affection</title>
+
+	<meta
+		name="description"
+		content="Build personalized Constructional Affection programs through a guided constructional interview."
+	/>
+	<meta name="author" content="Chase Owens" />
+
+	<meta property="og:title" content="Constructional Affection" />
+	<meta
+		property="og:description"
+		content="Build personalized Constructional Affection programs through a guided constructional interview."
+	/>
+	<meta property="og:type" content="website" />
+	<meta
+		property="og:image"
+		content="https://coach.constructionalaffection.com/images/constructional-affection-og.jpg"
+	/>
+
+	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+	<link rel="manifest" href="/site.webmanifest" />
 </svelte:head>
 
 <section class="shell flex min-h-screen flex-col bg-primary px-4">
