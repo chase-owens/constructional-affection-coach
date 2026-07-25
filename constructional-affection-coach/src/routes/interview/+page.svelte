@@ -21,7 +21,6 @@
 	import type { InterviewPhase } from "../../../../lambdas/src/domain";
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
 	import SideBar from "$lib/components/SideBar.svelte";
-	import { PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
 	import { auth } from "$lib/auth/auth.svelte";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
@@ -142,13 +141,6 @@
 		interviewId = newInterviewId;
 	};
 
-	const loadCompletedMockInterview = () => {
-		isInitializingInterview = false;
-		interviewId = "28f09342-736b-40c9-9e49-1671e8422eb0";
-
-		restoreCompletedInterview("28f09342-736b-40c9-9e49-1671e8422eb0");
-	};
-
 	const handleRestartInterview = async () => {
 		if (isInitializingInterview) return;
 
@@ -165,7 +157,6 @@
 
 	const restoreCompletedInterview = async (interviewId: InterviewIdType) => {
 		const savedInterview = await interviewClient.get(interviewId);
-		console.log("🚀 ~ restoreCompletedInterview ~ savedInterview:", savedInterview);
 
 		if (!savedInterview.program) {
 			await startNewInterview();
@@ -183,19 +174,12 @@
 
 	// initialize interview state on load
 	onMount(async () => {
-		if (PUBLIC_USE_COMPLETED_MOCK === "true") {
-			loadCompletedMockInterview();
-			return;
-		}
-
 		try {
-			if ($savedProgram?.interviewId) {
+			if (!auth.isAuthenticated && $savedProgram?.interviewId) {
 				isCreatingProgram = true;
 				restoreCompletedInterview($savedProgram.interviewId);
 				return;
 			}
-
-			console.log("restarting");
 
 			await startNewInterview();
 		} catch (err) {
@@ -251,19 +235,24 @@
 			});
 
 			const completedInterview = await interviewClient.pollComplete(currentInterviewId);
+			console.log("🚀 ~ initializeProgram ~ completedInterview:", completedInterview);
 
 			if (auth.isAuthenticated) {
 				await interviewClient.claim(currentInterviewId);
 			}
 
 			constructionalProgram = completedInterview.program;
-
-			savedProgram.set({
-				interviewId: currentInterviewId,
-				updatedAt: now
-			});
-
 			phase = "complete";
+
+			if (!auth.isAuthenticated) {
+				savedProgram.set({
+					interviewId: currentInterviewId,
+					updatedAt: now
+				});
+			} else {
+				console.log("🚀 ~ should re-route", completedInterview);
+				goto(resolve(`/programs/${currentInterviewId}`));
+			}
 		} catch (err) {
 			console.error("Program initialization failed", err);
 		} finally {
@@ -381,7 +370,7 @@
 								alt="celebration stars"
 							/>
 						{/if}
-						<p class="admin-eyebrow">Guided Constructional Interview</p>
+						<p class="eyebrow">Guided Constructional Interview</p>
 						<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
 							Let’s build the interaction you want.
 						</h1>
@@ -404,7 +393,7 @@
 									class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent"
 								></div>
 
-								<p class="admin-eyebrow mt-6">Building Your Program</p>
+								<p class="eyebrow mt-6">Building Your Program</p>
 
 								<h2 class="mt-3 text-2xl font-bold text-primary">
 									Turning the interview into a starting plan...
@@ -448,7 +437,7 @@
 							<button
 								onclick={rejectTargetOutcome}
 								disabled={isProcessing}
-								class="admin-button-secondary"
+								class="button-base button-secondary"
 							>
 								No, revise the goal
 							</button>
@@ -456,7 +445,7 @@
 							<button
 								onclick={confirmTargetOutcomeAndInitializeProgram}
 								disabled={isProcessing}
-								class="admin-button-primary"
+								class="button-base button-primary"
 							>
 								Yes, build my program
 							</button>

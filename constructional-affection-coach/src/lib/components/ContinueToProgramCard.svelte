@@ -40,7 +40,10 @@
 		</li>
 	</ul>
 
-	<button class="admin-button-primary mt-8 w-full cursor-pointer" onclick={handleContinueToProgram}>
+	<button
+		class="button-base button-primary mt-8 w-full cursor-pointer"
+		onclick={handleContinueToProgram}
+	>
 		View Program
 	</button>
 	<p class="sm:h-20 text-center text-xs text-muted lg:pt-4">

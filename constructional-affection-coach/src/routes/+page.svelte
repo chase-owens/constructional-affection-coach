@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
+	import { auth } from "$lib/auth/auth.svelte";
 	const steps = [
 		{
 			kicker: "01",
@@ -38,7 +39,7 @@
 			class="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pb-24 sm:pb-0 pt-10 lg:grid-cols-[1fr_0.95fr] lg:px-10 lg:pb-32"
 		>
 			<div class="relative max-w-2xl">
-				<p class="admin-eyebrow mb-5">Guided Constructional Questionnaire</p>
+				<p class="eyebrow mb-5">Guided Constructional Questionnaire</p>
 
 				<h1 class="text-5xl leading-[1.05] font-bold text-white sm:text-6xl lg:text-7xl">
 					Build the interaction you want with your dog.
@@ -49,21 +50,21 @@
 					already available, and where to begin a Constructional Affection program.
 				</p>
 
-				<div class="mt-8 flex flex-col gap-3 sm:flex-row">
+				<div class="mt-8 flex flex-col gap-3 sm:flex-row z-10">
 					<a
 						href={resolve("/interview")}
-						class="admin-button-primary inline-flex items-center justify-center px-6 py-4 z-10"
+						class="button-base button-primary inline-flex items-center justify-center px-6 py-4 z-10"
 					>
 						Start the Interview <span class="ml-3">→</span>
 					</a>
 
-					<a
-						href="https://constructionalaffection.com"
-						class="admin-button-secondary inline-flex items-center justify-center px-6 py-4"
-						target="_blank"
-					>
-						Learn the Method
-					</a>
+					{#if auth.isAuthenticated}
+						<a
+							href={resolve("/programs")}
+							class="button-base button-secondary inline-flex items-center justify-center px-6 py-4 z-10"
+						>
+							Saved Programs
+						</a>{/if}
 				</div>
 			</div>
 
@@ -131,7 +132,7 @@
 				Ready to build a better interaction with your dog?
 			</h2>
 
-			<a href={resolve("/interview")} class="admin-button-primary mt-8 inline-flex px-8 py-4">
+			<a href={resolve("/interview")} class="button-base button-primary mt-8 inline-flex px-8 py-4">
 				Start the Interview <span class="ml-3 z-10">→</span>
 			</a>
 		</div>

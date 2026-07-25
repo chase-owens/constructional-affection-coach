@@ -20,7 +20,7 @@
 			alt="celebration stars"
 		/>
 
-		<p class="admin-eyebrow">Program Complete</p>
+		<p class="eyebrow">Program Complete</p>
 		<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
 			Your Constructional Program is Ready!
 		</h1>

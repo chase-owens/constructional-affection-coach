@@ -91,7 +91,7 @@
 					type="text"
 					bind:value={username}
 					autocomplete="nickname"
-					class="admin-input"
+					class="input"
 					placeholder="How should we address you?"
 				/>
 			</div>
@@ -108,7 +108,7 @@
 					bind:value={email}
 					autocomplete="email"
 					required
-					class="admin-input"
+					class="input"
 				/>
 			</div>
 
@@ -124,7 +124,7 @@
 					bind:value={password}
 					autocomplete="new-password"
 					required
-					class="admin-input"
+					class="input"
 				/>
 
 				<div class="mt-2 text-xs leading-5 text-muted">
@@ -151,7 +151,7 @@
 					bind:value={confirmPassword}
 					autocomplete="new-password"
 					required
-					class="admin-input"
+					class="input"
 				/>
 			</div>
 
@@ -161,7 +161,7 @@
 				</p>
 			{/if}
 
-			<button type="submit" disabled={isSubmitting} class="admin-button-primary w-full">
+			<button type="submit" disabled={isSubmitting} class="button-base button-primary w-full">
 				{isSubmitting ? "Creating Account..." : "Create Account"}
 			</button>
 

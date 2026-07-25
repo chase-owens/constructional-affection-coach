@@ -23,7 +23,7 @@
 </script>
 
 <aside class="rounded-vintage border border-border bg-white p-6 shadow-soft">
-	<p class="admin-eyebrow text-highlight">Step {currentPhaseIndex + 1} of 5</p>
+	<p class="eyebrow text-highlight">Step {currentPhaseIndex + 1} of 5</p>
 	<h2 class="mt-2 font-body text-2xl font-bold text-primary">{currentPhaseTitle}</h2>
 
 	<div class="mt-8 space-y-5">
@@ -59,25 +59,27 @@
 	<div class="flex flex-col justify-center gap-5">
 		{#if isDev && !isInterviewComplete}
 			<button
-				type="button"
-				class="admin-button-secondary mt-5"
-				onclick={onGenerateMockProgram}
+				class="button-base button-secondary mt-5"
 				disabled={areButtonsDisabled}
+				onclick={onGenerateMockProgram}
 			>
 				Generate mock program
 			</button>
 		{/if}
 		{#if isInterviewComplete}
 			<button
-				type="button"
-				class="admin-button-primary mt-5"
-				onclick={onRestartInterview}
+				class="button-base button-primary mt-5"
 				disabled={areButtonsDisabled}
+				onclick={onRestartInterview}
 			>
 				Restart Interview
 			</button>
 		{/if}
-		<button onclick={onExitInterview} class="admin-button-secondary hover:bg-white">
+		<button
+			class="button-base button-primary"
+			disabled={areButtonsDisabled}
+			onclick={onExitInterview}
+		>
 			Exit Interview
 		</button>
 	</div>

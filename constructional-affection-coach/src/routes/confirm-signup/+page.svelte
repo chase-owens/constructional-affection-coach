@@ -96,7 +96,7 @@
 					bind:value={email}
 					autocomplete="email"
 					required
-					class="admin-input"
+					class="input"
 				/>
 			</div>
 
@@ -111,7 +111,7 @@
 					bind:value={confirmationCode}
 					autocomplete="one-time-code"
 					required
-					class="admin-input"
+					class="input"
 				/>
 			</div>
 
@@ -127,7 +127,7 @@
 				</p>
 			{/if}
 
-			<button type="submit" disabled={isSubmitting} class="admin-button-primary w-full">
+			<button type="submit" disabled={isSubmitting} class="button-base button-primary w-full">
 				{isSubmitting ? "Confirming..." : "Confirm Account"}
 			</button>
 

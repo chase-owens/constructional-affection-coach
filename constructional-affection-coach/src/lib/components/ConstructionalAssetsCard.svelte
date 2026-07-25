@@ -13,7 +13,7 @@
 </script>
 
 <div class="mb-8 rounded-vintage border border-accent/40 bg-white p-5 text-primary shadow-soft">
-	<p class="admin-eyebrow mb-3 text-primary/70">What We Can Build From</p>
+	<p class="eyebrow mb-3 text-primary/70">What We Can Build From</p>
 
 	<div class="grid gap-4 md:grid-cols-2">
 		<div>

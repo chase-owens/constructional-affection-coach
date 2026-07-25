@@ -10,8 +10,13 @@
 		ConstructionalProgram,
 		TargetOutcome
 	} from "../../../../../lambdas/src/schemas";
+	import { PUBLIC_MOCK_INTERVIEW_ID, PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
+	import Download from "$lib/assets/icons/Download.svelte";
+	import { handleDownload } from "$lib/interview/downloadProgramPdf";
 
-	let interviewId = $derived(page.params.interviewId);
+	let interviewId = $derived(
+		PUBLIC_USE_COMPLETED_MOCK === "true" ? PUBLIC_MOCK_INTERVIEW_ID : page.params.interviewId
+	);
 
 	let targetOutcome = $state<TargetOutcome | null>(null);
 	let constructionalAssets = $state<ConstructionalAssets | null>(null);
@@ -50,7 +55,7 @@
 
 <main class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10">
 	<div class="mb-8 text-center">
-		<p class="admin-eyebrow">Constructional Affection Program</p>
+		<p class="eyebrow">Constructional Affection Program</p>
 		<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
 			Let’s build the interaction you want.
 		</h1>
@@ -65,7 +70,7 @@
 					class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent"
 				></div>
 
-				<p class="admin-eyebrow mt-6">Fetching your program</p>
+				<p class="eyebrow mt-6">Fetching your program</p>
 
 				<h2 class="mt-3 text-2xl font-bold text-primary">Just a few more seconds...</h2>
 
@@ -75,6 +80,12 @@
 				</p>
 			</div>
 		{/if}
+
+		{#if constructionalProgram}<button
+				class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
+				onclick={() => handleDownload(constructionalProgram!)}
+				><Download class="size-6 cursor-pointer" /></button
+			>{/if}
 
 		{#if targetOutcome}<TargetOutcomeSummaryCard {targetOutcome} />{/if}
 		{#if constructionalAssets}<ConstructionalAssetsCard {constructionalAssets} />{/if}
