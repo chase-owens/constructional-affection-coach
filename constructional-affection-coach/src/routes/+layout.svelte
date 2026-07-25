@@ -8,6 +8,7 @@
 	import { goto } from "$app/navigation";
 	import User from "$lib/assets/icons/User.svelte";
 	import { onMount } from "svelte";
+	import { page } from "$app/state";
 
 	const { children } = $props();
 
@@ -75,6 +76,19 @@
 			</a>
 
 			<div class="flex items-center gap-3">
+				{#if auth.isAuthenticated}
+					<a
+						href="/programs"
+						class={[
+							"text-sm font-semibold transition",
+							page.url.pathname.startsWith("/programs")
+								? "text-accent"
+								: "text-white/80 hover:text-white"
+						]}
+					>
+						Programs
+					</a>
+				{/if}
 				<div bind:this={accountMenu} class="relative">
 					<button
 						type="button"

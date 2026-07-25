@@ -45,5 +45,5 @@
 		Create Free Account
 	</button>
 
-	<p class="mt-4 text-center text-xs text-muted">It takes less than a minute.</p>
+	<p class="h-20 pt-4 text-center text-xs text-muted">It takes less than a minute.</p>
 </article>

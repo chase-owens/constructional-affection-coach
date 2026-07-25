@@ -1,32 +1,25 @@
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
-import { constructionalProgramMock } from "$lib/data/constructionalProgram.mock";
+import { fetchAuthSession } from "aws-amplify/auth";
 import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
-import { PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
 
-type InterviewStatus = "pending" | "processing" | "complete" | "failed";
-
-export type PersistedInterview = {
+export type SavedProgram = {
 	interviewId: string;
-	status: InterviewStatus;
-	program?: ConstructionalProgram;
-	errorCode?: string;
-	createdAt?: string;
-	updatedAt?: string;
-	processingStartedAt?: string;
-	completedAt?: string;
-	failedAt?: string;
+	program: ConstructionalProgram;
+	createdAt: string;
+	updatedAt: string;
+	completedAt: string;
 };
 
 type GetInterviewResponse = {
-	interview: PersistedInterview;
+	interviews: SavedProgram[];
 };
 
-export const getInterview = async (interviewId: string): Promise<PersistedInterview> => {
-	if (PUBLIC_USE_COMPLETED_MOCK === "true") {
-		return { interviewId, program: constructionalProgramMock, status: "complete" };
-	}
-
-	const response = await fetch(`${PUBLIC_API_BASE_URL}/interviews/${interviewId}`);
+export const getInterviews = async (): Promise<SavedProgram[]> => {
+	const session = await fetchAuthSession();
+	const token = session.tokens?.accessToken?.toString();
+	const response = await fetch(`${PUBLIC_API_BASE_URL}/interviews`, {
+		headers: { Authorization: `Bearer ${token}` }
+	});
 
 	const contentType = response.headers.get("content-type") ?? "";
 
@@ -48,9 +41,9 @@ export const getInterview = async (interviewId: string): Promise<PersistedInterv
 		throw new Error(`Failed to retrieve interview: ${response.status}`);
 	}
 
-	if (!result.interview) {
+	if (!result.interviews) {
 		throw new Error("Interview response did not include an interview.");
 	}
 
-	return result.interview;
+	return result.interviews;
 };
