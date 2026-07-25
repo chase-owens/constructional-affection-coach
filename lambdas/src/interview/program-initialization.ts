@@ -5,9 +5,7 @@ import {
   InteractionChain,
   TargetOutcome,
 } from "../schemas";
-import type { ZodError } from "zod";
-
-export type ValidationIssue = ZodError["issues"][number];
+import type { ValidationIssue } from "../validation/types";
 
 export const runProgramInitialization = async (
   openai: OpenAI,

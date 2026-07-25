@@ -5,10 +5,7 @@ import type {
   TargetOutcome,
 } from "../schemas";
 import { getOpenAiClient } from "../interview/get-openai-client";
-import {
-  runProgramInitialization,
-  ValidationIssue,
-} from "../interview/program-initialization";
+import { runProgramInitialization } from "../interview/program-initialization";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { constructionalProgramSchema } from "../schemas/constructional-program";
 import {
@@ -16,6 +13,7 @@ import {
   ProgramValidationError,
 } from "../program/errors";
 import type { ZodError } from "zod";
+import { ValidationIssue } from "../validation/types";
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },

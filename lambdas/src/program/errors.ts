@@ -1,5 +1,17 @@
 import type { ZodError } from "zod";
 
+export class InterviewPhaseValidationError extends Error {
+  readonly code = "INTERVIEW_PHASE_VALIDATION_FAILED";
+
+  constructor(
+    readonly phase: string,
+    readonly validationError: ZodError,
+  ) {
+    super(`Generated ${phase} response failed schema validation.`);
+    this.name = "InterviewPhaseValidationError";
+  }
+}
+
 export class ProgramValidationError extends Error {
   readonly code = "PROGRAM_VALIDATION_FAILED";
 

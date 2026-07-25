@@ -5,7 +5,7 @@ import type {
   InteractionChain,
   TargetOutcome,
 } from "../../../schemas";
-import type { ValidationIssue } from "../../program-initialization";
+import { ValidationIssue } from "../../../validation/types";
 
 type ProgramInitializationInput = {
   targetOutcome: TargetOutcome;
