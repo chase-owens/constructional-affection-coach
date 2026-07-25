@@ -235,7 +235,6 @@
 			});
 
 			const completedInterview = await interviewClient.pollComplete(currentInterviewId);
-			console.log("🚀 ~ initializeProgram ~ completedInterview:", completedInterview);
 
 			if (auth.isAuthenticated) {
 				await interviewClient.claim(currentInterviewId);
@@ -250,7 +249,6 @@
 					updatedAt: now
 				});
 			} else {
-				console.log("🚀 ~ should re-route", completedInterview);
 				goto(resolve(`/programs/${currentInterviewId}`));
 			}
 		} catch (err) {
@@ -377,14 +375,6 @@
 					</div>
 
 					<div class="space-y-5">
-						<!-- {#if hasUserAgreement && constructionalAssets}
-							<ConstructionalAssetsCard {constructionalAssets} />
-						{/if}
-
-						{#if hasUserAgreement && startingPoint && terminalOutcome && phases}
-							<ProgramInitializationCard {phases} {startingPoint} {terminalOutcome} />
-						{/if} -->
-
 						{#if isCreatingProgram}
 							<div
 								class="mx-auto mt-8 max-w-2xl rounded-vintage border border-accent/40 bg-secondary-soft p-8 text-center shadow-soft"

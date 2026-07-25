@@ -1,20 +1,38 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { goto } from "$app/navigation";
 	import { interviewClient } from "$lib/api/interviewClient";
+	import { auth } from "$lib/auth/auth.svelte";
 
 	let isLoading = $state(true);
 	let errorMessage = $state("");
 	let programs = $state<any[]>([]);
+	let hasLoaded = $state(false);
 
-	onMount(async () => {
+	const loadPrograms = async () => {
+		if (hasLoaded) return;
+
+		hasLoaded = true;
+		isLoading = true;
+		errorMessage = "";
+
 		try {
-			const result = await interviewClient.getAll();
-			programs = result;
+			programs = await interviewClient.getAll();
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : "Unable to load your programs.";
 		} finally {
 			isLoading = false;
 		}
+	};
+
+	$effect(() => {
+		if (auth.isLoading) return;
+
+		if (!auth.user) {
+			void goto("/login");
+			return;
+		}
+
+		void loadPrograms();
 	});
 </script>
 
@@ -36,8 +54,16 @@
 	</div>
 
 	{#if isLoading}
-		<div class="rounded-vintage border border-border bg-white p-8 shadow-soft">
-			<p class="text-muted">Loading programs...</p>
+		<div
+			class="mx-auto mt-8 max-w-2xl rounded-vintage border border-accent/40 bg-secondary-soft p-8 text-center shadow-soft"
+		>
+			<div
+				class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent"
+			></div>
+
+			<p class="eyebrow mt-6">Loading Your Programs</p>
+
+			<h2 class="mt-3 text-2xl font-bold text-primary">Just a few more seconds...</h2>
 		</div>
 	{:else if errorMessage}
 		<div class="rounded-vintage border border-error/20 bg-error-background p-6">
