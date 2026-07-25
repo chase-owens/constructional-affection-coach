@@ -8,7 +8,7 @@
 	class="rounded-vintage border border-accent/40 bg-white p-5 text-primary shadow-soft sm:p-7"
 >
 	<header>
-		<p class="admin-eyebrow mb-3 text-primary/70">Your Starting Program</p>
+		<p class="eyebrow mb-3 text-primary/70">Your Starting Program</p>
 
 		<h2 class="max-w-4xl font-body text-xl font-bold sm:text-2xl">
 			Start with what is already reliably occurring and will build from here

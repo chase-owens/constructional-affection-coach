@@ -39,7 +39,7 @@
 	</ul>
 
 	<button
-		class="admin-button-primary bg-green-800 text-white mt-8 w-full font-medium cursor-pointer"
+		class="button-base button-primary bg-green-800 text-white mt-8 w-full font-medium cursor-pointer"
 		onclick={onCreateAccount}
 	>
 		Create Free Account

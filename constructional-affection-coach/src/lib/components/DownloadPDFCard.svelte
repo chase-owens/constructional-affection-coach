@@ -39,7 +39,7 @@
 	</ul>
 
 	<button
-		class="admin-button-primary bg-primary text-white mt-8 sm:mb-24 lg:mb-20 w-full font-medium cursor-pointer"
+		class="button-base button-primary bg-primary text-white mt-8 sm:mb-24 lg:mb-20 w-full font-medium cursor-pointer"
 		onclick={() => handleDownload(interview)}
 	>
 		Download PDF

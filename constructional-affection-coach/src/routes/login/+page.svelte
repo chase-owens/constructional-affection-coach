@@ -77,7 +77,7 @@
 					bind:value={email}
 					required
 					autocomplete="email"
-					class="admin-input"
+					class="input"
 				/>
 			</div>
 
@@ -91,11 +91,11 @@
 					required
 					bind:value={password}
 					autocomplete="current-password"
-					class="admin-input"
+					class="input"
 				/>
 			</div>
 
-			<button type="submit" disabled={isSubmitting} class="admin-button-primary w-full">
+			<button type="submit" disabled={isSubmitting} class="button-base button-primary w-full">
 				{isSubmitting ? "Signing in..." : "Login"}
 			</button>
 

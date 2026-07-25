@@ -63,7 +63,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<section class="admin-shell flex min-h-screen flex-col bg-primary px-4">
+<section class="shell flex min-h-screen flex-col bg-primary px-4">
 	<div class="mx-auto flex w-full max-w-7xl flex-1 flex-col">
 		<header class="flex items-center justify-between px-6 py-7 lg:px-10">
 			<a href="/" class="flex shrink-0 items-center gap-3 text-white hover:text-white">
@@ -108,13 +108,6 @@
 								<p class="text-primary px-4">
 									{auth.user?.signInDetails?.loginId ?? auth.user?.username}
 								</p>
-								<a
-									href="/programs"
-									onclick={() => (isAccountMenuOpen = false)}
-									class="block rounded-lg px-4 text-sm font-semibold text-primary transition hover:bg-secondary-soft hover:text-primary"
-								>
-									Programs
-								</a>
 
 								<button
 									type="button"

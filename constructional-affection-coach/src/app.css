@@ -95,47 +95,73 @@
 }
 
 @layer components {
-	.admin-shell {
+	.shell {
 		@apply min-h-screen bg-background text-foreground;
 	}
 
-	.admin-sidebar {
+	.sidebar {
 		@apply border-r border-border bg-background/95 shadow-soft;
 	}
 
-	.admin-card {
+	.card {
 		@apply rounded-vintage border border-border bg-surface/80 shadow-soft backdrop-blur;
 	}
 
-	.admin-card-alt {
+	.card-alt {
 		@apply rounded-vintage border border-highlight/40 bg-surface-alt/70 shadow-soft backdrop-blur;
 	}
 
-	.admin-eyebrow {
+	.eyebrow {
 		@apply text-xs font-bold tracking-[0.32em] text-highlight uppercase;
 	}
 
-	.admin-muted {
+	.muted {
 		@apply text-muted;
 	}
 
-	.admin-button-primary {
-		@apply rounded-vintage bg-accent px-4 py-3 font-bold text-primary shadow-soft transition hover:bg-white;
+	.button-base {
+		@apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-vintage border-2 px-5 py-3 font-bold transition-[transform,background-color,color,border-color,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+
+		box-shadow: 0 4px 0 rgba(12, 21, 21, 0.1);
+		transform: scale(1);
+
+		&:hover {
+			transform: scale(1.02);
+			box-shadow: 0 6px 0 rgba(15, 23, 42, 0.28);
+		}
+
+		&:active {
+			transform: scale(0.99);
+			box-shadow: 0 1px 0 rgba(15, 23, 42, 0.3);
+			transition-duration: 80ms;
+		}
 	}
 
-	.admin-button-secondary {
-		@apply rounded-vintage border border-highlight/60 bg-black/40 px-4 py-3 font-semibold text-accent transition hover:border-accent hover:text-white;
+	.button-primary {
+		@apply border-accent bg-accent text-primary;
+
+		&:hover {
+			background-color: #e1bd3d;
+		}
 	}
 
-	.admin-nav-item {
+	.button-secondary {
+		@apply border border-primary bg-white text-primary;
+
+		&:hover {
+			@apply border-accent bg-secondary-soft text-primary;
+		}
+	}
+
+	.nav-item {
 		@apply flex items-center gap-3 rounded-vintage px-4 py-3 text-sm font-medium text-muted transition hover:bg-surface-alt hover:text-white;
 	}
 
-	.admin-nav-item-active {
+	.nav-item-active {
 		@apply bg-surface-alt text-white shadow-soft;
 	}
 
-	.admin-input {
+	.input {
 		@apply w-full rounded-vintage border border-border bg-white px-4 py-3 text-sm text-foreground shadow-sm transition outline-none placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:cursor-not-allowed disabled:bg-secondary-soft disabled:text-muted;
 	}
 }

@@ -21,6 +21,6 @@
 	</p>
 
 	<div class="mt-8">
-		<button class="admin-button-primary" onclick={onRestartInterview}> Start Over </button>
+		<button class="button-base button-primary" onclick={onRestartInterview}> Start Over </button>
 	</div>
 </div>

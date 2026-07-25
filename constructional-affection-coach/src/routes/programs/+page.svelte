@@ -32,7 +32,7 @@
 			</h2>
 		</div>
 
-		<a href="/interview" class="admin-button-primary"> Start New Interview </a>
+		<a href="/interview" class="button-base button-primary"> Start New Interview </a>
 	</div>
 
 	{#if isLoading}
@@ -51,7 +51,7 @@
 				Complete an interview to create your first Constructional Affection program.
 			</p>
 
-			<a href="/interview" class="admin-button-primary"> Start Your First Interview </a>
+			<a href="/interview" class="button-base button-primary"> Start Your First Interview </a>
 		</div>
 	{:else}
 		<div class="space-y-4">
