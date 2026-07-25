@@ -147,32 +147,43 @@
 			{@render children()}
 		</main>
 
-		<footer
-			class="mt-10 flex flex-col items-center gap-4 border-t border-white/15 px-6 py-8 text-sm text-white/60 lg:px-10"
-		>
-			<div class="flex gap-4">
-				<p>Constructional Affection</p>
+		<footer class="border-t border-white/20 px-6 py-12 text-center">
+			<div class="mx-auto max-w-2xl">
+				<p class="text-xs font-bold uppercase tracking-[0.3em] text-accent">Our Mission</p>
 
-				<a
-					href="https://constructionalaffection.com"
-					target="_blank"
-					rel="noreferrer"
-					class="font-medium text-white/70 transition hover:text-accent"
-				>
-					constructionalaffection.com
-				</a>
-			</div>
-			<div class="flex gap-4">
-				<p>Constructional Approach to Animal Welfare and Training</p>
+				<h2 class="mt-3 font-serif text-2xl text-white">
+					Better lives for dogs and the people who love them.
+				</h2>
 
-				<a
-					href="https://www.caawt.com"
-					target="_blank"
-					rel="noreferrer"
-					class="font-medium text-white/70 transition hover:text-accent"
-				>
-					constructionalaffection.com
-				</a>
+				<p class="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/70">
+					Constructional Affection is part of a broader effort to improve the lives of dogs and the
+					people who care for them—building the foundation for better interactions and lasting
+					relationships.
+				</p>
+
+				<div class="mt-7 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-semibold">
+					<a
+						href="https://www.constructionalaffection.com"
+						target="_blank"
+						rel="noreferrer"
+						class="text-white hover:text-accent"
+					>
+						Constructional Affection →
+					</a>
+
+					<a
+						href="https://www.caawt.com"
+						target="_blank"
+						rel="noreferrer"
+						class="text-white hover:text-accent"
+					>
+						CAAWT →
+					</a>
+				</div>
+
+				<p class="mt-8 text-xs text-white/50">
+					© {new Date().getFullYear()} Constructional Affection
+				</p>
 			</div>
 		</footer>
 	</div>
