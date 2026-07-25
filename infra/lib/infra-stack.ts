@@ -7,9 +7,12 @@ import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigatewayv2 from "aws-cdk-lib/aws-apigatewayv2";
+import { HttpUserPoolAuthorizer } from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as cognito from "aws-cdk-lib/aws-cognito";
+
 import path from "path";
 import {
   NodejsFunction,
@@ -46,6 +49,45 @@ export class InfraStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // Add client user pool, app client, and authorizer
+    const coachUserPool = new cognito.UserPool(this, "CoachUserPool", {
+      userPoolName: "ca-coach-client-user-pool",
+      selfSignUpEnabled: true,
+      signInAliases: { email: true },
+      autoVerify: { email: true },
+    });
+
+    coachUserPool.addDomain("CoachCognitoDomain", {
+      cognitoDomain: { domainPrefix: "ca-coach-client" },
+    });
+
+    const coachPoolClient = coachUserPool.addClient("ClientUserPoolClient", {
+      authFlows: { userPassword: true, userSrp: true },
+      generateSecret: false,
+    });
+
+    const coachAuthorizer = new HttpUserPoolAuthorizer(
+      "ClientAuthorizer",
+      coachUserPool,
+      { userPoolClients: [coachPoolClient] },
+    );
+
+    new cdk.CfnOutput(this, "ClientCognitoAuthority", {
+      value: coachUserPool.userPoolProviderUrl,
+    });
+
+    new cdk.CfnOutput(this, "ClientCognitoClientId", {
+      value: coachPoolClient.userPoolClientId,
+    });
+
+    new cdk.CfnOutput(this, "ClientCognitoUserPoolId", {
+      value: coachUserPool.userPoolId,
+    });
+
+    new cdk.CfnOutput(this, "ClientCognitoDomain", {
+      value: `https://ca-coach-client.auth.${this.region}.amazoncognito.com`,
+    });
 
     // Get secrets
     const openAiSecret = secretsmanager.Secret.fromSecretNameV2(
@@ -185,7 +227,7 @@ export class InfraStack extends cdk.Stack {
           apigatewayv2.CorsHttpMethod.OPTIONS,
           apigatewayv2.CorsHttpMethod.GET,
         ],
-        allowHeaders: ["Content-Type"],
+        allowHeaders: ["Content-Type", "Authorization"],
       },
     });
 
@@ -237,6 +279,7 @@ export class InfraStack extends cdk.Stack {
         "GetInterviewsIntegration",
         getInterviewsLambda,
       ),
+      authorizer: coachAuthorizer,
     });
 
     api.addRoutes({

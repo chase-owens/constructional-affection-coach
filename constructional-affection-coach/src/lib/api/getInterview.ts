@@ -1,5 +1,7 @@
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
+import { constructionalProgramMock } from "$lib/data/constructionalProgram.mock";
 import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
+const USE_COMPLETED_MOCK = import.meta.env.DEV;
 
 type InterviewStatus = "pending" | "processing" | "complete" | "failed";
 
@@ -20,6 +22,10 @@ type GetInterviewResponse = {
 };
 
 export const getInterview = async (interviewId: string): Promise<PersistedInterview> => {
+	if (USE_COMPLETED_MOCK) {
+		return { interviewId, program: constructionalProgramMock, status: "complete" };
+	}
+
 	const response = await fetch(`${PUBLIC_API_BASE_URL}/interviews/${interviewId}`);
 
 	const contentType = response.headers.get("content-type") ?? "";
