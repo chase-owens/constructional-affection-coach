@@ -80,23 +80,6 @@
 
 		<form onsubmit={handleSubmit} class="mt-8 space-y-5">
 			<div>
-				<label for="username" class="mb-2 block text-sm font-semibold text-primary">
-					Name
-					<span class="ml-1 font-normal text-muted">(optional)</span>
-				</label>
-
-				<input
-					id="username"
-					name="username"
-					type="text"
-					bind:value={username}
-					autocomplete="nickname"
-					class="input"
-					placeholder="How should we address you?"
-				/>
-			</div>
-
-			<div>
 				<label for="email" class="mb-2 block text-sm font-semibold text-primary">
 					Email <span class="text-error">*</span>
 				</label>
