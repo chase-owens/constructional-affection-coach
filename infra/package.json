@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "scripts": {
     "build": "tsc",
+    "check": "tsc --noEmit",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy"
   },
   "devDependencies": {
     "@types/jest": "^30",
-    "@types/node": "^24.13.3",
+    "@types/node": "^22.20.1",
     "aws-cdk": "2.1129.0",
     "esbuild": "^0.28.1",
     "jest": "^30",

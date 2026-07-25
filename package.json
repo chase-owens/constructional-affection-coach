@@ -1,0 +1,20 @@
+{
+  "name": "constructional-affection",
+  "private": true,
+  "workspaces": [
+    "constructional-affection-coach",
+    "lambdas",
+    "infra"
+  ],
+  "scripts": {
+    "dev": "nx dev client",
+    "build": "nx run-many -t build",
+    "check": "nx run-many -t check",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
+    "graph": "nx graph"
+  },
+  "devDependencies": {
+    "nx": "23.1.0"
+  }
+}

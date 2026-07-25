@@ -358,18 +358,18 @@
 				<ProgramReadyView {constructionalProgram} {interviewId} />
 			{:else}
 				<main
-					class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10"
+					class="relative rounded-vintage border-3 border-accent bg-white p-6 shadow-soft sm:p-10"
 				>
 					<div class="mb-8 text-center">
 						{#if constructionalProgram}
 							<img
-								class="block m-auto max-h-60 -mb-12 -mt-8"
+								class="m-auto -mt-8 -mb-12 block max-h-60"
 								src="/images/stars.png"
 								alt="celebration stars"
 							/>
 						{/if}
 						<p class="eyebrow">Guided Constructional Interview</p>
-						<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
+						<h1 class="m-auto mt-3 max-w-xl text-4xl font-bold text-primary">
 							Let’s build the interaction you want.
 						</h1>
 					</div>
@@ -448,14 +448,14 @@
 									onkeydown={handleKeyDown}
 									disabled={isProcessing || isInitializingInterview}
 									rows="1"
-									class="min-h-12 flex-1 resize-none bg-transparent px-4 py-3 text-foreground placeholder:text-muted outline-none disabled:opacity-60"
+									class="min-h-12 flex-1 resize-none bg-transparent px-4 py-3 text-foreground outline-none placeholder:text-muted disabled:opacity-60"
 									placeholder={isProcessing ? "Thinking..." : "Type your answer here..."}
 								></textarea>
 
 								<button
 									onclick={submit}
 									disabled={isProcessing || isInitializingInterview}
-									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 bg-accent font-bold text-primary shadow-soft transition hover:bg-white disabled:opacity-60 cursor-pointer"
+									class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 bg-accent font-bold text-primary shadow-soft transition hover:bg-white disabled:opacity-60"
 									aria-label="Continue"
 								>
 									{isProcessing ? "…" : "➤"}
