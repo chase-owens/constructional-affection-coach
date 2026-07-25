@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import { TARGET_OUTCOME_INSTRUCTIONS } from "./instructions";
 import { targetOutcomePhaseResultSchema } from "../../../schemas";
+import { InterviewPhaseValidationError } from "../../../program/errors";
+import type { ValidationIssue } from "../../../validation/types";
 export type InterviewMessage = {
   role: "coach" | "user";
   content: string;
@@ -56,7 +58,26 @@ Return only JSON.
 export class TargetOutcomeController {
   constructor(private readonly openai: OpenAI) {}
 
-  async interview(messages: InterviewMessage[]) {
+  async interview(
+    messages: InterviewMessage[],
+    validationIssues?: ValidationIssue[],
+  ) {
+    const correctionMessage = validationIssues?.length
+      ? {
+          role: "system" as const,
+          content: `
+The previous response failed schema validation.
+
+Correct these issues:
+${validationIssues
+  .map((issue) => `- ${issue.path.map(String).join(".")}: ${issue.message}`)
+  .join("\n")}
+
+Return only corrected JSON matching the required response shape.
+        `.trim(),
+        }
+      : undefined;
+
     const response = await this.openai.responses.create({
       model: "gpt-4.1-mini",
       input: [
@@ -71,6 +92,7 @@ export class TargetOutcomeController {
               : ("assistant" as const),
           content: message.content,
         })),
+        ...(correctionMessage ? [correctionMessage] : []),
       ],
       text: {
         format: {
@@ -87,6 +109,12 @@ export class TargetOutcomeController {
         ? parsedJson
         : { ...parsedJson, phaseComplete: false };
 
-    return targetOutcomePhaseResultSchema.parse(normalizedJson);
+    const result = targetOutcomePhaseResultSchema.safeParse(normalizedJson);
+
+    if (!result.success) {
+      throw new InterviewPhaseValidationError("target_outcome", result.error);
+    }
+
+    return result.data;
   }
 }

@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import { INTERACTION_CHAIN_INSTRUCTIONS } from "./instructions";
 import { interactionChainPhaseResultSchema } from "../../../schemas";
+import type { ValidationIssue } from "../../../validation/types";
+import { InterviewPhaseValidationError } from "../../../program/errors";
 
 export type InterviewMessage = {
   role: "coach" | "user";
@@ -53,7 +55,26 @@ Return JSON with phaseComplete
 export class InteractionChainController {
   constructor(private readonly openai: OpenAI) {}
 
-  async interview(messages: InterviewMessage[]) {
+  async interview(
+    messages: InterviewMessage[],
+    validationIssues?: ValidationIssue[],
+  ) {
+    const correctionMessage = validationIssues?.length
+      ? {
+          role: "system" as const,
+          content: `
+The previous response failed schema validation.
+
+Correct these issues:
+${validationIssues
+  .map((issue) => `- ${issue.path.map(String).join(".")}: ${issue.message}`)
+  .join("\n")}
+
+Return only corrected JSON matching the required response shape.
+        `.trim(),
+        }
+      : undefined;
+
     const response = await this.openai.responses.create({
       model: "gpt-4.1-mini",
       input: [
@@ -68,6 +89,7 @@ export class InteractionChainController {
               : ("assistant" as const),
           content: message.content,
         })),
+        ...(correctionMessage ? [correctionMessage] : []),
       ],
       text: {
         format: {
@@ -83,6 +105,15 @@ export class InteractionChainController {
         ? parsedJson
         : { ...parsedJson, phaseComplete: false };
 
-    return interactionChainPhaseResultSchema.parse(normalizedJson);
+    const result = interactionChainPhaseResultSchema.safeParse(normalizedJson);
+
+    if (!result.success) {
+      throw new InterviewPhaseValidationError(
+        "interaction_chain",
+        result.error,
+      );
+    }
+
+    return result.data;
   }
 }
