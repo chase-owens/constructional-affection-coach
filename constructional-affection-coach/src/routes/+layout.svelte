@@ -148,18 +148,32 @@
 		</main>
 
 		<footer
-			class="mt-10 flex items-center justify-between border-t border-white/15 px-6 py-8 text-sm text-white/60 lg:px-10"
+			class="mt-10 flex flex-col items-center gap-4 border-t border-white/15 px-6 py-8 text-sm text-white/60 lg:px-10"
 		>
-			<p>Constructional Affection</p>
+			<div class="flex gap-4">
+				<p>Constructional Affection</p>
 
-			<a
-				href="https://constructionalaffection.com"
-				target="_blank"
-				rel="noreferrer"
-				class="font-medium text-white/70 transition hover:text-accent"
-			>
-				constructionalaffection.com
-			</a>
+				<a
+					href="https://constructionalaffection.com"
+					target="_blank"
+					rel="noreferrer"
+					class="font-medium text-white/70 transition hover:text-accent"
+				>
+					constructionalaffection.com
+				</a>
+			</div>
+			<div class="flex gap-4">
+				<p>Constructional Approach to Animal Welfare and Training</p>
+
+				<a
+					href="https://www.caawt.com"
+					target="_blank"
+					rel="noreferrer"
+					class="font-medium text-white/70 transition hover:text-accent"
+				>
+					constructionalaffection.com
+				</a>
+			</div>
 		</footer>
 	</div>
 </section>
