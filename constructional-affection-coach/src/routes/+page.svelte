@@ -60,6 +60,7 @@
 					<a
 						href="https://constructionalaffection.com"
 						class="admin-button-secondary inline-flex items-center justify-center px-6 py-4"
+						target="_blank"
 					>
 						Learn the Method
 					</a>

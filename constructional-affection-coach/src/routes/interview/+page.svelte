@@ -22,6 +22,7 @@
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
 	import SideBar from "$lib/components/SideBar.svelte";
 	import { PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
+	import { auth } from "$lib/auth/auth.svelte";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
@@ -135,8 +136,7 @@
 		const newInterviewId = crypto.randomUUID();
 
 		await interviewClient.create({
-			interviewId: newInterviewId,
-			userId: null
+			interviewId: newInterviewId
 		});
 
 		interviewId = newInterviewId;
@@ -251,6 +251,10 @@
 			});
 
 			const completedInterview = await interviewClient.pollComplete(currentInterviewId);
+
+			if (auth.isAuthenticated) {
+				await interviewClient.claim(currentInterviewId);
+			}
 
 			constructionalProgram = completedInterview.program;
 

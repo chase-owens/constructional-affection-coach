@@ -43,5 +43,8 @@
 	<button class="admin-button-primary mt-8 w-full cursor-pointer" onclick={handleContinueToProgram}>
 		View Program
 	</button>
-	<span class="mt-7"></span>
+	<p class="sm:h-20 text-center text-xs text-muted lg:pt-4">
+		The url that this link takes you to will continue to fetch the program created with or without a
+		user account
+	</p>
 </article>
