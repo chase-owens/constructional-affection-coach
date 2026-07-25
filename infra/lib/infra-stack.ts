@@ -151,6 +151,13 @@ export class InfraStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
+    this.interviewsTable.addGlobalSecondaryIndex({
+      indexName: "userId-updatedAt-index",
+      partitionKey: { name: "userId", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "updatedAt", type: dynamodb.AttributeType.STRING },
+    });
+
+    // Create worker lambda
     const startProgramLambda = createNodeLambda(this, "StartProgramLambda", {
       functionName: "ca-start-program-interviews",
       entry: path.join(lambdaProjectRoot, "src/program/start-program.ts"),
@@ -186,10 +193,24 @@ export class InfraStack extends cdk.Stack {
       ),
     });
 
+    const claimInterviewLambda = createNodeLambda(
+      this,
+      "ClaimInterviewLambda",
+      {
+        functionName: "ca-claim-interview",
+        entry: path.join(
+          lambdaProjectRoot,
+          "src/interview/claim-interview/index.ts",
+        ),
+        environment: { TABLE_NAME: this.interviewsTable.tableName },
+      },
+    );
+
     this.interviewsTable.grantWriteData(createInterviewLambda);
     this.interviewsTable.grantReadData(getInterviewsLambda);
     this.interviewsTable.grantReadData(getInterviewLambda);
     this.interviewsTable.grantReadWriteData(startProgramLambda);
+    this.interviewsTable.grantWriteData(claimInterviewLambda);
 
     // Grant lambdas read/write access to table
     const interviewFunction = new nodejs.NodejsFunction(
@@ -253,6 +274,16 @@ export class InfraStack extends cdk.Stack {
         responseLength: "$context.responseLength",
       }),
     };
+
+    api.addRoutes({
+      path: "/interviews/{interviewId}/claim",
+      methods: [apigatewayv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration(
+        "ClaimUserIdIntegration",
+        claimInterviewLambda,
+      ),
+      authorizer: coachAuthorizer,
+    });
 
     api.addRoutes({
       path: "/interviews/{interviewId}/phase",

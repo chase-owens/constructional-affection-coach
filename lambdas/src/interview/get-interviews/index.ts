@@ -1,11 +1,12 @@
-import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import jsonResponse from "../../util/jsonResponse";
 
-const client = new DynamoDBClient();
+const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 const TABLE_NAME = process.env.TABLE_NAME;
+const USER_INDEX = "userId-updatedAt-index";
 
 export const handler = async (event: any) => {
   if (!TABLE_NAME) {
@@ -14,19 +15,35 @@ export const handler = async (event: any) => {
     });
   }
 
+  const userId = event.requestContext?.authorizer?.jwt?.claims?.sub;
+
+  if (!userId) {
+    return jsonResponse(401, {
+      message: "Unauthorized",
+    });
+  }
+
   try {
     const result = await docClient.send(
-      new ScanCommand({ TableName: TABLE_NAME }),
+      new QueryCommand({
+        TableName: TABLE_NAME,
+        IndexName: USER_INDEX,
+        KeyConditionExpression: "userId = :userId",
+        ExpressionAttributeValues: {
+          ":userId": userId,
+        },
+        ScanIndexForward: false,
+      }),
     );
 
-    const interviews = (result.Items ?? []).sort((a, b) =>
-      String(b.createdAt ?? "").localeCompare(String(a.createdAt ?? "")),
-    );
-
-    return jsonResponse(200, { interviews });
+    return jsonResponse(200, {
+      interviews: result.Items ?? [],
+    });
   } catch (err) {
-    console.error("GET INTERVIEWS ERROR", JSON.stringify(err, null, 2));
+    console.error("GET INTERVIEWS ERROR", err);
 
-    return jsonResponse(500, { message: "Failed to fech interviews" });
+    return jsonResponse(500, {
+      message: "Failed to fetch interviews",
+    });
   }
 };

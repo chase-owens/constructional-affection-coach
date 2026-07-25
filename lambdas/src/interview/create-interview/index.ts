@@ -10,7 +10,6 @@ const documentClient = DynamoDBDocumentClient.from(dynamoClient, {
 
 export type CreateInterviewPayload = {
   interviewId: `${string}-${string}-${string}-${string}-${string}`;
-  userId: string | null;
 };
 
 export const handler = async (event: any) => {
