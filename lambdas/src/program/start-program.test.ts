@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { constructionalProgramMock } from "../../../constructional-affection-coach/src/lib/data/constructionalProgram.mock";
 
 const interactionChain: InteractionChain = {
   steps: [
@@ -70,6 +69,7 @@ vi.mock("../interview/program-initialization", () => ({
 import { handler } from "./start-program";
 import { afterEach } from "node:test";
 import { InteractionChain } from "../schemas";
+import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
 
 describe("start-program", () => {
   beforeEach(() => {

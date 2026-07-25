@@ -1,8 +1,34 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runProgramInitialization } from "./program-initialization";
 import type OpenAI from "openai";
+import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
+import { InteractionChain } from "../schemas";
 
-import { constructionalProgramMock } from "../../../constructional-affection-coach/src/lib/data/constructionalProgram.mock";
+const interactionChain: InteractionChain = {
+  steps: [
+    {
+      index: 0,
+      actor: "person",
+      description: "Person stands near the couch.",
+      change: "No change yet.",
+      expectedDogBehavior: "Dog remains calm.",
+      targetPatternPresent: true,
+      requiresTransfer: false,
+    },
+    {
+      index: 1,
+      actor: "person",
+      description: "Person begins sitting down.",
+      change: "Person bends toward the couch.",
+      expectedDogBehavior: "Dog begins moving toward the person.",
+      targetPatternPresent: false,
+      requiresTransfer: true,
+    },
+  ],
+  constructionStartIndex: 0,
+  targetOutcomeIndex: 1,
+  notes: "",
+};
 
 const initializeMock = vi.fn();
 
@@ -31,7 +57,7 @@ describe("runProgramInitialization", () => {
     const result = await runProgramInitialization(openai, {
       targetOutcome: constructionalProgramMock.targetOutcome,
       constructionalAssets: constructionalProgramMock.constructionalAssets,
-      interactionChain: constructionalProgramMock.interactionChain,
+      interactionChain,
     });
 
     expect(result.constructionalProgram).toEqual(constructionalProgramMock);
@@ -41,7 +67,7 @@ describe("runProgramInitialization", () => {
     expect(initializeMock).toHaveBeenCalledWith({
       targetOutcome: constructionalProgramMock.targetOutcome,
       constructionalAssets: constructionalProgramMock.constructionalAssets,
-      interactionChain: constructionalProgramMock.interactionChain,
+      interactionChain,
     });
   });
 });
