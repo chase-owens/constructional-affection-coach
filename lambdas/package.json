@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "check": "tsc --noEmit",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "Chase Owens <chasejonathanowens@gmail.com>",
@@ -21,7 +24,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.162",
-    "@types/node": "^26.1.1",
+    "@types/node": "^22.20.1",
     "esbuild": "^0.28.1",
     "typescript": "^7.0.2"
   }
