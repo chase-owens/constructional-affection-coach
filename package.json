@@ -3,8 +3,9 @@
   "private": true,
   "workspaces": [
     "constructional-affection-coach",
+    "infra",
     "lambdas",
-    "infra"
+    "mcp"
   ],
   "scripts": {
     "dev": "nx dev client",
