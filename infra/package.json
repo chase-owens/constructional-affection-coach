@@ -2,14 +2,13 @@
   "name": "infra",
   "version": "0.1.0",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit",
     "check": "tsc --noEmit",
-    "watch": "tsc -w",
+    "watch": "tsc --noEmit --watch",
     "test": "jest --passWithNoTests",
+    "cdk": "cdk",
     "synth": "cdk synth",
-    "diff": "cdk diff",
-    "deploy": "cdk deploy",
-    "destroy": "cdk destroy"
+    "deploy": "cdk deploy"
   },
   "devDependencies": {
     "@types/jest": "^30",
