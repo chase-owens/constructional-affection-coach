@@ -276,6 +276,6 @@ For a detailed description of the interview methodology and client behavior, see
 
 ## Author
 
-Built by Chase Hendrix.
+Built by Chase Owens.
 
 Constructional Affection Coach explores how structured AI systems can support the analysis and construction of individualized Constructional Affection programs.
