@@ -40,6 +40,9 @@ cdk.out/
 # Dependencies
 node_modules/
 
+# Lambda build artifacts
+lambdas/dist/
+
 # SvelteKit / deployment output
 .output/
 .vercel/

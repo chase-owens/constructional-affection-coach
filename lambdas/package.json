@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --noEmit",
     "check": "tsc --noEmit",
-    "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest"
   },
