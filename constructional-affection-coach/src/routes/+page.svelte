@@ -72,7 +72,7 @@
 				<img
 					src="/images/nanook_hero.png"
 					alt="Calm dog lying down"
-					class="absolute right-0 bottom-21 w-110 max-w-none drop-shadow-2xl sm:bottom-50 sm:w-136 lg:-right-16 lg:bottom-60 lg:w-184"
+					class="right-0 bottom-21 -mt-12 w-110 max-w-none drop-shadow-2xl sm:absolute sm:bottom-50 sm:mt-0 sm:w-136 lg:-right-16 lg:bottom-60 lg:w-184"
 				/>
 			</div>
 		</div>
