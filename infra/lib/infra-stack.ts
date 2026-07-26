@@ -155,7 +155,7 @@ export class InfraStack extends cdk.Stack {
         StringEquals: {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
           "token.actions.githubusercontent.com:sub":
-            "repo:chase-owens/constructional-affection:ref:refs/heads/main",
+            "repo:chase-owens/constructional-affection-coach:ref:refs/heads/main",
         },
       }),
       description:

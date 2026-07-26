@@ -27,7 +27,6 @@ yarn-error.log*
 .idea/
 
 # AWS CDK
-infra/**/*.js
 !infra/jest.config.js
 infra/**/*.d.ts
 
