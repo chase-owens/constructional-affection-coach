@@ -36,7 +36,7 @@
 <main class="min-h-screen bg-background text-foreground">
 	<section class="relative overflow-hidden bg-primary text-primary-foreground">
 		<div
-			class="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pb-24 sm:pb-0 pt-10 lg:grid-cols-[1fr_0.95fr] lg:px-10 lg:pb-32"
+			class="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pt-10 pb-24 sm:pb-0 lg:grid-cols-[1fr_0.95fr] lg:px-10 lg:pb-32"
 		>
 			<div class="relative max-w-2xl">
 				<p class="eyebrow mb-5">Guided Constructional Questionnaire</p>
@@ -50,10 +50,10 @@
 					already available, and where to begin a Constructional Affection program.
 				</p>
 
-				<div class="mt-8 flex flex-col gap-3 sm:flex-row z-10">
+				<div class="z-10 mt-8 flex flex-col gap-3 sm:flex-row">
 					<a
 						href={resolve("/interview")}
-						class="button-base button-primary inline-flex items-center justify-center px-6 py-4 z-10"
+						class="button-base button-primary z-10 inline-flex items-center justify-center px-6 py-4"
 					>
 						Start the Interview <span class="ml-3">→</span>
 					</a>
@@ -61,28 +61,28 @@
 					{#if auth.isAuthenticated}
 						<a
 							href={resolve("/programs")}
-							class="button-base button-secondary inline-flex items-center justify-center px-6 py-4 z-10"
+							class="button-base button-secondary z-10 inline-flex items-center justify-center px-6 py-4"
 						>
 							Saved Programs
 						</a>{/if}
 				</div>
 			</div>
 
-			<div class="relative min-h-136.5 sm:max-h-50 lg:min-h-190 z-0">
+			<div class="relative z-0 min-h-136.5 sm:max-h-50 lg:min-h-190">
 				<img
 					src="/images/nanook_hero.png"
 					alt="Calm dog lying down"
-					class="absolute bottom-0 sm:bottom-30 lg:bottom-0 right-0 w-136 max-w-none drop-shadow-2xl lg:-right-16 lg:w-184"
+					class="absolute right-0 bottom-0 w-136 max-w-none drop-shadow-2xl sm:bottom-30 lg:-right-16 lg:bottom-0 lg:w-184"
 				/>
 			</div>
 		</div>
 
 		<div
-			class="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-background to-transparent"
+			class="absolute right-0 bottom-0 left-0 h-24 bg-linear-to-t from-background to-transparent"
 		></div>
 	</section>
 
-	<section class="relative z-20 mx-auto -mt-40 sm:-mt-40 max-w-6xl px-6 lg:px-10 lg:mt-0">
+	<section class="relative z-20 mx-auto -mt-40 max-w-6xl px-6 sm:-mt-40 lg:mt-0 lg:px-10">
 		<div class="rounded-vintage border border-border bg-white p-6 shadow-soft sm:p-8">
 			<div class="flex flex-col gap-5 md:flex-row md:items-center">
 				<div
@@ -133,7 +133,7 @@
 			</h2>
 
 			<a href={resolve("/interview")} class="button-base button-primary mt-8 inline-flex px-8 py-4">
-				Start the Interview <span class="ml-3 z-10">→</span>
+				Start the Interview <span class="z-10 ml-3">→</span>
 			</a>
 		</div>
 	</section>

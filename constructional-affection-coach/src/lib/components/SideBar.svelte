@@ -50,7 +50,7 @@
 	</div>
 
 	<div class="mt-10 rounded-vintage border border-border bg-secondary-soft p-4">
-		<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/70">What to expect</p>
+		<p class="text-xs font-bold tracking-[0.18em] text-primary/70 uppercase">What to expect</p>
 		<p class="mt-3 text-sm leading-6 text-muted-dark">
 			We’ll define the goal, identify what already works, map the chain, then build your starting
 			program.

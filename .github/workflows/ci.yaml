@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    env:
+      PUBLIC_API_BASE_URL: ${{ vars.PUBLIC_API_BASE_URL }}
+      PUBLIC_COGNITO_AUTHORITY: ${{ vars.PUBLIC_COGNITO_AUTHORITY }}
+      PUBLIC_COGNITO_CLIENT_ID: ${{ vars.PUBLIC_COGNITO_CLIENT_ID }}
+      PUBLIC_COGNITO_DOMAIN: ${{ vars.PUBLIC_COGNITO_DOMAIN }}
+      PUBLIC_COGNITO_USER_POOL_ID: ${{ vars.PUBLIC_COGNITO_USER_POOL_ID }}
+      PUBLIC_USE_COMPLETED_MOCK: "false"
+      PUBLIC_MOCK_INTERVIEW_ID: "00000000-0000-0000-0000-000000000000"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build

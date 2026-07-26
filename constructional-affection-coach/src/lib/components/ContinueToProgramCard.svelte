@@ -10,7 +10,7 @@
 </script>
 
 <article
-	class="rounded-vintage border border-amber-200 bg-amber-50 p-8 h-full flex flex-col justify-between"
+	class="flex h-full flex-col justify-between rounded-vintage border border-amber-200 bg-amber-50 p-8"
 >
 	<div class="flex justify-center">
 		<div
@@ -21,9 +21,9 @@
 	</div>
 
 	<div class="min-h-32">
-		<h3 class="mt-2 text-xl font-serif text-primary text-center font-bold">View Program</h3>
+		<h3 class="mt-2 text-center font-serif text-xl font-bold text-primary">View Program</h3>
 
-		<p class="mt-4 flex-1 text-muted-dark text-center">
+		<p class="mt-4 flex-1 text-center text-muted-dark">
 			Continue to your completed program and get started.
 		</p>
 	</div>
@@ -46,7 +46,7 @@
 	>
 		View Program
 	</button>
-	<p class="sm:h-20 text-center text-xs text-muted lg:pt-4">
+	<p class="text-center text-xs text-muted sm:h-20 lg:pt-4">
 		The url that this link takes you to will continue to fetch the program created with or without a
 		user account
 	</p>

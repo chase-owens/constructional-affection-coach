@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { onMount } from "svelte";
 	import { confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
 
@@ -32,7 +33,7 @@
 			});
 
 			if (isSignUpComplete) {
-				await goto("/login?confirmed=true");
+				await goto(resolve("/login?confirmed=true"));
 				return;
 			}
 
@@ -141,7 +142,7 @@
 			</button>
 
 			<div class="text-center text-sm">
-				<a href="/login" class="font-semibold text-primary"> Back to Login </a>
+				<a href={resolve("/login")} class="font-semibold text-primary"> Back to Login </a>
 			</div>
 		</form>
 	</div>

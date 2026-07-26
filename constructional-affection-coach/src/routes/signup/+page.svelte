@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { auth } from "$lib/auth/auth.svelte";
 	import { signUp } from "aws-amplify/auth";
 	import { onMount } from "svelte";
@@ -16,7 +17,7 @@
 		await auth.refresh();
 
 		if (auth.isAuthenticated) {
-			await goto("/programs");
+			await goto(resolve("/programs"));
 		}
 	});
 
@@ -48,11 +49,11 @@
 			});
 
 			if (!isSignUpComplete) {
-				await goto(`/confirm-signup?email=${encodeURIComponent(email.trim())}`);
+				await goto(resolve(`/confirm-signup?email=${encodeURIComponent(email.trim())}`));
 				return;
 			}
 
-			await goto("/login");
+			await goto(resolve("/login"));
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : "Unable to create your account.";
 		} finally {
@@ -150,7 +151,7 @@
 
 			<div class="text-center text-sm">
 				Already have an account?
-				<a href="/login" class="font-semibold text-primary">Log In</a>
+				<a href={resolve("/login")} class="font-semibold text-primary">Log In</a>
 			</div>
 		</form>
 	</div>
