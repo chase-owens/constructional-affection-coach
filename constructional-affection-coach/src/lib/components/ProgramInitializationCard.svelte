@@ -15,7 +15,7 @@
 		</h2>
 
 		<div class="mt-5 rounded-vintage border border-accent/30 bg-accent/5 p-4">
-			<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/60">Starting Point</p>
+			<p class="text-xs font-bold tracking-[0.18em] text-primary/60 uppercase">Starting Point</p>
 
 			<p class="mt-2 text-sm leading-relaxed text-muted-dark sm:text-base">
 				{startingPoint}
@@ -33,7 +33,7 @@
 					class="flex cursor-pointer list-none items-start justify-between gap-4 p-5 marker:hidden"
 				>
 					<div class="min-w-0">
-						<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/60">
+						<p class="text-xs font-bold tracking-[0.18em] text-primary/60 uppercase">
 							Phase {phase.order + 1}
 						</p>
 
@@ -54,10 +54,10 @@
 					</span>
 				</summary>
 
-				<div class="border-t border-border px-5 pb-5 pt-5">
+				<div class="border-t border-border px-5 pt-5 pb-5">
 					<div class="grid gap-4 lg:grid-cols-2">
 						<div>
-							<p class="text-xs font-bold uppercase tracking-[0.15em] text-primary/60">
+							<p class="text-xs font-bold tracking-[0.15em] text-primary/60 uppercase">
 								Begin under these conditions
 							</p>
 
@@ -67,7 +67,7 @@
 						</div>
 
 						<div>
-							<p class="text-xs font-bold uppercase tracking-[0.15em] text-primary/60">
+							<p class="text-xs font-bold tracking-[0.15em] text-primary/60 uppercase">
 								Phase complete when
 							</p>
 
@@ -79,7 +79,7 @@
 
 					{#if phase.reinforcers?.length}
 						<div class="mt-5">
-							<p class="text-xs font-bold uppercase tracking-[0.15em] text-primary/60">
+							<p class="text-xs font-bold tracking-[0.15em] text-primary/60 uppercase">
 								Use throughout this phase
 							</p>
 
@@ -98,7 +98,7 @@
 					<div class="mt-7">
 						<div class="mb-4 flex items-center justify-between gap-4">
 							<div>
-								<p class="text-xs font-bold uppercase tracking-[0.18em] text-primary/60">
+								<p class="text-xs font-bold tracking-[0.18em] text-primary/60 uppercase">
 									Approximation sequence
 								</p>
 
@@ -119,13 +119,13 @@
 									<li class="relative pl-11">
 										{#if approximationIndex < phase.approximations.length - 1}
 											<span
-												class="absolute left-4.25 top-9 h-[calc(100%+1rem)] w-px bg-accent/40"
+												class="absolute top-9 left-4.25 h-[calc(100%+1rem)] w-px bg-accent/40"
 												aria-hidden="true"
 											></span>
 										{/if}
 
 										<span
-											class="absolute left-0 top-0 grid h-9 w-9 place-items-center rounded-full border-2 border-accent bg-white text-sm font-bold text-primary"
+											class="absolute top-0 left-0 grid h-9 w-9 place-items-center rounded-full border-2 border-accent bg-white text-sm font-bold text-primary"
 										>
 											{approximationIndex + 1}
 										</span>
@@ -147,7 +147,7 @@
 
 											{#if approximation.conditions?.length}
 												<div class="mt-4">
-													<p class="text-xs font-bold uppercase tracking-[0.12em] text-primary/60">
+													<p class="text-xs font-bold tracking-[0.12em] text-primary/60 uppercase">
 														Start under
 													</p>
 
@@ -163,7 +163,7 @@
 
 											<div class="mt-4 grid gap-4 md:grid-cols-2">
 												<div>
-													<p class="text-xs font-bold uppercase tracking-[0.12em] text-primary/60">
+													<p class="text-xs font-bold tracking-[0.12em] text-primary/60 uppercase">
 														Maintain
 													</p>
 
@@ -173,7 +173,7 @@
 												</div>
 
 												<div>
-													<p class="text-xs font-bold uppercase tracking-[0.12em] text-primary/60">
+													<p class="text-xs font-bold tracking-[0.12em] text-primary/60 uppercase">
 														Advance when
 													</p>
 
@@ -197,11 +197,11 @@
 
 					{#if phase.notes}
 						<div class="mt-6 border-t border-border pt-4">
-							<p class="text-xs font-bold uppercase tracking-[0.15em] text-primary/60">
+							<p class="text-xs font-bold tracking-[0.15em] text-primary/60 uppercase">
 								How to run this phase
 							</p>
 
-							<p class="mt-2 text-sm italic leading-relaxed text-muted-dark">
+							<p class="mt-2 text-sm leading-relaxed text-muted-dark italic">
 								{phase.notes}
 							</p>
 						</div>

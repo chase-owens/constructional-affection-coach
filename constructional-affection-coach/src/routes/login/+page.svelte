@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 	import { auth } from "$lib/auth/auth.svelte";
 	import { signIn } from "aws-amplify/auth";
 	import { onMount } from "svelte";
 
 	let email = $state("");
 	let password = $state("");
-	let errorMessage = "";
+	let errorMessage = $state("");
 	let isSubmitting = $state(false);
 
 	const login = async () => {
@@ -21,11 +22,11 @@
 
 			if (result.isSignedIn) {
 				await auth.refresh();
-				await goto("/programs");
+				await goto(resolve("/programs"));
 			}
 
 			if (result.nextStep.signInStep === "CONFIRM_SIGN_UP") {
-				await goto(`/confirm-signup?email=${encodeURIComponent(email.trim())}`);
+				await goto(resolve(`/confirm-signup?email=${encodeURIComponent(email.trim())}`));
 				return;
 			}
 
@@ -51,7 +52,7 @@
 		await auth.refresh();
 
 		if (auth.isAuthenticated) {
-			await goto("/programs");
+			await goto(resolve("/programs"));
 		}
 	});
 </script>
@@ -60,9 +61,15 @@
 	<title>Login | Constructional Affection Coach</title>
 </svelte:head>
 
-<div class="min-h-screen bg-background flex items-center justify-center p-6">
-	<div class="w-full max-w-md rounded-vintage bg-white shadow-soft border border-border p-8">
+<div class="flex min-h-screen items-center justify-center bg-background p-6">
+	<div class="w-full max-w-md rounded-vintage border border-border bg-white p-8 shadow-soft">
 		<h1 class="text-3xl font-bold text-primary">Welcome Back</h1>
+
+		{#if errorMessage}
+			<p class="px-6 text-sm text-error lg:px-10">
+				{errorMessage}
+			</p>
+		{/if}
 
 		<p class="mt-2 text-muted-dark">Sign in to continue your Constructional Affection programs.</p>
 
@@ -102,7 +109,7 @@
 			<div class="text-center text-sm">
 				Don't have an account?
 
-				<a href="/signup" class="text-primary font-semibold"> Create one </a>
+				<a href={resolve("/signup")} class="font-semibold text-primary"> Create one </a>
 			</div>
 		</form>
 	</div>

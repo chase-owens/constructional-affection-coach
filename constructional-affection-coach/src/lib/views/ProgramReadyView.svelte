@@ -12,27 +12,27 @@
 	}: { constructionalProgram: ConstructionalProgram; interviewId: InterviewIdType } = $props();
 </script>
 
-<main class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10">
+<main class="relative rounded-vintage border-3 border-accent bg-white p-6 shadow-soft sm:p-10">
 	<div class="mb-8 text-center">
 		<img
-			class="block m-auto max-h-60 -mb-12 -mt-8"
+			class="m-auto -mt-8 -mb-12 block max-h-60"
 			src="/images/stars.png"
 			alt="celebration stars"
 		/>
 
 		<p class="eyebrow">Program Complete</p>
-		<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
+		<h1 class="m-auto mt-3 max-w-xl text-4xl font-bold text-primary">
 			Your Constructional Program is Ready!
 		</h1>
 
-		<p class="text-sm text-primary mt-3">
+		<p class="mt-3 text-sm text-primary">
 			We've built a personalized program based on what you told us.
 		</p>
 		<p class="text-sm text-primary">Now choose how you'd like to save or continue.</p>
 	</div>
 
 	<div class="space-y-5">
-		<section class="grid sm:grid-cols-3 gap-4 border-t border-border pt-8">
+		<section class="grid gap-4 border-t border-border pt-8 sm:grid-cols-3">
 			<SaveToAccountCard />
 			<DownloadPDFCard interview={constructionalProgram} />
 			<ContinueToProgramCard {interviewId} />

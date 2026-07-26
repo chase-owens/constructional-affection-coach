@@ -8,7 +8,7 @@
 </script>
 
 <article
-	class="rounded-vintage border border-green-200 bg-green-50 p-8 h-full flex flex-col justify-between"
+	class="flex h-full flex-col justify-between rounded-vintage border border-green-200 bg-green-50 p-8"
 >
 	<div class="flex justify-center">
 		<div
@@ -19,9 +19,9 @@
 	</div>
 
 	<div class="min-h-32">
-		<h3 class="mt-2 text-xl font-serif text-primary text-center font-bold">Save to an Account</h3>
+		<h3 class="mt-2 text-center font-serif text-xl font-bold text-primary">Save to an Account</h3>
 
-		<p class="mt-4 flex-1 text-muted-dark text-center">
+		<p class="mt-4 flex-1 text-center text-muted-dark">
 			Access from any device and build your own library of constructional programs.
 		</p>
 	</div>
@@ -39,7 +39,7 @@
 	</ul>
 
 	<button
-		class="button-base button-primary bg-green-800 text-white mt-8 w-full font-medium cursor-pointer"
+		class="button-base button-primary mt-8 w-full cursor-pointer bg-green-800 font-medium text-white"
 		onclick={onCreateAccount}
 	>
 		Create Free Account

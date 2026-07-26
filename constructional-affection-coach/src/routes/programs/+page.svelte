@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
+	import type { SavedProgram } from "$lib/api/getInterviews";
 	import { interviewClient } from "$lib/api/interviewClient";
 	import { auth } from "$lib/auth/auth.svelte";
 
 	let isLoading = $state(true);
 	let errorMessage = $state("");
-	let programs = $state<any[]>([]);
+	let programs = $state<SavedProgram[]>([]);
 	let hasLoaded = $state(false);
 
 	const loadPrograms = async () => {
@@ -28,7 +30,7 @@
 		if (auth.isLoading) return;
 
 		if (!auth.user) {
-			void goto("/login");
+			void goto(resolve("/login"));
 			return;
 		}
 
@@ -50,7 +52,7 @@
 			</h2>
 		</div>
 
-		<a href="/interview" class="button-base button-primary"> Start New Interview </a>
+		<a href={resolve("/interview")} class="button-base button-primary"> Start New Interview </a>
 	</div>
 
 	{#if isLoading}
@@ -77,13 +79,15 @@
 				Complete an interview to create your first Constructional Affection program.
 			</p>
 
-			<a href="/interview" class="button-base button-primary"> Start Your First Interview </a>
+			<a href={resolve("/interview")} class="button-base button-primary">
+				Start Your First Interview
+			</a>
 		</div>
 	{:else}
 		<div class="space-y-4">
-			{#each programs as interview}
+			{#each programs as interview (interview.interviewId)}
 				<a
-					href={`/programs/${interview.interviewId}`}
+					href={resolve(`/programs/${interview.interviewId}`)}
 					class="block rounded-vintage border border-border bg-white p-6 shadow-soft transition hover:-translate-y-0.5"
 				>
 					<h2 class="text-lg font-semibold text-primary">

@@ -1,0 +1,184 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ProgramInitializationController = void 0;
+const instructions_1 = require("./instructions");
+const programInitializationPrompt = `
+${instructions_1.PROGRAM_INITIALIZATION_INSTRUCTIONS}
+
+Use the exact key "phaseComplete".
+
+Return ONLY valid JSON in this shape:
+
+{
+  "phaseComplete": true,
+  "constructionalProgram": {
+    "schemaVersion": "1.0",
+    "targetOutcome": {
+      "rawAnswer": "...",
+      "clarifiedOutcome": "...",
+      "desiredInteractionPattern": "...",
+      "primaryContext": "...",
+      "scope": "within_constructional_affection",
+      "isPositive": true,
+      "isObservable": true,
+      "notes": "..."
+    },
+    "constructionalAssets": {
+      "socialReinforcers": {
+        "touch": "unclear",
+        "talk": "unclear",
+        "eyeContact": "unclear",
+        "proximity": "unclear"
+      },
+      "relevantSkills": [],
+      "conditionsWhereTargetPatternOccurs": [],
+      "notes": "..."
+    },
+    "controlAnalysis": {
+      "targetPattern": "...",
+      "initialConditions": {
+        "description": "...",
+        "behaviorObserved": "...",
+        "controllingConditions": ["..."],
+        "relevantReinforcer": "...",
+        "evidence": ["..."]
+      },
+      "transitionPoint": {
+        "stepIndex": 0,
+        "changedCondition": "..."
+      },
+      "disturbingPattern": "...",
+      "terminalConditions": {
+        "description": "...",
+        "targetPattern": "..."
+      }
+    },
+    "initialization": {
+      "startingInteraction": {
+        "conditions": ["..."],
+        "targetPattern": "...",
+        "reinforcer": "...",
+        "controlCriterion": "..."
+      },
+      "readinessCriterion": "..."
+    },
+    "transferPlan": {
+      "phases": [
+        {
+          "id": "...",
+          "order": 0,
+          "title": "...",
+          "entryCondition": "...",
+          "targetPattern": "...",
+          "terminalCriterion": "...",
+          "reinforcers": ["..."],
+          "notes": "...",
+          "approximations": [
+            {
+              "id": "...",
+              "order": 0,
+              "conditions": ["..."],
+              "changeFromPrevious": {
+                "dimension": "...",
+                "adjustment": "..."
+              },
+              "targetPattern": "...",
+              "reinforcer": "...",
+              "controlCriterion": {
+                "evidenceOfControl": "...",
+                "sufficientToAdvance": "..."
+              },
+              "recovery": {
+                "reduceApproximationTo": "...",
+                "previousSuccessfulApproximationId": "..."
+              }
+            }
+          ]
+        }
+      ],
+      "terminalCriterion": "..."
+    }
+  }
+}
+
+Use the supplied targetOutcome and constructionalAssets without changing their meaning.
+
+Do not output markdown.
+Do not output explanations.
+Always return the phaseComplete key.
+Return only JSON.
+`;
+class ProgramInitializationController {
+    openai;
+    constructor(openai) {
+        this.openai = openai;
+    }
+    async initialize(input) {
+        console.log("THE actual controller top");
+        const validationFeedback = input.validationIssues?.length
+            ? `
+          The constructional program built from your previous programInitialization
+          failed schema validation.
+
+          Revise the complete programInitialization so the resulting constructional
+          program resolves every issue below:
+
+          ${input.validationIssues
+                .map((issue) => {
+                const path = issue.path.length > 0
+                    ? issue.path.map(String).join(".")
+                    : "root";
+                return `- ${path}: ${issue.message}`;
+            })
+                .join("\n")}
+
+          Return the complete corrected result.
+          Do not return only the corrected properties.
+          `
+            : "";
+        const response = await this.openai.responses.create({
+            model: "gpt-4.1-mini",
+            input: [
+                {
+                    role: "system",
+                    content: programInitializationPrompt,
+                },
+                {
+                    role: "user",
+                    content: `
+            Interview data:
+
+            ${JSON.stringify({
+                        targetOutcome: input.targetOutcome,
+                        constructionalAssets: input.constructionalAssets,
+                        interactionChain: input.interactionChain,
+                    }, null, 2)}
+
+            ${validationFeedback}
+            `,
+                },
+            ],
+            text: {
+                format: {
+                    type: "json_object",
+                },
+            },
+        });
+        const parsedJson = JSON.parse(response.output_text);
+        if (typeof parsedJson !== "object" ||
+            parsedJson === null ||
+            !("constructionalProgram" in parsedJson)) {
+            return {
+                phaseComplete: true,
+                constructionalProgram: undefined,
+            };
+        }
+        const result = parsedJson;
+        console.info("program.controller.completed");
+        return {
+            phaseComplete: true,
+            constructionalProgram: result.constructionalProgram,
+        };
+    }
+}
+exports.ProgramInitializationController = ProgramInitializationController;

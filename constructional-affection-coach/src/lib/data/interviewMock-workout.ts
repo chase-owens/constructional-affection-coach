@@ -84,8 +84,7 @@ const mockInterview = {
 					"The dog begins running around, walking on the person, jumping, or initiating play biting.",
 				targetPatternPresent: false,
 				requiresTransfer: true,
-				notes:
-					"This is the earliest identified change where the target pattern deteriorates."
+				notes: "This is the earliest identified change where the target pattern deteriorates."
 			}
 		],
 

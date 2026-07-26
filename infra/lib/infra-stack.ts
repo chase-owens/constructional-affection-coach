@@ -12,6 +12,7 @@ import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as cognito from "aws-cdk-lib/aws-cognito";
+import * as iam from "aws-cdk-lib/aws-iam";
 
 import path from "path";
 import {
@@ -20,7 +21,8 @@ import {
 } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 
-const lambdaProjectRoot = path.join(__dirname, "../../lambdas");
+const repoRoot = path.join(__dirname, "../..");
+const lambdaProjectRoot = path.join(repoRoot, "lambdas");
 
 const createNodeLambda = (
   scope: Construct,
@@ -32,8 +34,8 @@ const createNodeLambda = (
     runtime: lambda.Runtime.NODEJS_22_X,
     architecture: lambda.Architecture.ARM_64,
     memorySize: 256,
-    projectRoot: lambdaProjectRoot,
-    depsLockFilePath: path.join(lambdaProjectRoot, "package-lock.json"),
+    projectRoot: repoRoot,
+    depsLockFilePath: path.join(repoRoot, "package-lock.json"),
     handler: "handler",
     environment: { TABLE_NAME: tableName },
     timeout: cdk.Duration.seconds(120),
@@ -140,6 +142,39 @@ export class InfraStack extends cdk.Stack {
       },
     );
 
+    const githubOidcProvider =
+      iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+        this,
+        "GitHubOidcProvider",
+        `arn:aws:iam::${this.account}:oidc-provider/token.actions.githubusercontent.com`,
+      );
+
+    const githubDeployRole = new iam.Role(this, "GitHubDeployRole", {
+      roleName: "ca-coach-github-deploy",
+      assumedBy: new iam.OpenIdConnectPrincipal(githubOidcProvider, {
+        StringEquals: {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub":
+            "repo:chase-owens/constructional-affection:ref:refs/heads/main",
+        },
+      }),
+      description:
+        "Allows GitHub Actions on main to deploy the Constructional Affection Coach client.",
+    });
+
+    clientBucket.grantReadWrite(githubDeployRole);
+
+    githubDeployRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ["cloudfront:CreateInvalidation"],
+        resources: [clientDistribution.distributionArn],
+      }),
+    );
+
+    new cdk.CfnOutput(this, "GitHubDeployRoleArn", {
+      value: githubDeployRole.roleArn,
+    });
+
     // Create table
     this.interviewsTable = new dynamodb.Table(this, "CaProgramTable", {
       tableName: "ca-program-table",
@@ -221,8 +256,8 @@ export class InfraStack extends cdk.Stack {
         runtime: lambda.Runtime.NODEJS_22_X,
 
         entry: path.join(lambdaProjectRoot, "src/interview/index.ts"),
-        projectRoot: lambdaProjectRoot,
-        depsLockFilePath: path.join(lambdaProjectRoot, "package-lock.json"),
+        projectRoot: repoRoot,
+        depsLockFilePath: path.join(repoRoot, "package-lock.json"),
 
         handler: "handler",
         timeout: cdk.Duration.seconds(120),

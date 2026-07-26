@@ -8,7 +8,7 @@
 </script>
 
 <article
-	class="rounded-vintage border border-blue-200 bg-blue-50 p-8 h-full flex flex-col justify-between"
+	class="flex h-full flex-col justify-between rounded-vintage border border-blue-200 bg-blue-50 p-8"
 >
 	<div class="flex justify-center">
 		<div
@@ -19,9 +19,9 @@
 	</div>
 
 	<div class="min-h-32">
-		<h3 class="mt-2 text-xl font-serif text-primary text-center font-bold">Download PDF</h3>
+		<h3 class="mt-2 text-center font-serif text-xl font-bold text-primary">Download PDF</h3>
 
-		<p class="mt-4 flex-1 text-muted-dark text-center">
+		<p class="mt-4 flex-1 text-center text-muted-dark">
 			Keep an offline copy for printing, sharing, or future reference.
 		</p>
 	</div>
@@ -39,7 +39,7 @@
 	</ul>
 
 	<button
-		class="button-base button-primary bg-primary text-white mt-8 sm:mb-24 lg:mb-20 w-full font-medium cursor-pointer"
+		class="button-base button-primary mt-8 w-full cursor-pointer bg-primary font-medium text-white sm:mb-24 lg:mb-20"
 		onclick={() => handleDownload(interview)}
 	>
 		Download PDF

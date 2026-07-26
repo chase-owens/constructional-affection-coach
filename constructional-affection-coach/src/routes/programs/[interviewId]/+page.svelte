@@ -53,10 +53,10 @@
 	});
 </script>
 
-<main class="relative rounded-vintage border-accent border-3 bg-white p-6 shadow-soft sm:p-10">
+<main class="relative rounded-vintage border-3 border-accent bg-white p-6 shadow-soft sm:p-10">
 	<div class="mb-8 text-center">
 		<p class="eyebrow">Constructional Affection Program</p>
-		<h1 class="mt-3 text-4xl font-bold text-primary max-w-xl m-auto">
+		<h1 class="m-auto mt-3 max-w-xl text-4xl font-bold text-primary">
 			Let’s build the interaction you want.
 		</h1>
 	</div>
@@ -82,7 +82,7 @@
 		{/if}
 
 		{#if constructionalProgram}<button
-				class="absolute top-3 right-3 text-primary rounded-full border border-accent p-2"
+				class="absolute top-3 right-3 rounded-full border border-accent p-2 text-primary"
 				onclick={() => handleDownload(constructionalProgram!)}
 				><Download class="size-6 cursor-pointer" /></button
 			>{/if}

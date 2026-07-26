@@ -1,5 +1,6 @@
 <script lang="ts">
 	import "../app.css";
+	import { resolve } from "$app/paths";
 	import { browser } from "$app/environment";
 	import { configureAmplify } from "$lib/auth/amplify";
 	import { auth } from "$lib/auth/auth.svelte";
@@ -54,7 +55,7 @@
 			await signOut();
 			await auth.refresh();
 			isAccountMenuOpen = false;
-			await goto("/login");
+			await goto(resolve("/login"));
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : "Unable to sign out.";
 		}
@@ -64,10 +65,10 @@
 <section class="shell flex min-h-screen flex-col bg-primary px-4">
 	<div class="mx-auto flex w-full max-w-7xl flex-1 flex-col">
 		<header class="flex items-center justify-between px-6 py-7 lg:px-10">
-			<a href="/" class="flex shrink-0 items-center gap-3 text-white hover:text-white">
+			<a href={resolve("/")} class="flex shrink-0 items-center gap-3 text-white hover:text-white">
 				<img src="/images/logo.png" alt="Constructional Affection" class="h-12 w-12" />
 
-				<span class="text-sm font-bold leading-tight tracking-[0.24em] uppercase">
+				<span class="text-sm leading-tight font-bold tracking-[0.24em] uppercase">
 					Constructional<br />
 					Affection Coach
 				</span>
@@ -76,7 +77,7 @@
 			<div class="flex items-center gap-3">
 				{#if auth.isAuthenticated}
 					<a
-						href="/programs"
+						href={resolve("/programs")}
 						class={[
 							"text-sm font-semibold transition",
 							page.url.pathname.startsWith("/programs")
@@ -100,10 +101,10 @@
 
 					{#if isAccountMenuOpen}
 						<div
-							class="absolute right-0 z-50 mt-1 w-fit rounded-vintage border border-border bg-white p-2 shadow-soft flex flex-col gap-3"
+							class="absolute right-0 z-50 mt-1 flex w-fit flex-col gap-3 rounded-vintage border border-border bg-white p-2 shadow-soft"
 						>
 							{#if auth.isAuthenticated}
-								<p class="text-primary px-4">
+								<p class="px-4 text-primary">
 									{auth.user?.signInDetails?.loginId ?? auth.user?.username}
 								</p>
 
@@ -116,7 +117,7 @@
 								</button>
 							{:else}
 								<a
-									href="/login"
+									href={resolve("/login")}
 									onclick={() => (isAccountMenuOpen = false)}
 									class="block rounded-lg px-4 text-sm font-semibold text-primary transition hover:bg-secondary-soft hover:text-primary"
 								>
@@ -124,7 +125,7 @@
 								</a>
 
 								<a
-									href="/signup"
+									href={resolve("/signup")}
 									onclick={() => (isAccountMenuOpen = false)}
 									class="block rounded-lg px-4 text-sm font-semibold text-primary transition hover:bg-secondary-soft hover:text-primary"
 								>
@@ -149,7 +150,7 @@
 
 		<footer class="border-t border-white/20 px-6 py-12 text-center">
 			<div class="mx-auto max-w-2xl">
-				<p class="text-xs font-bold uppercase tracking-[0.3em] text-accent">Our Mission</p>
+				<p class="text-xs font-bold tracking-[0.3em] text-accent uppercase">Our Mission</p>
 
 				<h2 class="mt-3 font-serif text-2xl text-white">
 					Better lives for dogs and the people who love them.
