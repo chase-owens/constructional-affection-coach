@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
 
-	type Step = {
-		label: string;
-	};
-
 	let {
 		currentStep,
 		title
@@ -39,7 +35,7 @@
 	</div>
 
 	<div class="mt-6 flex items-center">
-		{#each phaseOrder as step, index}
+		{#each phaseOrder as step, index (step)}
 			{@const stepNumber = index + 1}
 			{@const isCurrent = stepNumber === currentStep}
 			{@const isComplete = stepNumber < currentStep}
@@ -81,7 +77,7 @@
 	{#if expanded}
 		<div class="mt-5 border-t border-slate-200 pt-5">
 			<ol class="space-y-4">
-				{#each phaseOrder as step, index}
+				{#each phaseOrder as step, index (step)}
 					{@const stepNumber = index + 1}
 					{@const isCurrent = stepNumber === currentStep}
 					{@const isComplete = stepNumber < currentStep}
