@@ -12,7 +12,9 @@
     "check": "nx run-many -t check",
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
-    "graph": "nx graph"
+    "graph": "nx graph",
+    "docker:build": "docker build -t ca-coach .",
+    "docker:check": "docker run --rm --env-file constructional-affection-coach/.env ca-coach"
   },
   "devDependencies": {
     "nx": "23.1.0"
