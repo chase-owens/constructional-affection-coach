@@ -43,7 +43,7 @@
 </svelte:head>
 
 <div class="mx-auto w-full max-w-5xl px-6 py-10">
-	<div class="mb-8 flex items-center justify-between">
+	<div class="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 		<div>
 			<h1 class="text-3xl font-bold text-white">Programs</h1>
 
@@ -52,7 +52,9 @@
 			</h2>
 		</div>
 
-		<a href={resolve("/interview")} class="button-base button-primary"> Start New Interview </a>
+		<a href={resolve("/interview")} class="button-base button-primary text-center sm:shrink-0">
+			Start New Interview
+		</a>
 	</div>
 
 	{#if isLoading}
@@ -90,7 +92,7 @@
 					href={resolve(`/programs/${interview.interviewId}`)}
 					class="block rounded-vintage border border-border bg-white p-6 shadow-soft transition hover:-translate-y-0.5"
 				>
-					<h2 class="text-lg font-semibold text-primary">
+					<h2 class="text-lg font-semibold text-primary sm:line-clamp-4 lg:line-clamp-none">
 						{interview.program?.targetOutcome?.clarifiedOutcome ?? "Constructional Program"}
 					</h2>
 

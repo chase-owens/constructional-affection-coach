@@ -79,7 +79,7 @@
 					<a
 						href={resolve("/programs")}
 						class={[
-							"text-sm font-semibold transition",
+							"hidden text-sm font-semibold transition sm:block",
 							page.url.pathname.startsWith("/programs")
 								? "text-accent"
 								: "text-white/80 hover:text-white"
@@ -150,7 +150,7 @@
 
 		<footer class="border-t border-white/20 px-6 py-12 text-center">
 			<div class="mx-auto max-w-2xl">
-				<p class="text-xs font-bold tracking-[0.3em] text-accent uppercase">Our Mission</p>
+				<p class="eyebrow text-xs font-bold tracking-[0.3em]">Our Mission</p>
 
 				<h2 class="mt-3 font-serif text-2xl text-white">
 					Better lives for dogs and the people who love them.
@@ -162,7 +162,7 @@
 					relationships.
 				</p>
 
-				<div class="mt-7 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-semibold">
+				<div class="mt-7 flex flex-wrap justify-center gap-x-8 gap-y-6 text-sm font-semibold">
 					<a
 						href="https://www.constructionalaffection.com"
 						target="_blank"
@@ -178,7 +178,7 @@
 						rel="noreferrer"
 						class="text-white hover:text-accent"
 					>
-						CAAWT →
+						Constructional Approach to Animal Welfare and Training →
 					</a>
 				</div>
 

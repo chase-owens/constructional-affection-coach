@@ -22,6 +22,7 @@
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
 	import SideBar from "$lib/components/SideBar.svelte";
 	import { auth } from "$lib/auth/auth.svelte";
+	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
@@ -344,15 +345,21 @@
 		<OutOfScopeCard onRestartInterview={handleRestartInterview} />
 	{:else}
 		<div class="grid gap-6 lg:grid-cols-[280px_1fr]">
-			<SideBar
-				{currentPhaseIndex}
-				currentPhaseTitle={phaseTitle[phase]}
-				isInterviewComplete={!!constructionalProgram}
-				areButtonsDisabled={isProcessing || isInitializingInterview}
-				onExitInterview={handleExitInterview}
-				onGenerateMockProgram={generateMockProgram}
-				onRestartInterview={handleRestartInterview}
-			/>
+			<div class="hidden lg:block">
+				<SideBar
+					{currentPhaseIndex}
+					currentPhaseTitle={phaseTitle[phase]}
+					isInterviewComplete={!!constructionalProgram}
+					areButtonsDisabled={isProcessing || isInitializingInterview}
+					onExitInterview={handleExitInterview}
+					onGenerateMockProgram={generateMockProgram}
+					onRestartInterview={handleRestartInterview}
+				/>
+			</div>
+
+			<div class="lg:hidden">
+				<MobileInterviewProgress currentStep={currentPhaseIndex + 1} title={phaseTitle[phase]} />
+			</div>
 
 			{#if constructionalProgram && interviewId}
 				<ProgramReadyView {constructionalProgram} {interviewId} />
@@ -468,6 +475,13 @@
 						</p>
 					{/if}
 				</main>
+				<button
+					class="button-base button-primary lg:hidden"
+					disabled={isProcessing || isInitializingInterview}
+					onclick={handleExitInterview}
+				>
+					Exit Interview
+				</button>
 			{/if}
 		</div>{/if}
 </div>
