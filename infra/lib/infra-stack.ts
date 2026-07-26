@@ -107,18 +107,18 @@ export class InfraStack extends cdk.Stack {
     });
 
     // Create custom domain cert
-    const certificate = acm.Certificate.fromCertificateArn(
-      this,
-      "CaCertificate",
-      "arn:aws:acm:us-east-1:657830185399:certificate/ca385ed8-ffde-4d6c-87cb-fae28af00f6b",
-    );
+    const certificate = new acm.Certificate(this, "CaCertificate", {
+      domainName: "constructionalaffectioncoach.com",
+      subjectAlternativeNames: ["www.constructionalaffectioncoach.com"],
+      validation: acm.CertificateValidation.fromDns(),
+    });
 
     // Create client distribution
     const clientDistribution = new cloudfront.Distribution(
       this,
       "CaDistribution",
       {
-        // certificate,
+        certificate,
         defaultRootObject: "index.html",
         defaultBehavior: {
           origin: origins.S3BucketOrigin.withOriginAccessControl(clientBucket),
@@ -126,7 +126,10 @@ export class InfraStack extends cdk.Stack {
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           functionAssociations: [],
         },
-        // domainNames: ["coach.constructionalaffection.com"],
+        domainNames: [
+          "constructionalaffectioncoach.com",
+          "www.constructionalaffectioncoach.com",
+        ],
         errorResponses: [
           {
             httpStatus: 403,
@@ -275,7 +278,8 @@ export class InfraStack extends cdk.Stack {
       corsPreflight: {
         allowOrigins: [
           "https://d3ih19l4laq6p0.cloudfront.net",
-          "https://coach.constructionalaffection.com",
+          "https://constructionalaffectioncoach.com",
+          "https://www.constructionalaffectioncoach.com",
           "http://localhost:5173",
         ],
         allowMethods: [
