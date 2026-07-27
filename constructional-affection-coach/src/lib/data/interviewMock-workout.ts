@@ -1,8 +1,5 @@
-import type {
-	ConstructionalAssets,
-	InteractionChain,
-	TargetOutcome
-} from "../../../../lambdas/src/schemas";
+import type { TargetOutcome } from "@constructional-affection/domain";
+import type { ConstructionalAssets, InteractionChain } from "../../../../lambdas/src/schemas";
 
 const mockInterview = {
 	targetOutcome: {

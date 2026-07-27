@@ -1,4 +1,4 @@
-import type { TargetOutcome } from "../schemas";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 export const TARGET_OUTCOME_QUESTION =
   "Assuming this process is successful, what would the outcome be?";

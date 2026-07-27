@@ -4,17 +4,14 @@ import type {
 } from "aws-lambda";
 import type OpenAI from "openai";
 
-import type {
-  ConstructionalAssets,
-  InteractionChain,
-  TargetOutcome,
-} from "../schemas";
+import type { ConstructionalAssets, InteractionChain } from "../schemas";
 import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
 import { runTargetOutcomeInterview } from "./target-outcome";
 import { logger } from "../shared/logger";
 import { getOpenAiClient } from "./get-openai-client";
 import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 const lambdaClient = new LambdaClient({});
 

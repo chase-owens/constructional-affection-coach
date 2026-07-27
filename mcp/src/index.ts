@@ -4,6 +4,11 @@ import {
   TARGET_OUTCOME_RESOURCE,
   TARGET_OUTCOME_RESOURCE_URI,
 } from "./resources/target-outcome.js";
+import {
+  EVALUATE_TARGET_OUTCOME_TOOL_NAME,
+  evaluateTargetOutcome,
+  evaluateTargetOutcomeInputSchema,
+} from "./tools/evaluate-target-outcome.js";
 
 const server = new McpServer({
   name: "constructional-affection",
@@ -26,6 +31,28 @@ server.registerResource(
       },
     ],
   }),
+);
+
+server.registerTool(
+  EVALUATE_TARGET_OUTCOME_TOOL_NAME,
+  {
+    title: "Evaluate Target Outcome",
+    description:
+      "Evaluates a Target Outcome against Constructional Affection methodology.",
+    inputSchema: evaluateTargetOutcomeInputSchema,
+  },
+  async (input) => {
+    const result = evaluateTargetOutcome(input);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2),
+        },
+      ],
+    };
+  },
 );
 
 async function main() {

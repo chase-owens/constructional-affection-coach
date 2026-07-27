@@ -1,11 +1,8 @@
 import OpenAI from "openai";
 import { PROGRAM_INITIALIZATION_INSTRUCTIONS } from "./instructions";
-import type {
-  ConstructionalAssets,
-  InteractionChain,
-  TargetOutcome,
-} from "../../../schemas";
+import type { ConstructionalAssets, InteractionChain } from "../../../schemas";
 import { ValidationIssue } from "../../../validation/types";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 type ProgramInitializationInput = {
   targetOutcome: TargetOutcome;

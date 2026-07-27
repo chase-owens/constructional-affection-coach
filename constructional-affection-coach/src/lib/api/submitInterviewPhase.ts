@@ -1,9 +1,6 @@
+import type { TargetOutcome } from "@constructional-affection/domain";
 import type { InterviewPhase } from "../../../../lambdas/src/domain";
-import type {
-	ConstructionalAssets,
-	InteractionChain,
-	TargetOutcome
-} from "../../../../lambdas/src/schemas";
+import type { ConstructionalAssets, InteractionChain } from "../../../../lambdas/src/schemas";
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 
