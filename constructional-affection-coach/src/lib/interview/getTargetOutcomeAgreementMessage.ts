@@ -1,4 +1,4 @@
-import type { TargetOutcome } from "../../../../lambdas/src/schemas";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 export const getTargetOutcomeAgreementMessage = (targetOutcome: TargetOutcome) => ({
 	role: "coach" as const,

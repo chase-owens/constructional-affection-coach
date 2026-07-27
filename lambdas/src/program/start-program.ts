@@ -1,9 +1,5 @@
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import type {
-  ConstructionalAssets,
-  InteractionChain,
-  TargetOutcome,
-} from "../schemas";
+import type { ConstructionalAssets, InteractionChain } from "../schemas";
 import { getOpenAiClient } from "../interview/get-openai-client";
 import { runProgramInitialization } from "../interview/program-initialization";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -14,6 +10,7 @@ import {
 } from "../program/errors";
 import type { ZodError } from "zod";
 import { ValidationIssue } from "../validation/types";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },

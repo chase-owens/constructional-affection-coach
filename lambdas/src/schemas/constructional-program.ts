@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { targetOutcomeSchema } from "./target-outcome";
+import { targetOutcomeSchema } from "@constructional-affection/domain";
 import { constructionalAssetsSchema } from "./constructional-assets";
 import { controlAnalysisSchema } from "./control-analysis";
 import { programPhaseSchema } from "./transfer-step";

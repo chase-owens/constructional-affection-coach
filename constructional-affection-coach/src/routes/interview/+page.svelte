@@ -2,7 +2,6 @@
 	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
 	import type {
 		ConstructionalProgram,
-		TargetOutcome,
 		ConstructionalAssets,
 		InteractionChain
 	} from "../../../../lambdas/src/schemas";
@@ -23,6 +22,7 @@
 	import SideBar from "$lib/components/SideBar.svelte";
 	import { auth } from "$lib/auth/auth.svelte";
 	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
+	import type { TargetOutcome } from "@constructional-affection/domain";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
