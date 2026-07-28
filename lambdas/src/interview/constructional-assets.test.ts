@@ -3,6 +3,10 @@ import type OpenAI from "openai";
 import { z } from "zod";
 import { InterviewPhaseValidationError } from "../program/errors";
 
+import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
+
+const { targetOutcome } = constructionalProgramMock;
+
 const mocks = vi.hoisted(() => ({
   interview: vi.fn(),
 }));
@@ -32,10 +36,14 @@ const validResult = {
   phaseComplete: true as const,
   constructionalAssets: {
     socialReinforcers: {
-      touch: "clearly_reinforcing" as const,
-      talk: "clearly_reinforcing" as const,
-      eyeContact: "unclear" as const,
-      proximity: "unclear" as const,
+      approachesVoluntarily: "yes",
+      evidence: ["She loves being pet, scratched and praised"],
+      reinforcers: {
+        touch: "clearly_reinforcing" as const,
+        talk: "clearly_reinforcing" as const,
+        eyeContact: "unclear" as const,
+        proximity: "unclear" as const,
+      },
     },
     relevantSkills: [
       {
@@ -89,13 +97,21 @@ describe("runConstructionalAssetsInterview", () => {
   it("returns without retrying when the first attempt is valid", async () => {
     mocks.interview.mockResolvedValueOnce(validResult);
 
-    const result = await runConstructionalAssetsInterview(openai, messages);
+    const result = await runConstructionalAssetsInterview(
+      openai,
+      messages,
+      targetOutcome,
+    );
 
     expect(result).toEqual(validResult);
 
     expect(mocks.interview).toHaveBeenCalledOnce();
 
-    expect(mocks.interview).toHaveBeenCalledWith(messages, undefined);
+    expect(mocks.interview).toHaveBeenCalledWith(
+      messages,
+      targetOutcome,
+      undefined,
+    );
   });
 
   it("retries with validation issues when the first attempt fails validation", async () => {
@@ -105,16 +121,25 @@ describe("runConstructionalAssetsInterview", () => {
       .mockRejectedValueOnce(validationError)
       .mockResolvedValueOnce(validResult);
 
-    const result = await runConstructionalAssetsInterview(openai, messages);
+    const result = await runConstructionalAssetsInterview(
+      openai,
+      messages,
+      targetOutcome,
+    );
 
     expect(result).toEqual(validResult);
 
     expect(mocks.interview).toHaveBeenCalledTimes(2);
 
-    expect(mocks.interview.mock.calls[0]).toEqual([messages, undefined]);
+    expect(mocks.interview.mock.calls[0]).toEqual([
+      messages,
+      targetOutcome,
+      undefined,
+    ]);
 
     expect(mocks.interview.mock.calls[1]).toEqual([
       messages,
+      targetOutcome,
       validationError.validationError.issues,
     ]);
   });
@@ -128,13 +153,14 @@ describe("runConstructionalAssetsInterview", () => {
       .mockRejectedValueOnce(secondValidationError);
 
     await expect(
-      runConstructionalAssetsInterview(openai, messages),
+      runConstructionalAssetsInterview(openai, messages, targetOutcome),
     ).rejects.toBe(secondValidationError);
 
     expect(mocks.interview).toHaveBeenCalledTimes(2);
 
     expect(mocks.interview.mock.calls[1]).toEqual([
       messages,
+      targetOutcome,
       firstValidationError.validationError.issues,
     ]);
   });
@@ -145,7 +171,7 @@ describe("runConstructionalAssetsInterview", () => {
     mocks.interview.mockRejectedValueOnce(error);
 
     await expect(
-      runConstructionalAssetsInterview(openai, messages),
+      runConstructionalAssetsInterview(openai, messages, targetOutcome),
     ).rejects.toBe(error);
 
     expect(mocks.interview).toHaveBeenCalledOnce();

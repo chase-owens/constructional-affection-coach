@@ -1,5 +1,6 @@
 import type { TargetOutcome } from "@constructional-affection/domain";
-import type { ConstructionalAssets, InteractionChain } from "../../../../lambdas/src/schemas";
+import type { InteractionChain } from "../../../../lambdas/src/schemas";
+import type { ConstructionalAssets } from "@constructional-affection/domain";
 
 const mockInterview = {
 	targetOutcome: {
@@ -20,10 +21,14 @@ const mockInterview = {
 
 	constructionalAssets: {
 		socialReinforcers: {
-			touch: "clearly_reinforcing",
-			talk: "clearly_reinforcing",
-			eyeContact: "unclear",
-			proximity: "unclear"
+			approachesVoluntarily: "yes",
+			evidence: ["She loves being pet, belly scratches, and being praised"],
+			reinforcers: {
+				eyeContact: "unclear",
+				proximity: "unclear",
+				talk: "clearly_reinforcing",
+				touch: "clearly_reinforcing"
+			}
 		},
 
 		relevantSkills: [

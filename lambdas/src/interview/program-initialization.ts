@@ -1,8 +1,11 @@
 import OpenAI from "openai";
 import { ProgramInitializationController } from "./controllers/program-initialization/program-initialization-controller";
-import type { ConstructionalAssets, InteractionChain } from "../schemas";
+import type { InteractionChain } from "../schemas";
 import type { ValidationIssue } from "../validation/types";
-import type { TargetOutcome } from "@constructional-affection/domain";
+import type {
+  ConstructionalAssets,
+  TargetOutcome,
+} from "@constructional-affection/domain";
 
 export const runProgramInitialization = async (
   openai: OpenAI,

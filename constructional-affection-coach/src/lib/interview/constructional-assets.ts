@@ -1,2 +1,5 @@
-export const startConstructionalAssetsPhase = () =>
-	"We've identified what we'd like your dog to be doing instead. Does your dog ever do those things already, even in different situations?";
+import type { TargetOutcome } from "@constructional-affection/domain";
+
+export const startConstructionalAssetsPhase = (targetOutcome: TargetOutcome) =>
+	`You said you'd like to see ${targetOutcome.clarifiedOutcome.toLowerCase()}.
+Does your dog already do any part of that, even in a different situation?`;

@@ -5,14 +5,11 @@
 	import ProgramInitializationCard from "$lib/components/ProgramInitializationCard.svelte";
 	import TargetOutcomeSummaryCard from "$lib/components/TargetOutcomeSummaryCard.svelte";
 	import { onMount } from "svelte";
-	import type {
-		ConstructionalAssets,
-		ConstructionalProgram
-	} from "../../../../../lambdas/src/schemas";
 	import { PUBLIC_MOCK_INTERVIEW_ID, PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
 	import Download from "$lib/assets/icons/Download.svelte";
 	import { handleDownload } from "$lib/interview/downloadProgramPdf";
-	import type { TargetOutcome } from "@constructional-affection/domain";
+	import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
+	import type { ConstructionalProgram } from "../../../../../lambdas/src/schemas";
 
 	let interviewId = $derived(
 		PUBLIC_USE_COMPLETED_MOCK === "true" ? PUBLIC_MOCK_INTERVIEW_ID : page.params.interviewId

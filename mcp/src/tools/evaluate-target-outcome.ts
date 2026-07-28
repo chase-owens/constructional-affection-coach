@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { targetOutcomeSchema } from "@constructional-affection/domain";
+import {
+  targetOutcomeSchema,
+  type EvaluationResult,
+} from "@constructional-affection/domain";
 
 const NON_OBSERVABLE_TERMS = [
   "understand",
@@ -24,7 +27,7 @@ export type EvaluateTargetOutcomeInput = z.infer<
 
 export const evaluateTargetOutcome = ({
   targetOutcome,
-}: EvaluateTargetOutcomeInput) => {
+}: EvaluateTargetOutcomeInput): EvaluationResult => {
   const issues: string[] = [];
 
   if (targetOutcome.scope === "outside_constructional_affection") {

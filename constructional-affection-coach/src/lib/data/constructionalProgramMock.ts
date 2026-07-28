@@ -19,10 +19,14 @@ export const constructionalProgramMock: ConstructionalProgram = {
 			}
 		],
 		socialReinforcers: {
-			eyeContact: "unclear",
-			proximity: "unclear",
-			talk: "clearly_reinforcing",
-			touch: "clearly_reinforcing"
+			approachesVoluntarily: "yes",
+			evidence: ["She loves being pet, belly scratches, and being praised"],
+			reinforcers: {
+				eyeContact: "unclear",
+				proximity: "unclear",
+				talk: "clearly_reinforcing",
+				touch: "clearly_reinforcing"
+			}
 		}
 	},
 	controlAnalysis: {

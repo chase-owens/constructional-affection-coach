@@ -9,22 +9,26 @@ export const reinforcerStatusSchema = z.enum([
 ]);
 
 export const socialReinforcersSchema = z.object({
-  touch: reinforcerStatusSchema,
-  talk: reinforcerStatusSchema,
-  eyeContact: reinforcerStatusSchema,
-  proximity: reinforcerStatusSchema,
+  approachesVoluntarily: z.enum(["yes", "no"]),
+  evidence: z.array(z.string().trim()),
+  reinforcers: z.object({
+    touch: reinforcerStatusSchema,
+    talk: reinforcerStatusSchema,
+    eyeContact: reinforcerStatusSchema,
+    proximity: reinforcerStatusSchema,
+  }),
 });
 
 export const relevantSkillSchema = z.object({
-  name: z.string(),
-  context: z.string().optional(),
-  notes: z.string().optional(),
+  name: z.string().trim().min(1),
+  context: z.string().trim().min(1).optional(),
+  notes: z.string().trim().min(1).optional(),
 });
 
 export const relevantConditionSchema = z.object({
-  description: z.string(),
-  behaviorObserved: z.string(),
-  notes: z.string().optional(),
+  description: z.string().trim().min(1),
+  behaviorObserved: z.string().trim().min(1),
+  notes: z.string().trim().min(1).optional(),
 });
 
 export const constructionalAssetsSchema = z.object({
@@ -62,10 +66,14 @@ export type ConstructionalAssetsPhaseResult = z.infer<
 
 export const DEFAULT_CONSTRUCTIONAL_ASSETS: ConstructionalAssets = {
   socialReinforcers: {
-    touch: "unclear",
-    talk: "unclear",
-    eyeContact: "unclear",
-    proximity: "unclear",
+    approachesVoluntarily: "yes",
+    evidence: [],
+    reinforcers: {
+      touch: "unclear",
+      talk: "unclear",
+      eyeContact: "unclear",
+      proximity: "unclear",
+    },
   },
   relevantSkills: [],
   conditionsWhereTargetPatternOccurs: [],

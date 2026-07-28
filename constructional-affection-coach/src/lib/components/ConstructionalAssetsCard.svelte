@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ConstructionalAssets, ReinforcerStatus } from "../../../../lambdas/src/schemas";
+	import type { ConstructionalAssets, ReinforcerStatus } from "@constructional-affection/domain";
 
 	const { constructionalAssets }: { constructionalAssets: ConstructionalAssets } = $props();
 
@@ -19,13 +19,21 @@
 		<div>
 			<h3 class="font-bold">Relevant Reinforcers</h3>
 			<ul class="mt-2 space-y-1 text-sm text-muted-dark">
-				<li>Touch: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.touch]}</li>
-				<li>Talk: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.talk]}</li>
 				<li>
-					Eye contact: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.eyeContact]}
+					Touch: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.reinforcers.touch]}
 				</li>
 				<li>
-					Closeness: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.proximity]}
+					Talk: {reinforcerStatusTitle[constructionalAssets.socialReinforcers.reinforcers.talk]}
+				</li>
+				<li>
+					Eye contact: {reinforcerStatusTitle[
+						constructionalAssets.socialReinforcers.reinforcers.eyeContact
+					]}
+				</li>
+				<li>
+					Closeness: {reinforcerStatusTitle[
+						constructionalAssets.socialReinforcers.reinforcers.proximity
+					]}
 				</li>
 			</ul>
 		</div>

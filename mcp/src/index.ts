@@ -9,11 +9,28 @@ import {
   evaluateTargetOutcome,
   evaluateTargetOutcomeInputSchema,
 } from "./tools/evaluate-target-outcome.js";
+import {
+  CONSTRUCTIONAL_ASSETS_RESOURCE,
+  CONSTRUCTIONAL_ASSETS_RESOURCE_URI,
+} from "./resources/constructional-assets.js";
+import {
+  EVALUATE_CONSTRUCTIONAL_ASSETS_TOOL_NAME,
+  evaluateConstructionalAssets,
+  evaluateConstructionalAssetsInputSchema,
+} from "./tools/evaluate-constructional-assets.js";
+import "dotenv/config";
+import OpenAI from "openai";
 
 const server = new McpServer({
   name: "constructional-affection",
   version: "1.0.0",
 });
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Register resources
 server.registerResource(
   "target-outcome",
   TARGET_OUTCOME_RESOURCE_URI,
@@ -30,6 +47,20 @@ server.registerResource(
         text: TARGET_OUTCOME_RESOURCE,
       },
     ],
+  }),
+);
+
+server.registerResource(
+  "constructional-assets",
+  CONSTRUCTIONAL_ASSETS_RESOURCE_URI,
+  {
+    title: "Constructional Affection Constructional Assets",
+    description:
+      "Methodology for identifying Constructional Affection Constructional Assets",
+    mimeType: "text/markdown",
+  },
+  async (uri) => ({
+    contents: [{ uri: uri.href, text: CONSTRUCTIONAL_ASSETS_RESOURCE }],
   }),
 );
 
@@ -51,6 +82,23 @@ server.registerTool(
           text: JSON.stringify(result, null, 2),
         },
       ],
+    };
+  },
+);
+
+server.registerTool(
+  EVALUATE_CONSTRUCTIONAL_ASSETS_TOOL_NAME,
+  {
+    title: "Evaluate Constructional Assets",
+    description:
+      "Evaluates Constructional Assets against Constructional Affection methodology",
+    inputSchema: evaluateConstructionalAssetsInputSchema,
+  },
+  async (input) => {
+    const result = await evaluateConstructionalAssets({ openai, input });
+
+    return {
+      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
     };
   },
 );

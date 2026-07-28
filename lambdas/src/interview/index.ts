@@ -3,8 +3,8 @@ import type {
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
 import type OpenAI from "openai";
-
-import type { ConstructionalAssets, InteractionChain } from "../schemas";
+import type { InteractionChain } from "../schemas";
+import type { ConstructionalAssets } from "@constructional-affection/domain";
 import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
 import { runTargetOutcomeInterview } from "./target-outcome";
@@ -69,7 +69,11 @@ const runInterviewPhase = async (openai: OpenAI, request: InterviewRequest) => {
         );
       }
 
-      return runConstructionalAssetsInterview(openai, request.messages);
+      return runConstructionalAssetsInterview(
+        openai,
+        request.messages,
+        request.targetOutcome,
+      );
     }
 
     case "complete":

@@ -257,17 +257,14 @@ Each program stage includes practical coaching instructions describing exactly:
 
 ### Infrastructure
 
-Planned AWS deployment:
-
 - API Gateway
 - Lambda
 - DynamoDB
 - CloudFront
 - S3
+- Cognito
 
----
-
-## Planned Features
+## Features
 
 ### V1
 
@@ -275,18 +272,21 @@ Planned AWS deployment:
 - AI-generated constructional programs
 - PDF export
 - AWS deployment
+- User accounts
+- Save multiple programs
+
+---
+
+## Planned Features
 
 ### V2
 
-- User accounts
-- Save multiple programs
 - Resume interviews
 - Program execution coaching
 - Session tracking
 - Progress logging
 - Troubleshooting assistant
 - Generalization planning
-- Proofing suggestions
 
 ---
 
@@ -315,13 +315,13 @@ Current version:
 - ✅ Constructional asset discovery
 - ✅ Interaction chain analysis
 - ✅ Program generation
-- 🚧 PDF export
-- 🚧 AWS deployment
-- 🚧 User accounts
-- 🚧 Saved programs
+- ✅ PDF export
+- ✅ AWS deployment
+- ✅ User accounts
+- ✅ Saved programs
 
 ---
 
 ## Author
 
-Built by Chase Hendrix as an exploration of applying AI to Constructional Affection methodology.
+Built by Chase Hendrix as an exploration of applying AI to Constructional Questionnaire inside the scope of the Constructional Affection methodology.
