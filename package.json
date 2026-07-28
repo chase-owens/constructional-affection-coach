@@ -15,10 +15,19 @@
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
     "graph": "nx graph",
+    "mcp:dev": "npm --workspace mcp run dev",
     "docker:build": "docker build -t ca-coach .",
     "docker:check": "docker run --rm --env-file constructional-affection-coach/.env ca-coach"
   },
   "devDependencies": {
-    "nx": "23.1.0"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-svelte": "^3.22.0",
+    "globals": "^17.8.0",
+    "nx": "23.1.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-svelte": "^4.1.1",
+    "typescript-eslint": "^8.65.0"
   }
 }

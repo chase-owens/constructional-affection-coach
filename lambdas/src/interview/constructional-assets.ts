@@ -6,12 +6,14 @@ import {
 } from "./controllers/constructional-assets";
 import type { ValidationIssue } from "../validation/types";
 import { InterviewPhaseValidationError } from "../program/errors";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 const MAX_ATTEMPTS = 2;
 
 export const runConstructionalAssetsInterview = async (
   openai: OpenAI,
   messages: InterviewMessage[],
+  targetOutcome: TargetOutcome,
 ) => {
   const controller = new ConstructionalAssetsController(openai);
 
@@ -19,7 +21,11 @@ export const runConstructionalAssetsInterview = async (
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     try {
-      return await controller.interview(messages, validationIssues);
+      return await controller.interview(
+        messages,
+        targetOutcome,
+        validationIssues,
+      );
     } catch (error) {
       if (!(error instanceof InterviewPhaseValidationError)) {
         throw error;

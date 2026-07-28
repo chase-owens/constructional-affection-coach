@@ -1,8 +1,9 @@
 import OpenAI from "openai";
 import { CONSTRUCTIONAL_ASSETS_INSTRUCTIONS } from "./instructions";
-import { constructionalAssetsPhaseResultSchema } from "../../../schemas";
+import { constructionalAssetsPhaseResultSchema } from "@constructional-affection/domain";
 import type { ValidationIssue } from "../../../validation/types";
 import { InterviewPhaseValidationError } from "../../../program/errors";
+import type { TargetOutcome } from "@constructional-affection/domain";
 
 export type InterviewMessage = {
   role: "coach" | "user";
@@ -25,10 +26,13 @@ or
   "phaseComplete": true,
   "constructionalAssets": {
     "socialReinforcers": {
-      "touch": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",
-      "talk": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",
-      "eyeContact": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",
-      "proximity": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing"
+      "evidence": ["..."],
+      "reinforcers": {
+        "touch": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",
+        "talk": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",
+        "eyeContact": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",
+        "proximity": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing"
+        }
     },
     "relevantSkills": [
       {
@@ -59,20 +63,24 @@ export class ConstructionalAssetsController {
 
   async interview(
     messages: InterviewMessage[],
+    targetOutcome: TargetOutcome,
     validationIssues?: ValidationIssue[],
   ) {
     const correctionMessage = validationIssues?.length
       ? {
           role: "system" as const,
           content: `
-The previous response failed schema validation.
+            The previous response failed schema validation.
 
-Correct these issues:
-${validationIssues
-  .map((issue) => `- ${issue.path.map(String).join(".")}: ${issue.message}`)
-  .join("\n")}
+            Correct these issues:
+            ${validationIssues
+              .map(
+                (issue) =>
+                  `- ${issue.path.map(String).join(".")}: ${issue.message}`,
+              )
+              .join("\n")}
 
-Return only corrected JSON matching the required response shape.
+            Return only corrected JSON matching the required response shape.
         `.trim(),
         }
       : undefined;
@@ -80,9 +88,18 @@ Return only corrected JSON matching the required response shape.
     const response = await this.openai.responses.create({
       model: "gpt-4.1-mini",
       input: [
+        { role: "system" as const, content: constructionalAssetsPrompt },
         {
           role: "system" as const,
-          content: constructionalAssetsPrompt,
+          content: `
+
+          The Target Outcome established in the previous phase is
+
+          ${JSON.stringify(targetOutcome, null, 2)}
+
+          Use this Target Outcome as the reference point when identifying existing behaviors, interaction patterns, and conditions that the program can build from.
+
+        `.trim(),
         },
         ...messages.map((message) => ({
           role:
@@ -108,16 +125,16 @@ Return only corrected JSON matching the required response shape.
         ? parsedJson
         : { ...parsedJson, phaseComplete: false };
 
-    const reuslt =
+    const result =
       constructionalAssetsPhaseResultSchema.safeParse(normalizedJson);
 
-    if (!reuslt.success) {
+    if (!result.success) {
       throw new InterviewPhaseValidationError(
         "constructional_assets",
-        reuslt.error,
+        result.error,
       );
     }
 
-    return reuslt.data;
+    return result.data;
   }
 }

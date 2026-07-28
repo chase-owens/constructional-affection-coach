@@ -1,10 +1,7 @@
 <script lang="ts">
 	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
-	import type {
-		ConstructionalProgram,
-		ConstructionalAssets,
-		InteractionChain
-	} from "../../../../lambdas/src/schemas";
+	import type { ConstructionalProgram, InteractionChain } from "../../../../lambdas/src/schemas";
+	import type { ConstructionalAssets } from "@constructional-affection/domain";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
 	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
 	import { savedProgram } from "$lib/stores/interview-program";
@@ -41,7 +38,7 @@
 			case "constructional_assets":
 				return {
 					role: "coach",
-					content: startConstructionalAssetsPhase()
+					content: startConstructionalAssetsPhase(targetOutcome!)
 				};
 
 			case "program_initialization":
@@ -93,7 +90,7 @@
 			}
 		];
 
-		await initializeProgram();
+		await advanceInterviewPhaseAndCreateProgram();
 	};
 
 	let phase = $state<InterviewPhase>("target_outcome");
@@ -173,7 +170,6 @@
 		isCreatingProgram = false;
 	};
 
-	// initialize interview state on load
 	onMount(async () => {
 		try {
 			if (!auth.isAuthenticated && $savedProgram?.interviewId) {
@@ -215,7 +211,8 @@
 		messages = previousMessage ? [previousMessage, initializer] : [initializer];
 	};
 
-	const initializeProgram = async () => {
+	// this advances and runs each interview phase
+	const advanceInterviewPhaseAndCreateProgram = async () => {
 		const currentInterviewId = interviewId;
 		const now = new Date().toISOString();
 
@@ -270,7 +267,7 @@
 		phase = "program_initialization";
 		hasUserAgreement = true;
 
-		await initializeProgram();
+		await advanceInterviewPhaseAndCreateProgram();
 	};
 
 	const handleKeyDown = async (event: KeyboardEvent) => {

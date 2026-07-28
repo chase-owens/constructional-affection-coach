@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { PROGRAM_INITIALIZATION_INSTRUCTIONS } from "./instructions";
-import type { ConstructionalAssets, InteractionChain } from "../../../schemas";
+import type { InteractionChain } from "../../../schemas";
+import type { ConstructionalAssets } from "@constructional-affection/domain";
 import { ValidationIssue } from "../../../validation/types";
 import type { TargetOutcome } from "@constructional-affection/domain";
 
@@ -34,10 +35,13 @@ Return ONLY valid JSON in this shape:
     },
     "constructionalAssets": {
       "socialReinforcers": {
-        "touch": "unclear",
-        "talk": "unclear",
-        "eyeContact": "unclear",
-        "proximity": "unclear"
+        "evidence": ["..."],
+        "reinforcers": {
+          "touch": "unclear",
+          "talk": "unclear",
+          "eyeContact": "unclear",
+          "proximity": "unclear"
+        }
       },
       "relevantSkills": [],
       "conditionsWhereTargetPatternOccurs": [],
@@ -129,8 +133,6 @@ export class ProgramInitializationController {
   async initialize(
     input: ProgramInitializationInput,
   ): Promise<ProgramInitializationResult> {
-    console.log("THE actual controller top");
-
     const validationFeedback = input.validationIssues?.length
       ? `
           The constructional program built from your previous programInitialization

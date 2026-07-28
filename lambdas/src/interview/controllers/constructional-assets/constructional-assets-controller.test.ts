@@ -4,6 +4,9 @@ import { z } from "zod";
 
 import type { ValidationIssue } from "../../../validation/types";
 import { ConstructionalAssetsController } from "./constructional-assets-controller";
+import { constructionalProgramMock } from "../../../test/fixtures/constructionalProgram.mock";
+
+const { targetOutcome } = constructionalProgramMock;
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(),
@@ -30,10 +33,14 @@ const validCompletedResponse = {
   phaseComplete: true,
   constructionalAssets: {
     socialReinforcers: {
-      touch: "clearly_reinforcing",
-      talk: "clearly_reinforcing",
-      eyeContact: "unclear",
-      proximity: "unclear",
+      approachesVoluntarily: "yes",
+      evidence: ["She loves being pet, scratched and praised"],
+      reinforcers: {
+        touch: "clearly_reinforcing",
+        talk: "clearly_reinforcing",
+        eyeContact: "unclear",
+        proximity: "unclear",
+      },
     },
     relevantSkills: [
       {
@@ -88,7 +95,7 @@ describe("ConstructionalAssetsController", () => {
 
     const controller = new ConstructionalAssetsController(openai);
 
-    const result = await controller.interview(messages);
+    const result = await controller.interview(messages, targetOutcome);
 
     expect(result).toEqual(validCompletedResponse);
     expect(mocks.create).toHaveBeenCalledOnce();
@@ -101,9 +108,13 @@ describe("ConstructionalAssetsController", () => {
         ...validCompletedResponse.constructionalAssets,
         socialReinforcers: {
           ...validCompletedResponse.constructionalAssets.socialReinforcers,
+          reinforcers: {
+            ...validCompletedResponse.constructionalAssets.socialReinforcers
+              .reinforcers,
 
-          // Deliberately violate the schema.
-          touch: "really_likes_it",
+            // Deliberately violate the schema.
+            touch: "really_likes_it",
+          },
         },
       },
     };
@@ -114,7 +125,9 @@ describe("ConstructionalAssetsController", () => {
 
     const controller = new ConstructionalAssetsController(openai);
 
-    await expect(controller.interview(messages)).rejects.toMatchObject({
+    await expect(
+      controller.interview(messages, targetOutcome),
+    ).rejects.toMatchObject({
       name: "InterviewPhaseValidationError",
       code: "INTERVIEW_PHASE_VALIDATION_FAILED",
       phase: "constructional_assets",
@@ -132,7 +145,7 @@ describe("ConstructionalAssetsController", () => {
 
     const controller = new ConstructionalAssetsController(openai);
 
-    await controller.interview(messages, validationIssues);
+    await controller.interview(messages, targetOutcome, validationIssues);
 
     expect(mocks.create).toHaveBeenCalledOnce();
 
