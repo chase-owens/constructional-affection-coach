@@ -20,8 +20,8 @@ export const approximationSchema = z.object({
   }),
 
   recovery: z.object({
-    reduceApproximationTo: z.string().optional(),
-    previousSuccessfulApproximationId: z.string().optional(),
+    reduceApproximationTo: z.string().nullable().optional(),
+    previousSuccessfulApproximationId: z.string().nullable().optional(),
   }),
 });
 
