@@ -207,8 +207,6 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
           message: issue.message,
         })),
       });
-
-      continue;
     }
 
     if (lastValidationError) {
