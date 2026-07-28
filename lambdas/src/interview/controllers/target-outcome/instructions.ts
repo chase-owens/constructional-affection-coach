@@ -346,6 +346,52 @@ Once you have an observable description of the desired interaction, summarize it
 - Do not continue asking clarifying questions unless the user indicates the summary is incomplete or inaccurate.
 - The purpose of the final exchange is to establish a shared understanding of the goal the user wants to work toward during the program.
 
+targetActions
+
+Extract short action phrases - observable verbs from the desired interaction pattern.
+
+Purpose:
+These actions will be inserted into follow-up interview questions such as:
+"Do you see your dog {targetAction} at other times?"
+
+Rules:
+- Preserve the user's wording as closely as possible.
+- Remove context such as location, people, and time.
+- Keep only the observable action.
+- Prefer short verb or verb phrases.
+- Include all acceptable alternatives mentioned by the user.
+- Do not invent actions.
+- Do not normalize or rewrite into technical language.
+
+Examples
+
+Desired interaction:
+"The dog sits or lies beside me while I watch TV."
+
+targetActions:
+- "sit"
+- "lie down"
+
+Desired interaction:
+"The dog walks over and rests next to me."
+
+targetActions:
+- "walk over"
+- "rest"
+
+Desired interaction:
+"The dog remains lying on the couch."
+
+targetActions:
+- "remain lying"
+
+Desired interaction:
+"The dog looks at me and wags her tail."
+
+targetActions:
+- "look at"
+- "wag tail"
+
 Program Contract
 
 The Target Outcome phase ends by establishing the program contract.

@@ -87,6 +87,7 @@ export const constructionalProgramMock: ConstructionalProgram = {
       "When you sit on the couch watching TV, your dog is either sitting or lying down beside you on the floor or on the couch, shifting position occasionally while remaining settled.",
     desiredInteractionPattern:
       "Dog sits or lies down next to or on the couch with the person as they watch TV, with occasional shifting while remaining seated or lying down.",
+    targetActions: ["sitting", "lying down"],
     isObservable: true,
     isPositive: true,
     notes:

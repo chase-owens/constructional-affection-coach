@@ -18,6 +18,7 @@ export type TargetConditions = {
 
 export const DEFAULT_TARGET_OUTCOME: TargetOutcome = {
   rawAnswer: "",
+  targetActions: [""],
   clarifiedOutcome: "",
   desiredInteractionPattern: "",
   primaryContext: null,

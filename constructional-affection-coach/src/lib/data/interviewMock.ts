@@ -4,6 +4,7 @@ import type { ConstructionalAssets } from "@constructional-affection/domain";
 
 const mockInterview = {
 	targetOutcome: {
+		targetActions: ["sitting", "lying down"],
 		rawAnswer:
 			"When I sit on the couch to watch TV, my dog would be sitting or lying down on the floor next to the couch or on the couch with me, allowed to shift positions but not jump on me.",
 		clarifiedOutcome:
