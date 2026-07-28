@@ -4,6 +4,7 @@ export const targetOutcomeSchema = z.object({
   rawAnswer: z.string(),
   clarifiedOutcome: z.string(),
   desiredInteractionPattern: z.string(),
+  targetActions: z.array(z.string()).min(1),
   primaryContext: z.string().nullable(),
   scope: z.enum([
     "within_constructional_affection",

@@ -24,6 +24,7 @@ Return ONLY valid JSON in this shape:
   "constructionalProgram": {
     "schemaVersion": "1.0",
     "targetOutcome": {
+      "targetActions": ["..."]
       "rawAnswer": "...",
       "clarifiedOutcome": "...",
       "desiredInteractionPattern": "...",
@@ -35,6 +36,7 @@ Return ONLY valid JSON in this shape:
     },
     "constructionalAssets": {
       "socialReinforcers": {
+        "approachesVoluntarily: "..."
         "evidence": ["..."],
         "reinforcers": {
           "touch": "unclear",

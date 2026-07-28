@@ -71,6 +71,7 @@ export const constructionalProgramMock: ConstructionalProgram = {
 	},
 	schemaVersion: "1.0",
 	targetOutcome: {
+		targetActions: ["Sit", "Lay down"],
 		clarifiedOutcome:
 			"When you sit on the couch watching TV, your dog is either sitting or lying down beside you on the floor or on the couch, shifting position occasionally while remaining settled.",
 		desiredInteractionPattern:

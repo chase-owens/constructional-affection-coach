@@ -4,6 +4,7 @@ import type { ConstructionalAssets } from "@constructional-affection/domain";
 
 const mockInterview = {
 	targetOutcome: {
+		targetActions: ["sitting", "lying down"],
 		rawAnswer:
 			"I want her to be sitting or lying in her bed a few feet away from me on the floor during my workouts, allowing some movement but no jumping on me, walking on me, or play biting me, especially while I am doing pushups or situps on the floor.",
 		clarifiedOutcome:

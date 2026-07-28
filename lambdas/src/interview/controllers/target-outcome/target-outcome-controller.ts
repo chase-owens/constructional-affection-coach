@@ -33,6 +33,7 @@ or
     "rawAnswer": "...",
     "clarifiedOutcome": "...",
     "desiredInteractionPattern": "...",
+    "targetActions: ["..."],
     "primaryContext": "... or null",
     "scope": "within_constructional_affection",
     "isPositive": true,

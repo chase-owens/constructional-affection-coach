@@ -32,6 +32,7 @@ const validCompletedResponse = {
   coachMessage: "Great, that gives us a clear target.",
   phaseComplete: true,
   targetOutcome: {
+    targetActions: ["sitting", "lying down"],
     rawAnswer: "I want my dog calm while I sit on the couch.",
     clarifiedOutcome:
       "The dog sits or lies calmly while the person sits on the couch.",
