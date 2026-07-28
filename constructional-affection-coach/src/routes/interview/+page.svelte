@@ -192,7 +192,14 @@
 			targetOutcome = result.targetOutcome;
 			isOutOfCaScope = result.targetOutcome.scope !== "within_constructional_affection";
 		}
-		if (result.constructionalAssets) constructionalAssets = result.constructionalAssets;
+		if (result.constructionalAssets) {
+			isOutOfCaScope =
+				result.constructionalAssets.socialReinforcers.approachesVoluntarily === "no" ||
+				result.constructionalAssets.socialReinforcers.reinforcers.touch === "not_reinforcing" ||
+				result.constructionalAssets.socialReinforcers.reinforcers.proximity === "not_reinforcing";
+
+			constructionalAssets = result.constructionalAssets;
+		}
 		if (result.interactionChain) interactionChain = result.interactionChain;
 		if (result.constructionalProgram) constructionalProgram = result.constructionalProgram;
 
