@@ -113,23 +113,23 @@
 									onclick={logout}
 									class="block w-full rounded-lg px-4 text-left text-sm font-semibold text-primary transition hover:bg-secondary-soft"
 								>
-									Sign out
+									Sign Out
 								</button>
 							{:else}
 								<a
 									href={resolve("/login")}
 									onclick={() => (isAccountMenuOpen = false)}
-									class="block rounded-lg px-4 text-sm font-semibold text-primary transition hover:bg-secondary-soft hover:text-primary"
+									class="block rounded-lg px-4 text-sm font-semibold whitespace-nowrap text-primary transition hover:bg-secondary-soft hover:text-primary"
 								>
-									Log in
+									Log In
 								</a>
 
 								<a
 									href={resolve("/signup")}
 									onclick={() => (isAccountMenuOpen = false)}
-									class="block rounded-lg px-4 text-sm font-semibold text-primary transition hover:bg-secondary-soft hover:text-primary"
+									class="block rounded-lg px-4 text-sm font-semibold whitespace-nowrap text-primary transition hover:bg-secondary-soft hover:text-primary"
 								>
-									Sign up
+									Sign Up
 								</a>
 							{/if}
 						</div>
