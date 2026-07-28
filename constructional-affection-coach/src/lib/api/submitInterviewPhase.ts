@@ -1,8 +1,9 @@
 import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
 import type { InterviewPhase } from "../../../../lambdas/src/domain";
 import type { InteractionChain } from "../../../../lambdas/src/schemas";
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
 
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
+const API_BASE_URL = PUBLIC_API_BASE_URL;
 
 type Message = {
 	role: "coach" | "user";
