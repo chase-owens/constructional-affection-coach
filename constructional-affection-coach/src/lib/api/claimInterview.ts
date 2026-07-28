@@ -1,6 +1,7 @@
 import { fetchAuthSession } from "aws-amplify/auth";
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
 
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
+const API_BASE_URL = PUBLIC_API_BASE_URL;
 
 type ClaimInterviewResponse = {
 	interviewId: string;
