@@ -1,25 +1,27 @@
 <script lang="ts">
-	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
-	import type { ConstructionalProgram, InteractionChain } from "../../../../lambdas/src/schemas";
+	import type { InterviewPhase, TargetOutcome } from "@constructional-affection/domain";
 	import { type ConstructionalAssets } from "@constructional-affection/domain";
-	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
-	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
-	import { savedProgram } from "$lib/stores/interview-program";
-	import mockInterview from "$lib/data/interviewMock-workout";
-	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
-	import { interviewClient } from "$lib/api/interviewClient";
+
+	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
+	import { interviewClient } from "$lib/api/interviewClient";
+	import { auth } from "$lib/auth/auth.svelte";
+	import ErrorCard from "$lib/components/ErrorCard.svelte";
+	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
+	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
+	import SideBar from "$lib/components/SideBar.svelte";
+	import mockInterview from "$lib/data/interviewMock-workout";
+	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
+	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
+	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
+	import { getPhaseIndex } from "$lib/interview/getPhaseIndex";
 	import { getTargetOutcomeAgreementMessage } from "$lib/interview/getTargetOutcomeAgreementMessage";
 	import type { InterviewIdType, InterviewResponse, Message } from "$lib/interview/types";
-	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
-	import { getPhaseIndex } from "$lib/interview/getPhaseIndex";
+	import { savedProgram } from "$lib/stores/interview-program";
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
-	import SideBar from "$lib/components/SideBar.svelte";
-	import { auth } from "$lib/auth/auth.svelte";
-	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
-	import type { InterviewPhase, TargetOutcome } from "@constructional-affection/domain";
-	import ErrorCard from "$lib/components/ErrorCard.svelte";
+
+	import type { ConstructionalProgram, InteractionChain } from "../../../../lambdas/src/schemas";
 
 	const getPhaseInitializer = (
 		phase: Exclude<InterviewPhase, "revise_target_outcome">

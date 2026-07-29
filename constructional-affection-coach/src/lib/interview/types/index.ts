@@ -1,5 +1,6 @@
-import type { ConstructionalProgram, InteractionChain } from "../../../../../lambdas/src/schemas";
 import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
+
+import type { ConstructionalProgram, InteractionChain } from "../../../../../lambdas/src/schemas";
 
 export type InterviewIdType = `${string}-${string}-${string}-${string}-${string}`;
 

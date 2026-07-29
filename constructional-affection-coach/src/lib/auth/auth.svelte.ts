@@ -1,4 +1,5 @@
 import { getCurrentUser } from "aws-amplify/auth";
+
 import { configureAmplify } from "./amplify";
 
 type CurrentUser = Awaited<ReturnType<typeof getCurrentUser>>;

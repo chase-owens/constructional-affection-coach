@@ -1,14 +1,16 @@
 <script lang="ts">
 	import "../app.css";
-	import { resolve } from "$app/paths";
+
+	import { signOut } from "aws-amplify/auth";
+	import { onMount } from "svelte";
+
 	import { browser } from "$app/environment";
+	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
+	import { page } from "$app/state";
+	import User from "$lib/assets/icons/User.svelte";
 	import { configureAmplify } from "$lib/auth/amplify";
 	import { auth } from "$lib/auth/auth.svelte";
-	import { signOut } from "aws-amplify/auth";
-	import { goto } from "$app/navigation";
-	import User from "$lib/assets/icons/User.svelte";
-	import { onMount } from "svelte";
-	import { page } from "$app/state";
 
 	const { children } = $props();
 

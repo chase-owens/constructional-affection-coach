@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
+	import { onMount } from "svelte";
+
 	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
-	import { onMount } from "svelte";
-	import { confirmSignUp, resendSignUpCode } from "aws-amplify/auth";
 
 	let email = $state("");
 	let confirmationCode = $state("");

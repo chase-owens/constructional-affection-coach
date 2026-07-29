@@ -1,4 +1,5 @@
 import { Amplify } from "aws-amplify";
+
 import { PUBLIC_COGNITO_CLIENT_ID, PUBLIC_COGNITO_USER_POOL_ID } from "$env/static/public";
 
 let isConfigured = false;

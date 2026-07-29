@@ -1,14 +1,16 @@
 <script lang="ts">
+	import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
+	import { onMount } from "svelte";
+
 	import { page } from "$app/state";
+	import { PUBLIC_MOCK_INTERVIEW_ID, PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
 	import { interviewClient } from "$lib/api/interviewClient";
+	import Download from "$lib/assets/icons/Download.svelte";
 	import ConstructionalAssetsCard from "$lib/components/ConstructionalAssetsCard.svelte";
 	import ProgramInitializationCard from "$lib/components/ProgramInitializationCard.svelte";
 	import TargetOutcomeSummaryCard from "$lib/components/TargetOutcomeSummaryCard.svelte";
-	import { onMount } from "svelte";
-	import { PUBLIC_MOCK_INTERVIEW_ID, PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
-	import Download from "$lib/assets/icons/Download.svelte";
 	import { handleDownload } from "$lib/interview/downloadProgramPdf";
-	import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
+
 	import type { ConstructionalProgram } from "../../../../../lambdas/src/schemas";
 
 	let interviewId = $derived(
