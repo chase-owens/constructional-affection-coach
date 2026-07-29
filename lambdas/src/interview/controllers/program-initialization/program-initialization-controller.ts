@@ -36,7 +36,7 @@ Return ONLY valid JSON in this shape:
     },
     "constructionalAssets": {
       "socialReinforcers": {
-        "approachesVoluntarily: "..."
+        "approachesVoluntarily: "yes"
         "evidence": ["..."],
         "reinforcers": {
           "touch": "unclear",

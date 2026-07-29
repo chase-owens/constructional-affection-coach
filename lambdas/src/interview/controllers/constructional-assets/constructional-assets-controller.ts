@@ -26,6 +26,7 @@ or
   "phaseComplete": true,
   "constructionalAssets": {
     "socialReinforcers": {
+      "approachesVoluntarily": "yes | no",
       "evidence": ["..."],
       "reinforcers": {
         "touch": "clearly_reinforcing | sometimes_reinforcing | unclear | not_reinforcing | over_arousing",

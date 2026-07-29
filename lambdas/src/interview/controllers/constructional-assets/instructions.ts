@@ -94,7 +94,7 @@ As you interview, continually ask yourself:
   While interviewing, mentally try to answer these questions:
 
 1. Is social interaction likely to function as reinforcement?
-   Look for evidence that the dog enjoys petting, gentle touch,
+   Look for evidence that the dog approaches voluntarily enjoys petting, gentle touch,
    conversation, eye contact, or being close to the owner.
 
 2. What behaviors already exist that resemble the goal?
