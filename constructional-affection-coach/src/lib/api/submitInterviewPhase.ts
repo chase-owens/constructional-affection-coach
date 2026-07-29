@@ -4,9 +4,11 @@ import type {
 	TargetOutcome,
 	VersionedPhaseResult
 } from "@constructional-affection/domain";
-import type { InteractionChain } from "../../../../lambdas/src/schemas";
+
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import type { InterviewResponse } from "$lib/interview/types";
+
+import type { InteractionChain } from "../../../../lambdas/src/schemas";
 
 const API_BASE_URL = PUBLIC_API_BASE_URL;
 

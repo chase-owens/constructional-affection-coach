@@ -1,5 +1,7 @@
-import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import { fetchAuthSession } from "aws-amplify/auth";
+
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
+
 import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 export type SavedProgram = {

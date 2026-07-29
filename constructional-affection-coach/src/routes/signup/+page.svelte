@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { signUp } from "aws-amplify/auth";
+	import { onMount } from "svelte";
+
 	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
 	import { auth } from "$lib/auth/auth.svelte";
-	import { signUp } from "aws-amplify/auth";
-	import { onMount } from "svelte";
 
 	let username = $state("");
 	let email = $state("");

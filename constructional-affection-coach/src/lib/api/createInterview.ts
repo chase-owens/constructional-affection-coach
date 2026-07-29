@@ -1,5 +1,7 @@
-import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import { error } from "@sveltejs/kit";
+
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
+
 import type { CreateInterviewPayload } from "../../../../lambdas/src/interview/create-interview";
 
 export const createInterviewRecord = async (interview: CreateInterviewPayload) => {

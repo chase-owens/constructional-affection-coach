@@ -1,8 +1,11 @@
-import prettier from "eslint-config-prettier";
 import path from "node:path";
+
 import js from "@eslint/js";
-import svelte from "eslint-plugin-svelte";
 import { defineConfig, includeIgnoreFile } from "eslint/config";
+import prettier from "eslint-config-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import svelte from "eslint-plugin-svelte";
+import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import ts from "typescript-eslint";
 
@@ -16,10 +19,36 @@ export default defineConfig(
 	prettier,
 	svelte.configs.prettier,
 	{
-		languageOptions: { globals: { ...globals.browser, ...globals.node } },
+		languageOptions: {
+			globals: {
+				...globals.browser,
+				...globals.node
+			}
+		},
+		plugins: {
+			"simple-import-sort": simpleImportSort,
+			"unused-imports": unusedImports
+		},
 		rules: {
-			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
-			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
+			// Let eslint-plugin-unused-imports handle unused variables and imports.
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": "off",
+			"unused-imports/no-unused-imports": "error",
+			"unused-imports/no-unused-vars": [
+				"warn",
+				{
+					args: "after-used",
+					argsIgnorePattern: "^_",
+					vars: "all",
+					varsIgnorePattern: "^_"
+				}
+			],
+
+			// Group and alphabetize imports and exports.
+			"simple-import-sort/imports": "error",
+			"simple-import-sort/exports": "error",
+
+			// TypeScript provides no-undef checking.
 			"no-undef": "off"
 		}
 	},
@@ -34,8 +63,7 @@ export default defineConfig(
 		}
 	},
 	{
-		// Override or add rule settings here, such as:
-		// 'svelte/button-has-type': 'error'
+		// Override or add rule settings here.
 		rules: {}
 	}
 );
