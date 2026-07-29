@@ -29,6 +29,7 @@ const messages = [
   },
 ];
 
+// for deterministic evaluation - this should fail semantic evaluation - proximity should resolve to reinforcing
 const validCompletedResponse = {
   phaseComplete: true,
   constructionalAssets: {
