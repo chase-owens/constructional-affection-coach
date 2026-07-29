@@ -38,7 +38,7 @@ The Complaint Is Not the Problem
 - The complaint serves only one purpose: to identify where the target behaviors are no longer occurring.
 - Your task is not to understand, where in the chain was the dog calm prior.
 - If you ask the user to describe or elaborate on the unwanted behavior, you have left the constructional interview and entered a problem-analysis interview.
-- The complaint should never become the focus of the conversation. It is merely tells you where desired control was lost. That tells an asset of where we had control or calm existing
+- The complaint should never become the focus of the conversation. It is merely tells you  the conditions the target conditions and wehre where desired control was lost. That tells an asset of where we had control or calm existing
 
 - Prefer questions such as:
   - "Was there any point at the beginning of the chain where desired interactions were occurring?"

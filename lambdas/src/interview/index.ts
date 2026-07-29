@@ -4,14 +4,27 @@ import type {
 } from "aws-lambda";
 import type OpenAI from "openai";
 import type { InteractionChain } from "../schemas";
-import type { ConstructionalAssets } from "@constructional-affection/domain";
+import {
+  CONSTRUCTIONAL_ASSETS_BASELINE,
+  INTERACTION_CHAIN_BASELINE,
+  isRunnableInterviewPhase,
+  PROGRAM_INITIALIZATION_BASELINE,
+  TARGET_OUTCOME_BASELINE,
+  type ConstructionalAssets,
+} from "@constructional-affection/domain";
 import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
 import { runTargetOutcomeInterview } from "./target-outcome";
 import { logger } from "../shared/logger";
 import { getOpenAiClient } from "./get-openai-client";
 import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
-import type { TargetOutcome } from "@constructional-affection/domain";
+import type {
+  InterviewPhase,
+  PhaseVersionMetadata,
+  TargetOutcome,
+} from "@constructional-affection/domain";
+
+//ORCHESTRATION LAYER
 
 const lambdaClient = new LambdaClient({});
 
@@ -19,13 +32,6 @@ type InterviewMessage = {
   role: "coach" | "user";
   content: string;
 };
-
-type InterviewPhase =
-  | "target_outcome"
-  | "interaction_chain"
-  | "constructional_assets"
-  | "program_initialization"
-  | "complete";
 
 type InterviewRequest = {
   interviewId: `${string}-${string}-${string}-${string}-${string}`;
@@ -35,6 +41,11 @@ type InterviewRequest = {
   constructionalAssets?: ConstructionalAssets | null;
   interactionChain?: InteractionChain | null;
 };
+
+export type RunnableInterviewPhase = Exclude<
+  InterviewPhase,
+  "revise_target_outcome" | "complete"
+>;
 
 const jsonResponse = (
   statusCode: number,
@@ -47,10 +58,16 @@ const jsonResponse = (
   body: JSON.stringify(body),
 });
 
-const runInterviewPhase = async (openai: OpenAI, request: InterviewRequest) => {
+const runInterviewPhase = async (
+  openai: OpenAI,
+  request: InterviewRequest,
+  metadata: PhaseVersionMetadata,
+) => {
   switch (request.phase) {
     case "target_outcome":
-      return runTargetOutcomeInterview(openai, request.messages);
+      const result = await runTargetOutcomeInterview(openai, request.messages);
+
+      return { metadata, result };
 
     case "interaction_chain": {
       if (!request.targetOutcome) {
@@ -59,7 +76,12 @@ const runInterviewPhase = async (openai: OpenAI, request: InterviewRequest) => {
         );
       }
 
-      return runInteractionChainInterview(openai, request.messages);
+      const result = await runInteractionChainInterview(
+        openai,
+        request.messages,
+      );
+
+      return { metadata, result };
     }
 
     case "constructional_assets": {
@@ -69,18 +91,30 @@ const runInterviewPhase = async (openai: OpenAI, request: InterviewRequest) => {
         );
       }
 
-      return runConstructionalAssetsInterview(
+      const result = await runConstructionalAssetsInterview(
         openai,
         request.messages,
         request.targetOutcome,
       );
-    }
 
-    case "complete":
-      return {
-        phaseComplete: true,
-        coachMessage: "Your starting program is complete.",
-      };
+      return { metadata, result };
+    }
+  }
+};
+
+const getPhaseMetadata = (phase: RunnableInterviewPhase) => {
+  switch (phase) {
+    case "target_outcome":
+      return TARGET_OUTCOME_BASELINE;
+
+    case "interaction_chain":
+      return INTERACTION_CHAIN_BASELINE;
+
+    case "constructional_assets":
+      return CONSTRUCTIONAL_ASSETS_BASELINE;
+
+    case "program_initialization":
+      return PROGRAM_INITIALIZATION_BASELINE;
   }
 };
 
@@ -89,10 +123,10 @@ export const handler = async (
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   const requestId = event.requestContext.requestId;
   const startedAt = Date.now();
+  const interviewId = event.pathParameters?.interviewId;
+  let selectedMetadata: ReturnType<typeof getPhaseMetadata> | undefined;
 
   try {
-    const interviewId = event.pathParameters?.interviewId;
-
     if (!interviewId) {
       return jsonResponse(400, {
         message: "interviewId is required",
@@ -107,7 +141,7 @@ export const handler = async (
 
     const request = JSON.parse(event.body) as InterviewRequest;
 
-    if (!request.phase) {
+    if (!isRunnableInterviewPhase(request.phase)) {
       return jsonResponse(400, {
         error: "phase is required.",
       });
@@ -118,6 +152,8 @@ export const handler = async (
         error: "messages must be an array.",
       });
     }
+
+    selectedMetadata = getPhaseMetadata(request.phase);
 
     if (request.phase === "program_initialization") {
       if (
@@ -144,6 +180,7 @@ export const handler = async (
           Payload: Buffer.from(
             JSON.stringify({
               interviewId,
+              metadata: selectedMetadata,
               targetOutcome: request.targetOutcome,
               constructionalAssets: request.constructionalAssets,
               interactionChain: request.interactionChain,
@@ -154,31 +191,59 @@ export const handler = async (
 
       logger.info("program.worker.invoked", {
         requestId,
+        ...selectedMetadata,
         interviewId,
       });
 
       return jsonResponse(202, {
         interviewId,
+        ...selectedMetadata,
         status: "pending",
       });
     }
 
+    const runnablePhases: readonly RunnableInterviewPhase[] = [
+      "target_outcome",
+      "interaction_chain",
+      "constructional_assets",
+    ];
+
+    if (!runnablePhases.includes(request.phase as RunnableInterviewPhase)) {
+      return jsonResponse(400, {
+        error: `Unsupported interview phase: ${request.phase}`,
+      });
+    }
+
     const openai = await getOpenAiClient();
-    const result = await runInterviewPhase(openai, request);
+    const phaseResult = await runInterviewPhase(
+      openai,
+      request,
+      selectedMetadata,
+    );
 
-    logger.info("interview.request.completed", {
-      requestId,
-      interviewId,
-      phase: request.phase,
-      phaseComplete: result?.phaseComplete ?? false,
-    });
+    if (phaseResult?.result) {
+      logger.info("interview.request.completed", {
+        requestId,
+        interviewId,
+        ...selectedMetadata,
+        phaseComplete: phaseResult.result.phaseComplete ?? false,
+      });
+    } else {
+      logger.info("interview.request.completed", {
+        requestId,
+        interviewId,
+        ...selectedMetadata,
+        phaseComplete: false,
+      });
+    }
 
-    return jsonResponse(200, result);
+    return jsonResponse(200, phaseResult);
   } catch (error) {
     logger.error("interview.request.failed", {
       requestId,
       durationMs: Date.now() - startedAt,
       errorName: error instanceof Error ? error.name : "unknown error",
+      ...selectedMetadata,
     });
     console.error("Interview Lambda failed:", error);
 

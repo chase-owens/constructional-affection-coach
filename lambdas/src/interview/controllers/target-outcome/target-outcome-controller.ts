@@ -1,6 +1,9 @@
 import OpenAI from "openai";
 import { TARGET_OUTCOME_INSTRUCTIONS } from "./instructions";
-import { targetOutcomePhaseResultSchema } from "@constructional-affection/domain";
+import {
+  PhaseVersionMetadata,
+  targetOutcomePhaseResultSchema,
+} from "@constructional-affection/domain";
 import { InterviewPhaseValidationError } from "../../../program/errors";
 import type { ValidationIssue } from "../../../validation/types";
 export type InterviewMessage = {

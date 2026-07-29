@@ -1,1 +1,1 @@
-export * from './target-outcome-controller';
+export * from "./target-outcome-controller";

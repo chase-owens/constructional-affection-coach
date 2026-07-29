@@ -1,1 +1,1 @@
-export * from './constructional-assets-controller';
+export * from "./constructional-assets-controller";

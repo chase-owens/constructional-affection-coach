@@ -1,4 +1,4 @@
-import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
 import jsonResponse from "../../util/jsonResponse";
 import { APIGatewayProxyEventV2 } from "aws-lambda";

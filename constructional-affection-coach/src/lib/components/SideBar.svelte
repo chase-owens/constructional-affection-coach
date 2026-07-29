@@ -19,6 +19,8 @@
 		onRestartInterview: () => void;
 	} = $props();
 
+	const filteredPhases = phaseOrder.filter((phase) => phase !== "revise_target_outcome");
+
 	const isDev = import.meta.env.DEV;
 </script>
 
@@ -27,7 +29,7 @@
 	<h2 class="mt-2 font-body text-2xl font-bold text-primary">{currentPhaseTitle}</h2>
 
 	<div class="mt-8 space-y-5">
-		{#each phaseOrder as phaseItem, index (phaseItem)}
+		{#each filteredPhases as phaseItem, index (phaseItem)}
 			<div class="flex items-center gap-4">
 				<div
 					class={[
