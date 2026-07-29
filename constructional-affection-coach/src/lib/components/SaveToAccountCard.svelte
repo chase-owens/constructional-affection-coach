@@ -1,10 +1,7 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import Checkmark from "$lib/assets/icons/Checkmark.svelte";
 	import CloudUpload from "$lib/assets/icons/CloudUpload.svelte";
-
-	const onCreateAccount = () => {
-		console.log("account created");
-	};
 </script>
 
 <article
@@ -38,12 +35,12 @@
 		</li>
 	</ul>
 
-	<button
+	<a
 		class="button-base button-primary mt-8 w-full cursor-pointer bg-green-800 font-medium text-white"
-		onclick={onCreateAccount}
+		href={resolve("/signup")}
 	>
 		Create Free Account
-	</button>
+	</a>
 
 	<p class="h-20 pt-4 text-center text-xs text-muted">It takes less than a minute.</p>
 </article>
