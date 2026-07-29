@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
+	import { interviewClient } from "$lib/api/interviewClient";
 	import { auth } from "$lib/auth/auth.svelte";
+	import { savedProgram } from "$lib/stores/interview-program";
 	import { signIn } from "aws-amplify/auth";
 	import { onMount } from "svelte";
 
@@ -22,6 +24,12 @@
 
 			if (result.isSignedIn) {
 				await auth.refresh();
+
+				if (auth.user?.userId && $savedProgram?.interviewId) {
+					await interviewClient.claim($savedProgram.interviewId);
+					savedProgram.set(null);
+				}
+
 				await goto(resolve("/programs"));
 			}
 
