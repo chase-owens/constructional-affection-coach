@@ -16,10 +16,6 @@ export const handler = async (event: any) => {
   const requestId = event.requestContext.requestId;
   const startedAt = Date.now();
 
-  // if (event.requestContext?.http?.method === "OPTIONS") {
-  //   return jsonResponse(200, { ok: true });
-  // }
-
   const tableName = process.env.TABLE_NAME;
 
   if (!tableName) {

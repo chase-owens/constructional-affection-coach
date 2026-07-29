@@ -1,7 +1,7 @@
 <script lang="ts">
 	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
 	import type { ConstructionalProgram, InteractionChain } from "../../../../lambdas/src/schemas";
-	import type { ConstructionalAssets } from "@constructional-affection/domain";
+	import { type ConstructionalAssets } from "@constructional-affection/domain";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
 	import { startConstructionalAssetsPhase } from "$lib/interview/constructional-assets";
 	import { savedProgram } from "$lib/stores/interview-program";
@@ -14,15 +14,16 @@
 	import type { InterviewIdType, InterviewResponse, Message } from "$lib/interview/types";
 	import { phaseOrder, phaseTitle } from "$lib/interview/constants";
 	import { getPhaseIndex } from "$lib/interview/getPhaseIndex";
-	import type { InterviewPhase } from "../../../../lambdas/src/domain";
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
 	import SideBar from "$lib/components/SideBar.svelte";
 	import { auth } from "$lib/auth/auth.svelte";
 	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
-	import type { TargetOutcome } from "@constructional-affection/domain";
+	import type { InterviewPhase, TargetOutcome } from "@constructional-affection/domain";
 	import ErrorCard from "$lib/components/ErrorCard.svelte";
 
-	const getPhaseInitializer = (phase: InterviewPhase): Message => {
+	const getPhaseInitializer = (
+		phase: Exclude<InterviewPhase, "revise_target_outcome">
+	): Message => {
 		switch (phase) {
 			case "target_outcome":
 				return {
@@ -53,6 +54,11 @@
 					role: "coach",
 					content: "Way to go"
 				};
+
+			default: {
+				const exhaustiveCheck: never = phase;
+				return exhaustiveCheck;
+			}
 		}
 	};
 
@@ -213,6 +219,12 @@
 
 		phase = nextPhase;
 
+		//TODO: implement revise target outcome phase
+		if (nextPhase === "revise_target_outcome") {
+			console.log("revising target outcome");
+			return;
+		}
+
 		const initializer =
 			nextPhase === "program_initialization" && targetOutcome
 				? getTargetOutcomeAgreementMessage(targetOutcome)
@@ -306,6 +318,10 @@
 
 		isProcessing = true;
 		answer = "";
+
+		if (phase === "complete" || phase === "revise_target_outcome") {
+			throw Error(`Unsupported phase in submit: ${phase}`);
+		}
 
 		const nextMessages = [...messages, { role: "user" as const, content: trimmed }];
 

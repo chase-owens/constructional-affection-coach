@@ -1,7 +1,12 @@
-import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
-import type { InterviewPhase } from "../../../../lambdas/src/domain";
+import type {
+	ConstructionalAssets,
+	RunnableInterviewPhase,
+	TargetOutcome,
+	VersionedPhaseResult
+} from "@constructional-affection/domain";
 import type { InteractionChain } from "../../../../lambdas/src/schemas";
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
+import type { InterviewResponse } from "$lib/interview/types";
 
 const API_BASE_URL = PUBLIC_API_BASE_URL;
 
@@ -11,7 +16,7 @@ type Message = {
 };
 
 export type SubmitInterviewPhaseRequest = {
-	phase: InterviewPhase;
+	phase: RunnableInterviewPhase | "program_initialization";
 	messages?: Message[];
 	targetOutcome?: TargetOutcome | null;
 	constructionalAssets?: ConstructionalAssets | null;
@@ -47,7 +52,9 @@ export const submitInterviewPhase = async (
 		throw new Error("The interview service returned an unexpected response.");
 	}
 
-	const result = (await response.json()) as InterviewPhaseResponse;
+	const phaseResponse = (await response.json()) as VersionedPhaseResult<InterviewResponse>;
+
+	const result = phaseResponse.result;
 
 	if (!response.ok) {
 		throw new Error(

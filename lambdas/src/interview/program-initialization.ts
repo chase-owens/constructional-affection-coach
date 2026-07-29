@@ -6,10 +6,12 @@ import type {
   ConstructionalAssets,
   TargetOutcome,
 } from "@constructional-affection/domain";
+import { ModelId } from "../../../domain/src/evaluation/model-ids";
 
 export const runProgramInitialization = async (
   openai: OpenAI,
   input: {
+    modelId: ModelId;
     targetOutcome: TargetOutcome;
     constructionalAssets: ConstructionalAssets;
     interactionChain: InteractionChain;

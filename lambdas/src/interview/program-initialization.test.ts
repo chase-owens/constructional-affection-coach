@@ -3,6 +3,7 @@ import { runProgramInitialization } from "./program-initialization";
 import type OpenAI from "openai";
 import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
 import { InteractionChain } from "../schemas";
+import { MODEL_IDS } from "../../../domain/src/evaluation/model-ids";
 
 const interactionChain: InteractionChain = {
   steps: [
@@ -55,6 +56,7 @@ describe("runProgramInitialization", () => {
     });
 
     const result = await runProgramInitialization(openai, {
+      modelId: MODEL_IDS.GPT_4_1_MINI,
       targetOutcome: constructionalProgramMock.targetOutcome,
       constructionalAssets: constructionalProgramMock.constructionalAssets,
       interactionChain,
@@ -65,6 +67,7 @@ describe("runProgramInitialization", () => {
     expect(initializeMock).toHaveBeenCalledOnce();
 
     expect(initializeMock).toHaveBeenCalledWith({
+      modelId: MODEL_IDS.GPT_4_1_MINI,
       targetOutcome: constructionalProgramMock.targetOutcome,
       constructionalAssets: constructionalProgramMock.constructionalAssets,
       interactionChain,

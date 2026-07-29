@@ -12,6 +12,7 @@ import type { ZodError } from "zod";
 import { ValidationIssue } from "../validation/types";
 import type {
   ConstructionalAssets,
+  PhaseVersionMetadata,
   TargetOutcome,
 } from "@constructional-affection/domain";
 
@@ -21,6 +22,7 @@ const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
 
 type StartProgramEvent = {
   interviewId: string;
+  metadata: PhaseVersionMetadata;
   targetOutcome: TargetOutcome;
   constructionalAssets: ConstructionalAssets;
   interactionChain: InteractionChain;
@@ -54,7 +56,10 @@ const getTableName = () => {
   return tableName;
 };
 
-const markProcessing = async (interviewId: string) => {
+const markProcessing = async (
+  interviewId: string,
+  metadata: PhaseVersionMetadata,
+) => {
   const now = new Date().toISOString();
 
   await documentClient.send(
@@ -64,12 +69,14 @@ const markProcessing = async (interviewId: string) => {
 
       UpdateExpression: `
         SET #status = :status,
+            programInitializationMetadata = :metadata,
             updatedAt = :updatedAt,
             processingStartedAt = :processingStartedAt
       `,
       ExpressionAttributeNames: { "#status": "status" },
       ExpressionAttributeValues: {
         ":status": "processing",
+        ":metadata": metadata,
         ":updatedAt": now,
         ":processingStartedAt": now,
       },
@@ -77,7 +84,11 @@ const markProcessing = async (interviewId: string) => {
   );
 };
 
-const markComplete = async (interviewId: string, program: unknown) => {
+const markComplete = async (
+  interviewId: string,
+  program: unknown,
+  metadata: PhaseVersionMetadata,
+) => {
   const now = new Date().toISOString();
 
   await documentClient.send(
@@ -87,6 +98,7 @@ const markComplete = async (interviewId: string, program: unknown) => {
       UpdateExpression: `
         SET #status = :status,
             program = :program,
+            programInitializationMetadata = :metadata,
             updatedAt = :updatedAt,
             completedAt = :completedAt
         REMOVE errorCode, failedAt
@@ -99,6 +111,7 @@ const markComplete = async (interviewId: string, program: unknown) => {
       ExpressionAttributeValues: {
         ":status": "complete",
         ":program": program,
+        ":metadata": metadata,
         ":updatedAt": now,
         ":completedAt": now,
       },
@@ -106,7 +119,11 @@ const markComplete = async (interviewId: string, program: unknown) => {
   );
 };
 
-const markFailed = async (interviewId: string, error: unknown) => {
+const markFailed = async (
+  interviewId: string,
+  error: unknown,
+  metadata: PhaseVersionMetadata,
+) => {
   const now = new Date().toISOString();
   const errorCode = getErrorCode(error);
 
@@ -117,6 +134,7 @@ const markFailed = async (interviewId: string, error: unknown) => {
 
       UpdateExpression: `
         SET #status = :status,
+            programInitializationMetadata = :metadata,
             errorCode = :errorCode,
             updatedAt = :updatedAt,
             failedAt = :failedAt
@@ -128,6 +146,7 @@ const markFailed = async (interviewId: string, error: unknown) => {
 
       ExpressionAttributeValues: {
         ":status": "failed",
+        ":metadata": metadata,
         ":errorCode": errorCode,
         ":updatedAt": now,
         ":failedAt": now,
@@ -147,8 +166,13 @@ const markFailed = async (interviewId: string, error: unknown) => {
 };
 
 export const handler = async (event: StartProgramEvent): Promise<void> => {
-  const { interviewId, targetOutcome, constructionalAssets, interactionChain } =
-    event;
+  const {
+    interviewId,
+    metadata,
+    targetOutcome,
+    constructionalAssets,
+    interactionChain,
+  } = event;
 
   if (!interviewId) {
     throw new Error("StartProgramEvent is missing interviewId.");
@@ -156,10 +180,14 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
 
   console.info("program.worker.started", {
     interviewId,
+    ...metadata,
   });
 
   try {
-    await markProcessing(interviewId);
+    if (!metadata) {
+      throw new Error("StartProgramEvent is missing metadata");
+    }
+    await markProcessing(interviewId, metadata);
 
     const openai = await getOpenAiClient();
 
@@ -168,6 +196,7 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
 
     for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt += 1) {
       const result = await runProgramInitialization(openai, {
+        modelId: metadata.modelId,
         targetOutcome,
         constructionalAssets,
         interactionChain,
@@ -185,11 +214,12 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
       );
 
       if (parsedProgram.success) {
-        await markComplete(interviewId, parsedProgram.data);
+        await markComplete(interviewId, parsedProgram.data, metadata);
 
         console.info("program.persistence.completed", {
           interviewId,
           attempt,
+          ...metadata,
         });
 
         return;
@@ -206,6 +236,7 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
           code: issue.code,
           message: issue.message,
         })),
+        ...metadata,
       });
     }
 
@@ -219,10 +250,11 @@ export const handler = async (event: StartProgramEvent): Promise<void> => {
   } catch (err) {
     console.error("Program worker failed", {
       interviewId,
+      ...metadata,
       err,
     });
 
-    await markFailed(interviewId, err);
+    await markFailed(interviewId, err, metadata);
 
     return;
   }
