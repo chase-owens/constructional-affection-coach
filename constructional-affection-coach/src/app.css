@@ -195,3 +195,16 @@
 		margin: 0.5in;
 	}
 }
+
+.error-card {
+	background: white;
+}
+
+@media (max-width: 1024px) {
+	.error-card {
+		background-image: url("/images/wrong-tree-mobile.png");
+		background-repeat: no-repeat;
+		background-position: bottom right;
+		background-size: contain;
+	}
+}
