@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { auth } from "$lib/auth/auth.svelte";
+
 	const steps = [
 		{
 			kicker: "01",
@@ -82,13 +83,13 @@
 		></div>
 	</section>
 
-	<section class="relative z-20 mx-auto -mt-40 max-w-6xl px-6 sm:-mt-40 lg:mt-0 lg:px-10">
+	<section class="relative z-20 mx-auto -mt-40 max-w-6xl px-6 sm:-mt-40 lg:px-10">
 		<div class="rounded-vintage border border-border bg-white p-6 shadow-soft sm:p-8">
 			<div class="flex flex-col gap-5 md:flex-row md:items-center">
 				<div
-					class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary text-3xl text-accent"
+					class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-3 border-primary bg-primary/5"
 				>
-					◎
+					<img src="/images/logo.png" alt="" class="h-10 w-10 object-contain" />
 				</div>
 
 				<div>
