@@ -20,6 +20,7 @@
 	import { auth } from "$lib/auth/auth.svelte";
 	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
 	import type { TargetOutcome } from "@constructional-affection/domain";
+	import ErrorCard from "$lib/components/ErrorCard.svelte";
 
 	const getPhaseInitializer = (phase: InterviewPhase): Message => {
 		switch (phase) {
@@ -105,6 +106,7 @@
 	let isProcessing = $state(false);
 	let isCreatingProgram = $state(false);
 	let isInitializingInterview = $state(true);
+	let error = $state<string | null>("test error");
 
 	let messages = $state<Message[]>([getPhaseInitializer("target_outcome")]);
 	let interviewId = $state<InterviewIdType | null>(null);
@@ -113,6 +115,7 @@
 	const resetInterviewState = () => {
 		savedProgram.set(null);
 
+		error = null;
 		interviewId = null;
 		constructionalProgram = null;
 		phase = "target_outcome";
@@ -345,6 +348,9 @@
 </script>
 
 <div class="mx-auto max-w-7xl">
+	{#if isInitializingInterview}
+		<div class="flex justify-center"><span class="loader"></span></div>
+	{/if}
 	{#if isOutOfCaScope}
 		<OutOfScopeCard onRestartInterview={handleRestartInterview} />
 	{:else}
@@ -365,7 +371,9 @@
 				<MobileInterviewProgress currentStep={currentPhaseIndex + 1} title={phaseTitle[phase]} />
 			</div>
 
-			{#if constructionalProgram && interviewId}
+			{#if error}
+				<ErrorCard message={error} {startNewInterview} />
+			{:else if constructionalProgram && interviewId}
 				<ProgramReadyView {constructionalProgram} {interviewId} />
 			{:else}
 				<main
