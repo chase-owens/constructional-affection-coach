@@ -25,7 +25,7 @@ export const CONSTRUCTIONAL_ASSETS_RESOURCE = `
   - the conditions under which those patterns already occur reliably
   - conditions that may provide a useful starting point for the program
 
-  A single observation may support multiple conclustions. Evidence should be collected to classify volunrary approach and identify social reinforcers.
+  A single observation may support multiple conclusions. Evidence should be collected to classify voluntary approach and identify social reinforcers.
 
   Avoid technical terminology when interviewing the user, including:
 

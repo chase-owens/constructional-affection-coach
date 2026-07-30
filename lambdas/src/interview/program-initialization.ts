@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { ProgramInitializationController } from "./controllers/program-initialization/program-initialization-controller";
-import type { InteractionChain } from "../schemas";
+import type { InteractionChain } from "@constructional-affection/domain";
 import type { ValidationIssue } from "../validation/types";
 import type {
   ConstructionalAssets,

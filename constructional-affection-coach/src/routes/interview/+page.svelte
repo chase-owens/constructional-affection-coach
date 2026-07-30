@@ -1,5 +1,9 @@
 <script lang="ts">
-	import type { InterviewPhase, TargetOutcome } from "@constructional-affection/domain";
+	import type {
+		InteractionChain,
+		InterviewPhase,
+		TargetOutcome
+	} from "@constructional-affection/domain";
 	import { type ConstructionalAssets } from "@constructional-affection/domain";
 	import { onMount } from "svelte";
 
@@ -21,7 +25,7 @@
 	import { savedProgram } from "$lib/stores/interview-program";
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
 
-	import type { ConstructionalProgram, InteractionChain } from "../../../../lambdas/src/schemas";
+	import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 	const getPhaseInitializer = (
 		phase: Exclude<InterviewPhase, "revise_target_outcome">

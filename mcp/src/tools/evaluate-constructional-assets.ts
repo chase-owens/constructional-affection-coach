@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 
 import {
+  CONSTRUCTIONAL_ASSETS_BASELINE,
   constructionalAssetsSchema,
   evaluationResultSchema,
   type EvaluationResult,
@@ -28,7 +29,7 @@ export const evaluateConstructionalAssets = async ({
   input,
 }: ConstructionalAssetsToolProps): Promise<EvaluationResult> => {
   const response = await openai.responses.create({
-    model: "gpt-4.1-mini",
+    model: CONSTRUCTIONAL_ASSETS_BASELINE.modelId,
     input: [
       {
         role: "system",

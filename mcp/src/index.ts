@@ -20,6 +20,10 @@ import {
 } from "./tools/evaluate-constructional-assets.js";
 import "dotenv/config";
 import OpenAI from "openai";
+import {
+  INTERACTION_CHAIN_RESOURCE,
+  INTERACTION_CHAIN_RESOURCE_URI,
+} from "./resources/interaction-chain.js";
 
 const server = new McpServer({
   name: "constructional-affection",
@@ -41,12 +45,7 @@ server.registerResource(
     mimeType: "text/markdown",
   },
   async (uri) => ({
-    contents: [
-      {
-        uri: uri.href,
-        text: TARGET_OUTCOME_RESOURCE,
-      },
-    ],
+    contents: [{ uri: uri.href, text: TARGET_OUTCOME_RESOURCE }],
   }),
 );
 
@@ -61,6 +60,20 @@ server.registerResource(
   },
   async (uri) => ({
     contents: [{ uri: uri.href, text: CONSTRUCTIONAL_ASSETS_RESOURCE }],
+  }),
+);
+
+server.registerResource(
+  "interaction-chain",
+  INTERACTION_CHAIN_RESOURCE_URI,
+  {
+    title: "Constructional Affection Interaction Chain",
+    description:
+      "Methodology for identifying the Interaction Chain for the Target Outcome",
+    mimeType: "text/markdown",
+  },
+  async (uri) => ({
+    contents: [{ uri: uri.href, text: INTERACTION_CHAIN_RESOURCE }],
   }),
 );
 

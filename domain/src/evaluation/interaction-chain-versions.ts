@@ -7,4 +7,5 @@ export const INTERACTION_CHAIN_BASELINE = {
   schemaVersion: "1.0.0",
   experimentId: null,
   modelId: MODEL_IDS.GPT_4_1_MINI,
+  orchestration: "custom",
 } as const satisfies PhaseVersionMetadata;

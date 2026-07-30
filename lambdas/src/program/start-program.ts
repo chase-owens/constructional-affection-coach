@@ -1,5 +1,5 @@
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import type { InteractionChain } from "../schemas";
+import type { InteractionChain } from "@constructional-affection/domain";
 import { getOpenAiClient } from "../interview/get-openai-client";
 import { runProgramInitialization } from "../interview/program-initialization";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";

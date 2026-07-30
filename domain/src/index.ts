@@ -3,6 +3,7 @@ export * from "./schemas/constructional-assets.js";
 export * from "./schemas/interaction-chain.js";
 export * from "./evaluation/evaluation-result.js";
 export * from "./evaluation/phase-version-metadata.js";
+export * from "./evaluation/active-phase-version-metadata.js";
 export * from "./types/phase.js";
 export * from "./evaluation/target-outcome-versions.js";
 export * from "./evaluation/assets-versions.js";

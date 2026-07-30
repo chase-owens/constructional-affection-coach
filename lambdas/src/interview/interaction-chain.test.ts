@@ -14,6 +14,7 @@ vi.mock("./controllers/interaction-chain", () => ({
 }));
 
 import { runInteractionChainInterview } from "./interaction-chain";
+import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
 
 const openai = {} as OpenAI;
 
@@ -84,13 +85,21 @@ describe("runInteractionChainInterview", () => {
   it("returns without retrying when the first attempt is valid", async () => {
     mocks.interview.mockResolvedValueOnce(validResult);
 
-    const result = await runInteractionChainInterview(openai, messages);
+    const result = await runInteractionChainInterview(
+      openai,
+      messages,
+      constructionalProgramMock.targetOutcome,
+    );
 
     expect(result).toEqual(validResult);
 
     expect(mocks.interview).toHaveBeenCalledOnce();
 
-    expect(mocks.interview).toHaveBeenCalledWith(messages, undefined);
+    expect(mocks.interview).toHaveBeenCalledWith(
+      messages,
+      constructionalProgramMock.targetOutcome,
+      undefined,
+    );
   });
 
   it("retries with validation issues when the first attempt fails validation", async () => {
@@ -100,16 +109,25 @@ describe("runInteractionChainInterview", () => {
       .mockRejectedValueOnce(validationError)
       .mockResolvedValueOnce(validResult);
 
-    const result = await runInteractionChainInterview(openai, messages);
+    const result = await runInteractionChainInterview(
+      openai,
+      messages,
+      constructionalProgramMock.targetOutcome,
+    );
 
     expect(result).toEqual(validResult);
 
     expect(mocks.interview).toHaveBeenCalledTimes(2);
 
-    expect(mocks.interview.mock.calls[0]).toEqual([messages, undefined]);
+    expect(mocks.interview.mock.calls[0]).toEqual([
+      messages,
+      constructionalProgramMock.targetOutcome,
+      undefined,
+    ]);
 
     expect(mocks.interview.mock.calls[1]).toEqual([
       messages,
+      constructionalProgramMock.targetOutcome,
       validationError.validationError.issues,
     ]);
   });
@@ -122,14 +140,19 @@ describe("runInteractionChainInterview", () => {
       .mockRejectedValueOnce(firstValidationError)
       .mockRejectedValueOnce(secondValidationError);
 
-    await expect(runInteractionChainInterview(openai, messages)).rejects.toBe(
-      secondValidationError,
-    );
+    await expect(
+      runInteractionChainInterview(
+        openai,
+        messages,
+        constructionalProgramMock.targetOutcome,
+      ),
+    ).rejects.toBe(secondValidationError);
 
     expect(mocks.interview).toHaveBeenCalledTimes(2);
 
     expect(mocks.interview.mock.calls[1]).toEqual([
       messages,
+      constructionalProgramMock.targetOutcome,
       firstValidationError.validationError.issues,
     ]);
   });
@@ -139,9 +162,13 @@ describe("runInteractionChainInterview", () => {
 
     mocks.interview.mockRejectedValueOnce(error);
 
-    await expect(runInteractionChainInterview(openai, messages)).rejects.toBe(
-      error,
-    );
+    await expect(
+      runInteractionChainInterview(
+        openai,
+        messages,
+        constructionalProgramMock.targetOutcome,
+      ),
+    ).rejects.toBe(error);
 
     expect(mocks.interview).toHaveBeenCalledOnce();
   });

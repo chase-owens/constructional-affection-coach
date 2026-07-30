@@ -1,8 +1,11 @@
 import OpenAI from "openai";
 import { INTERACTION_CHAIN_INSTRUCTIONS } from "./instructions";
-import { interactionChainPhaseResultSchema } from "../../../schemas";
 import type { ValidationIssue } from "../../../validation/types";
 import { InterviewPhaseValidationError } from "../../../program/errors";
+import {
+  interactionChainPhaseResultSchema,
+  TargetOutcome,
+} from "@constructional-affection/domain";
 
 export type InterviewMessage = {
   role: "coach" | "user";
@@ -57,6 +60,7 @@ export class InteractionChainController {
 
   async interview(
     messages: InterviewMessage[],
+    targetOutcome: TargetOutcome,
     validationIssues?: ValidationIssue[],
   ) {
     const correctionMessage = validationIssues?.length
@@ -82,6 +86,25 @@ Return only corrected JSON matching the required response shape.
           role: "system" as const,
           content: interactionChainPrompt,
         },
+        {
+          role: "system" as const,
+          content: `
+
+          The Target Outcome established in the previous phase is
+
+          ${JSON.stringify(targetOutcome, null, 2)}
+
+          Use this Target Outcome as the reference point when identifying existing behaviors, interaction patterns, and conditions that the program can build from.
+
+        `.trim(),
+        },
+        ...messages.map((message) => ({
+          role:
+            message.role === "user"
+              ? ("user" as const)
+              : ("assistant" as const),
+          content: message.content,
+        })),
         ...messages.map((message) => ({
           role:
             message.role === "user"
