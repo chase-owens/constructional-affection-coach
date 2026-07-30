@@ -271,6 +271,24 @@ The application includes resilience mechanisms around AI-assisted workflows, inc
 - API Gateway access logging
 - dedicated desktop and mobile recovery states
 
+### Missing Program Recovery
+
+A valid program route was requested, but the referenced program could not be located.
+
+<p align="center">
+  <img
+    src="docs/images/interview-not-found.png"
+    alt="Missing program recovery state"
+    width="100%"
+  >
+</p>
+
+The application distinguishes between interview failures, invalid routes, and missing resources. When a requested program cannot be found, the user is guided toward the most likely recovery path—returning to their saved programs if authenticated or starting a new interview if the program is no longer available.
+
+### Interview Recovery State
+
+Valid interview/workflow failed
+
 <table>
   <tr>
     <td width="65%" valign="top">
@@ -280,6 +298,29 @@ The application includes resilience mechanisms around AI-assisted workflows, inc
     <td width="35%" valign="top">
       <img src="docs/images/error-mobile.png" alt="Mobile interview recovery state">
       <p align="center"><strong>Mobile recovery state</strong></p>
+    </td>
+  </tr>
+</table>
+
+### Route and Resource Recovery
+
+Route or requested resource does not exist
+
+<table>
+  <tr>
+    <td width="65%" valign="top">
+      <img
+        src="docs/images/fallback-error-route.png"
+        alt="Desktop not-found route"
+      >
+      <p align="center"><strong>Desktop fallback route</strong></p>
+    </td>
+    <td width="35%" valign="top">
+      <img
+        src="docs/images/fallback-error-route-mobile.png"
+        alt="Mobile not-found route"
+      >
+      <p align="center"><strong>Mobile fallback route</strong></p>
     </td>
   </tr>
 </table>

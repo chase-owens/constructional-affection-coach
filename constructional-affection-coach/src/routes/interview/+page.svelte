@@ -14,6 +14,7 @@
 	import ErrorCard from "$lib/components/ErrorCard.svelte";
 	import MobileInterviewProgress from "$lib/components/MobileInterviewProgress.svelte";
 	import OutOfScopeCard from "$lib/components/OutOfScopeCard.svelte";
+	import ProgramLoadingCard from "$lib/components/ProgramLoadingCard.svelte";
 	import SideBar from "$lib/components/SideBar.svelte";
 	import mockInterview from "$lib/data/interviewMock-workout";
 	import { startInteractionChainPhase, startTargetOutcomePhase } from "$lib/interview";
@@ -168,31 +169,8 @@
 		}
 	};
 
-	const restoreCompletedInterview = async (interviewId: InterviewIdType) => {
-		const savedInterview = await interviewClient.get(interviewId);
-
-		if (!savedInterview.program) {
-			await startNewInterview();
-			return;
-		}
-
-		constructionalProgram = savedInterview.program;
-		targetOutcome = savedInterview.program.targetOutcome;
-		constructionalAssets = savedInterview.program.constructionalAssets;
-		hasUserAgreement = true;
-		phase = "complete";
-
-		isCreatingProgram = false;
-	};
-
 	onMount(async () => {
 		try {
-			if (!auth.isAuthenticated && $savedProgram?.interviewId) {
-				isCreatingProgram = true;
-				restoreCompletedInterview($savedProgram.interviewId);
-				return;
-			}
-
 			await startNewInterview();
 		} catch (err) {
 			console.error("Failed to initialize interview", err);
@@ -417,24 +395,7 @@
 
 					<div class="space-y-5">
 						{#if isCreatingProgram}
-							<div
-								class="mx-auto mt-8 max-w-2xl rounded-vintage border border-accent/40 bg-secondary-soft p-8 text-center shadow-soft"
-							>
-								<div
-									class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent"
-								></div>
-
-								<p class="eyebrow mt-6">Building Your Program</p>
-
-								<h2 class="mt-3 text-2xl font-bold text-primary">
-									Turning the interview into a starting plan...
-								</h2>
-
-								<p class="mt-3 text-sm leading-6 text-muted-dark">
-									I’m using the goal, what already works, and the interaction chain to choose the
-									first step and build the progression.
-								</p>
-							</div>
+							<ProgramLoadingCard />
 						{/if}
 
 						{#if !constructionalProgram || isCreatingProgram}{#each messages as message (message.content)}
