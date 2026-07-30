@@ -1,8 +1,8 @@
+import type { ConstructionalProgram } from "@constructional-affection/domain";
+
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import { PUBLIC_USE_COMPLETED_MOCK } from "$env/static/public";
 import { constructionalProgramMock } from "$lib/data/constructionalProgramMock";
-
-import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 type InterviewStatus = "pending" | "processing" | "complete" | "failed";
 

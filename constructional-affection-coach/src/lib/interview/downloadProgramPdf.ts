@@ -1,6 +1,6 @@
-import { downloadProgramPdf } from "$lib/pdf/download-program";
+import type { ConstructionalProgram } from "@constructional-affection/domain";
 
-import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
+import { downloadProgramPdf } from "$lib/pdf/download-program";
 
 export const handleDownload = (constructionalProgram: ConstructionalProgram) => {
 	if (!constructionalProgram) return;

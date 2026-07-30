@@ -1,8 +1,7 @@
+import type { ConstructionalProgram } from "@constructional-affection/domain";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
-
-import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (pdfMake as any).addVirtualFileSystem(pdfFonts);

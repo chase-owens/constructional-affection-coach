@@ -1,5 +1,9 @@
 <script lang="ts">
-	import type { ConstructionalAssets, TargetOutcome } from "@constructional-affection/domain";
+	import type {
+		ConstructionalAssets,
+		ConstructionalProgram,
+		TargetOutcome
+	} from "@constructional-affection/domain";
 	import { onMount } from "svelte";
 
 	import { page } from "$app/state";
@@ -14,8 +18,6 @@
 	import { handleDownload } from "$lib/interview/downloadProgramPdf";
 	import type { InterviewIdType } from "$lib/interview/types";
 	import { savedProgram } from "$lib/stores/interview-program";
-
-	import type { ConstructionalProgram } from "../../../../../lambdas/src/schemas";
 
 	let interviewId = $derived(
 		PUBLIC_USE_COMPLETED_MOCK === "true" ? PUBLIC_MOCK_INTERVIEW_ID : page.params.interviewId

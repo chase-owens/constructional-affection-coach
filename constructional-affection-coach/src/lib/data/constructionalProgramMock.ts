@@ -1,4 +1,4 @@
-import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
+import type { ConstructionalProgram } from "@constructional-affection/domain";
 
 export const constructionalProgramMock: ConstructionalProgram = {
 	constructionalAssets: {

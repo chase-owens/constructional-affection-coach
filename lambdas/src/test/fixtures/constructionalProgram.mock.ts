@@ -1,4 +1,4 @@
-import { ConstructionalProgram } from "../../schemas";
+import { ConstructionalProgram } from "@constructional-affection/domain";
 
 export const constructionalProgramMock: ConstructionalProgram = {
   constructionalAssets: {

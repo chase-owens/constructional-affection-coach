@@ -1,8 +1,7 @@
+import type { ConstructionalProgram } from "@constructional-affection/domain";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 import { PUBLIC_API_BASE_URL } from "$env/static/public";
-
-import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 export type SavedProgram = {
 	interviewId: string;
