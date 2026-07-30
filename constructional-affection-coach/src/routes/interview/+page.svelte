@@ -118,7 +118,7 @@
 	let isProcessing = $state(false);
 	let isCreatingProgram = $state(false);
 	let isInitializingInterview = $state(true);
-	let error = $state<string | null>("test error");
+	let error = $state<string | null>("");
 
 	let messages = $state<Message[]>([getPhaseInitializer("target_outcome")]);
 	let interviewId = $state<InterviewIdType | null>(null);
