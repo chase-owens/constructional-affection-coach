@@ -275,13 +275,18 @@ The application includes resilience mechanisms around AI-assisted workflows, inc
 
 A valid program route was requested, but the referenced program could not be located.
 
-<p align="center">
-  <img
-    src="docs/images/interview-not-found.png"
-    alt="Missing program recovery state"
-    width="100%"
-  >
-</p>
+<table>
+  <tr>
+    <td width="65%" valign="top">
+      <img src="docs/images/program-not-found.png" alt="Missing program recovery state">
+      <p align="center"><strong>Desktop recovery state</strong></p>
+    </td>
+    <td width="35%" valign="top">
+      <img src="docs/images/program-not-found-mobile.png" alt="Missing program recovery state-mobile">
+      <p align="center"><strong>Mobile recovery state</strong></p>
+    </td>
+  </tr>
+</table>
 
 The application distinguishes between interview failures, invalid routes, and missing resources. When a requested program cannot be found, the user is guided toward the most likely recovery path—returning to their saved programs if authenticated or starting a new interview if the program is no longer available.
 
