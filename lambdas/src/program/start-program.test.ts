@@ -27,8 +27,8 @@ const interactionChain: InteractionChain = {
 };
 
 const event = {
-  metadata: PROGRAM_INITIALIZATION_BASELINE,
   interviewId: "test-interview-id",
+  metadata: PROGRAM_INITIALIZATION_BASELINE,
   targetOutcome: constructionalProgramMock.targetOutcome,
   constructionalAssets: constructionalProgramMock.constructionalAssets,
   interactionChain,
@@ -69,9 +69,11 @@ vi.mock("../interview/program-initialization", () => ({
 // dependency setup easier to understand.
 import { handler } from "./start-program";
 import { afterEach } from "node:test";
-import { InteractionChain } from "../schemas";
+import {
+  InteractionChain,
+  PROGRAM_INITIALIZATION_BASELINE,
+} from "@constructional-affection/domain";
 import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
-import { PROGRAM_INITIALIZATION_BASELINE } from "../../../domain/src/evaluation/program-initialization-versions";
 
 describe("start-program", () => {
   beforeEach(() => {

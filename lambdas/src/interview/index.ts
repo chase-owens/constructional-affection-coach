@@ -3,7 +3,6 @@ import type {
   APIGatewayProxyStructuredResultV2,
 } from "aws-lambda";
 import type OpenAI from "openai";
-import type { InteractionChain } from "../schemas";
 import {
   CONSTRUCTIONAL_ASSETS_BASELINE,
   INTERACTION_CHAIN_BASELINE,
@@ -11,6 +10,7 @@ import {
   PROGRAM_INITIALIZATION_BASELINE,
   TARGET_OUTCOME_BASELINE,
   type ConstructionalAssets,
+  type InteractionChain,
 } from "@constructional-affection/domain";
 import { runConstructionalAssetsInterview } from "./constructional-assets";
 import { runInteractionChainInterview } from "./interaction-chain";
@@ -79,6 +79,7 @@ const runInterviewPhase = async (
       const result = await runInteractionChainInterview(
         openai,
         request.messages,
+        request.targetOutcome,
       );
 
       return { metadata, result };

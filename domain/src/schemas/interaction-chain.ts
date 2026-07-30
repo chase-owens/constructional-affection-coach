@@ -6,11 +6,13 @@ export const interactionStepActorSchema = z.enum([
   "environment",
 ]);
 
+const nonEmptyStringSchema = z.string().trim().min(1);
+
 export const interactionStepSchema = z.object({
   index: z.number().int().nonnegative(),
   actor: interactionStepActorSchema,
-  description: z.string(),
-  change: z.string(),
+  description: nonEmptyStringSchema,
+  change: nonEmptyStringSchema,
   expectedDogBehavior: z.string().optional(),
   targetPatternPresent: z.union([z.boolean(), z.literal("unknown")]),
   requiresTransfer: z.boolean(),
@@ -18,7 +20,7 @@ export const interactionStepSchema = z.object({
 });
 
 export const interactionChainSchema = z.object({
-  steps: z.array(interactionStepSchema),
+  steps: z.array(interactionStepSchema).min(2),
   constructionStartIndex: z.number().int().nonnegative(),
   targetOutcomeIndex: z.number().int().nonnegative(),
   notes: z.string(),
@@ -26,7 +28,7 @@ export const interactionChainSchema = z.object({
 
 export const interactionChainPhaseResultSchema = z.union([
   z.object({
-    coachMessage: z.string(),
+    coachMessage: nonEmptyStringSchema,
     phaseComplete: z.literal(false),
   }),
   z.object({

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import type { ValidationIssue } from "../../../validation/types";
 import { InteractionChainController } from "./interaction-chain-controller";
+import { constructionalProgramMock } from "../../../test/fixtures/constructionalProgram.mock";
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(),
@@ -86,7 +87,10 @@ describe("InteractionChainController", () => {
 
     const controller = new InteractionChainController(openai);
 
-    const result = await controller.interview(messages);
+    const result = await controller.interview(
+      messages,
+      constructionalProgramMock.targetOutcome,
+    );
 
     expect(result).toEqual(validCompletedResponse);
     expect(mocks.create).toHaveBeenCalledOnce();
@@ -114,7 +118,9 @@ describe("InteractionChainController", () => {
 
     const controller = new InteractionChainController(openai);
 
-    await expect(controller.interview(messages)).rejects.toMatchObject({
+    await expect(
+      controller.interview(messages, constructionalProgramMock.targetOutcome),
+    ).rejects.toMatchObject({
       name: "InterviewPhaseValidationError",
       code: "INTERVIEW_PHASE_VALIDATION_FAILED",
       phase: "interaction_chain",
@@ -132,7 +138,11 @@ describe("InteractionChainController", () => {
 
     const controller = new InteractionChainController(openai);
 
-    await controller.interview(messages, validationIssues);
+    await controller.interview(
+      messages,
+      constructionalProgramMock.targetOutcome,
+      validationIssues,
+    );
 
     expect(mocks.create).toHaveBeenCalledOnce();
 

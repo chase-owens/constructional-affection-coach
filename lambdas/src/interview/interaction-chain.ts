@@ -5,12 +5,14 @@ import {
 } from "./controllers/interaction-chain";
 import type { ValidationIssue } from "../validation/types";
 import { InterviewPhaseValidationError } from "../program/errors";
+import { TargetOutcome } from "../../../domain/src/schemas/target-outcome";
 
 const MAX_ATTEMPTS = 2;
 
 export const runInteractionChainInterview = async (
   openai: OpenAI,
   messages: InterviewMessage[],
+  targetOutcome: TargetOutcome,
 ) => {
   const controller = new InteractionChainController(openai);
 
@@ -18,7 +20,11 @@ export const runInteractionChainInterview = async (
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     try {
-      return await controller.interview(messages, validationIssues);
+      return await controller.interview(
+        messages,
+        targetOutcome,
+        validationIssues,
+      );
     } catch (error) {
       if (!(error instanceof InterviewPhaseValidationError)) {
         throw error;

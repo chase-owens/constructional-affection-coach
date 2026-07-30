@@ -7,12 +7,14 @@ export const TARGET_OUTCOME_BASELINE = {
   schemaVersion: "1.0.0",
   experimentId: null,
   modelId: MODEL_IDS.GPT_4_1_MINI,
+  orchestration: "custom",
 } as const satisfies PhaseVersionMetadata;
 
 export const TARGET_OUTCOME_V2_EXPERIMENT = {
   phase: "target_outcome",
   implementationVersion: "2.0.0-beta.1",
   schemaVersion: "2.0.0-beta.1",
-  experimentId: "target-oucome-accomplishment-001",
+  experimentId: "target-outcome-accomplishment-001",
   modelId: MODEL_IDS.GPT_5_MINI,
+  orchestration: "custom",
 } as const satisfies PhaseVersionMetadata;

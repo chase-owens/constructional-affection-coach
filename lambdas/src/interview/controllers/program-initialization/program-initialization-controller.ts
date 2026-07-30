@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { PROGRAM_INITIALIZATION_INSTRUCTIONS } from "./instructions";
-import type { InteractionChain } from "../../../schemas";
+import type { InteractionChain } from "@constructional-affection/domain";
 import type { ConstructionalAssets } from "@constructional-affection/domain";
 import { ValidationIssue } from "../../../validation/types";
 import type { TargetOutcome } from "@constructional-affection/domain";

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runProgramInitialization } from "./program-initialization";
 import type OpenAI from "openai";
 import { constructionalProgramMock } from "../test/fixtures/constructionalProgram.mock";
-import { InteractionChain } from "../schemas";
+import { InteractionChain } from "@constructional-affection/domain";
 import { MODEL_IDS } from "../../../domain/src/evaluation/model-ids";
 
 const interactionChain: InteractionChain = {

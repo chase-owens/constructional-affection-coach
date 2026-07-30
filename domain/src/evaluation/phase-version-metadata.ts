@@ -14,6 +14,8 @@ export type PhaseVersionMetadata = {
 
   // Acutal OpenAI model used
   modelId: ModelId;
+
+  orchestration: "custom" | "mcp";
 };
 
 export type VersionedPhaseResult<T> = {
