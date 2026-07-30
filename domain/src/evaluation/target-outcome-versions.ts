@@ -8,6 +8,7 @@ export const TARGET_OUTCOME_BASELINE = {
   experimentId: null,
   modelId: MODEL_IDS.GPT_4_1_MINI,
   orchestration: "custom",
+  rubricVersion: "1.0.0",
 } as const satisfies PhaseVersionMetadata;
 
 export const TARGET_OUTCOME_V2_EXPERIMENT = {
@@ -17,4 +18,5 @@ export const TARGET_OUTCOME_V2_EXPERIMENT = {
   experimentId: "target-outcome-accomplishment-001",
   modelId: MODEL_IDS.GPT_5_MINI,
   orchestration: "custom",
+  rubricVersion: "1.0.0",
 } as const satisfies PhaseVersionMetadata;
