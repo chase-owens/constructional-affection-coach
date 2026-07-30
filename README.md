@@ -287,7 +287,7 @@ The application distinguishes between interview failures, invalid routes, and mi
 
 ### Interview Recovery State
 
-Valid interview, workflow failed
+Valid interview/workflow failed
 
 <table>
   <tr>
