@@ -11,7 +11,9 @@
 
 	let expanded = $state(false);
 
-	const progress = $derived(Math.round((currentStep / phaseOrder.length) * 100));
+	const filteredPhases = phaseOrder.filter((phase) => phase !== "revise_target_outcome");
+
+	const progress = $derived(Math.round((currentStep / filteredPhases.length) * 100));
 </script>
 
 <section class="rounded-2xl bg-white px-5 py-5 shadow-sm lg:hidden">
@@ -35,7 +37,7 @@
 	</div>
 
 	<div class="mt-6 flex items-center">
-		{#each phaseOrder as step, index (step)}
+		{#each filteredPhases as step, index (step)}
 			{@const stepNumber = index + 1}
 			{@const isCurrent = stepNumber === currentStep}
 			{@const isComplete = stepNumber < currentStep}

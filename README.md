@@ -2,15 +2,93 @@
 
 Constructional Affection Coach is an AI-assisted interview and program-building platform for creating individualized Constructional Affection programs.
 
-The application combines a SvelteKit client, serverless AWS backend, structured AI workflows, persistent user programs, and an emerging MCP integration in a single Nx-managed monorepo.
+The application combines a responsive SvelteKit client, a serverless AWS backend, structured AI workflows, persistent user programs, and an emerging MCP integration in a single Nx-managed monorepo.
+
+<p align="center">
+  <a href="https://constructionalaffectioncoach.com">
+    <img src="docs/images/hero.png" alt="Constructional Affection Coach home page" width="100%">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://constructionalaffectioncoach.com"><strong>View the live application</strong></a>
+</p>
+
+## Product Experience
+
+The application guides a user from a desired interaction, through existing constructional assets and the interaction chain, to a structured starting program.
+
+### Guided Interview
+
+<p align="center">
+  <img src="docs/images/interview.png" alt="Guided Constructional Affection interview" width="100%">
+</p>
+
+The interview is organized into explicit phases rather than operating as an unrestricted chatbot. Each phase collects and transforms information required to construct the final program.
+
+### Program Generation
+
+<p align="center">
+  <img src="docs/images/program-loading-state.png" alt="Constructional Affection program generation state" width="100%">
+</p>
+
+After the interview is complete, the application uses the defined goal, existing assets, reinforcers, and interaction chain to construct the program's starting point and progression.
+
+### Program Completion
+
+<p align="center">
+  <img src="docs/images/unknown-user-program-complete-state.png" alt="Completed Constructional Affection program options" width="100%">
+</p>
+
+Users can create an account, download a PDF, or continue directly to the completed program.
+
+### Completed Program
+
+<p align="center">
+  <img src="docs/images/program.png" alt="Generated Constructional Affection program" width="100%">
+</p>
+
+The completed program preserves the target outcome, relevant reinforcers and repertoire, existing interaction assets, the constructional starting point, and progressive program phases.
+
+### Accounts and Saved Programs
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/images/login.png" alt="Constructional Affection Coach login">
+      <p align="center"><strong>Authentication</strong></p>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/images/programs.png" alt="Saved Constructional Affection programs">
+      <p align="center"><strong>Saved programs</strong></p>
+    </td>
+  </tr>
+</table>
+
+Amazon Cognito provides authenticated accounts, while DynamoDB persistence allows completed programs to be associated with a user and retrieved later.
+
+### Responsive Experience
+
+<table>
+  <tr>
+    <td width="38%" valign="top">
+      <img src="docs/images/hero-mobile.png" alt="Constructional Affection Coach mobile home page">
+    </td>
+    <td width="62%" valign="middle">
+      <h4>Responsive across desktop and mobile</h4>
+      <p>The client adapts the interview, navigation, program library, and generated-program experience for smaller screens without changing the underlying workflow.</p>
+    </td>
+  </tr>
+</table>
 
 ## Architecture
 
-The repository is organized as a monorepo containing the client application, backend services, AWS infrastructure, and MCP tooling.
+The repository is organized as a monorepo containing the client application, backend services, AWS infrastructure, domain packages, and MCP tooling.
 
 ```text
 constructional-affection/
 ├── constructional-affection-coach/   # SvelteKit client
+├── domain/                            # Shared domain models and schemas
 ├── lambdas/                           # AWS Lambda services
 ├── infra/                             # AWS CDK infrastructure
 ├── mcp/                               # MCP server and tools
@@ -42,7 +120,14 @@ The client provides:
 - authenticated user accounts
 - saved programs
 - program viewing
+- PDF export
 - responsive desktop and mobile interfaces
+
+### Domain
+
+`domain/`
+
+The domain package contains shared types, Zod schemas, interview-phase contracts, and version metadata used across the client, Lambda services, and MCP implementation.
 
 ### Lambda Services
 
@@ -58,9 +143,11 @@ Responsibilities include:
 - orchestrating interview phases
 - generating programs
 - interacting with the OpenAI API
+- validating structured AI responses
+- retrying recoverable failures
 - persisting application state in DynamoDB
 
-AI responses are structured and validated before being incorporated into the application workflow.
+The orchestration layer manages deterministic application behavior around probabilistic model behavior rather than acting as a simple proxy to the OpenAI API.
 
 ### Infrastructure
 
@@ -76,6 +163,7 @@ The production architecture includes:
 - Amazon Cognito
 - Amazon S3
 - Amazon CloudFront
+- AWS Certificate Manager
 - AWS Secrets Manager
 - Amazon CloudWatch
 - AWS IAM
@@ -88,7 +176,7 @@ https://constructionalaffectioncoach.com
 
 `mcp/`
 
-The MCP package contains the canonical implementation of the Constructional Affection methodology.
+The MCP package contains the emerging canonical implementation of the Constructional Affection methodology.
 
 Rather than embedding interview logic inside a specific application, the methodology is exposed as structured MCP resources and tools that can be consumed by multiple clients.
 
@@ -105,7 +193,6 @@ The existing Lambda orchestration serves as the production baseline while the MC
 ## AI Workflow
 
 The application uses the OpenAI API as part of a controlled interview and program-generation workflow rather than as an unrestricted chatbot.
-
 The interview progresses through defined phases that collect and transform information needed to construct a program.
 
 ```text
@@ -140,17 +227,27 @@ The project is intentionally separating the Constructional Affection methodology
 
 Current production flow:
 
+```text
 Client
-→ API Gateway
-→ Lambda orchestration
-→ OpenAI
+  ↓
+API Gateway
+  ↓
+Lambda orchestration
+  ↓
+OpenAI
+```
 
 Emerging architecture:
 
+```text
 Client
-→ MCP
-→ Constructional Affection methodology
-→ OpenAI
+  ↓
+MCP
+  ↓
+Constructional Affection methodology
+  ↓
+OpenAI
+```
 
 One long-term goal is to evaluate whether the MCP implementation can replace or augment the custom orchestration layer while producing equivalent or improved interview quality.
 
@@ -158,9 +255,7 @@ One long-term goal is to evaluate whether the MCP implementation can replace or 
 
 Amazon Cognito provides user authentication.
 
-Interviews can begin before authentication and later be associated with an authenticated user.
-
-Completed programs are persisted in DynamoDB and can be retrieved through authenticated API routes.
+Interviews can begin before authentication and later be associated with an authenticated user. Completed programs are persisted in DynamoDB and can be retrieved through authenticated API routes.
 
 A DynamoDB secondary index supports retrieving programs by user and update time.
 
@@ -174,8 +269,22 @@ The application includes resilience mechanisms around AI-assisted workflows, inc
 - interview state preservation
 - CloudWatch application logging
 - API Gateway access logging
+- dedicated desktop and mobile recovery states
 
-These mechanisms allow probabilistic model behavior to be integrated into deterministic application workflows.
+<table>
+  <tr>
+    <td width="65%" valign="top">
+      <img src="docs/images/error.png" alt="Desktop interview recovery state">
+      <p align="center"><strong>Desktop recovery state</strong></p>
+    </td>
+    <td width="35%" valign="top">
+      <img src="docs/images/error-mobile.png" alt="Mobile interview recovery state">
+      <p align="center"><strong>Mobile recovery state</strong></p>
+    </td>
+  </tr>
+</table>
+
+These mechanisms allow probabilistic model behavior to be integrated into deterministic application workflows while giving users a clear path to restart or return home when an interview cannot continue.
 
 ## Experimentation
 
@@ -190,18 +299,6 @@ Phase outputs are versioned with metadata describing:
 - experiment identifier
 
 This allows different methodology revisions, schemas, prompting strategies, orchestration approaches, and models to be compared objectively using deterministic and semantic evaluation tools.
-
-## Current Development
-
-Current priorities include:
-
-- Completing the lean MCP implementation of all interview phases.
-- Publishing the Constructional Affection MCP server.
-- Continue building deterministic and semantic evaluation tooling.
-- Comparing MCP orchestration against the existing custom orchestration.
-- Expanding methodology versioning and experiment support.
-- Developing participant-facing program execution and coaching capabilities.
-- Develop program for Constructional Aggression Treatment (distancing contingencies to nearing contingencies)
 
 ## Development
 
@@ -329,14 +426,15 @@ Secrets and environment-specific credentials are not committed to the repository
 
 The core application is deployed and functional.
 
-Current development is focused on expanding the architecture beyond the initial coach interface, including:
+Current priorities include:
 
-- MCP resources and tools
-- methodology validation
-- published-example retrieval
-- participant-facing program execution
-- program progress and session tracking
-- additional coaching capabilities
+- completing the lean MCP implementation of all interview phases
+- publishing the Constructional Affection MCP server
+- continuing deterministic and semantic evaluation tooling
+- comparing MCP orchestration with the existing custom orchestration
+- expanding methodology versioning and experiment support
+- developing participant-facing program execution and coaching capabilities
+- developing a Constructional Aggression Treatment workflow for moving from distancing contingencies to nearing contingencies
 
 ## Methodology
 
