@@ -84,15 +84,23 @@ The client is distributed through CloudFront from a private S3 origin and is ava
 
 https://constructionalaffectioncoach.com
 
-### MCP
+## MCP
 
 `mcp/`
 
-The MCP package provides the foundation for exposing Constructional Affection capabilities as structured tools and resources.
+The MCP package contains the canonical implementation of the Constructional Affection methodology.
 
-The goal is to separate domain operations from any individual user interface, allowing methodology, validation, examples, and future coaching capabilities to be consumed through a standardized interface.
+Rather than embedding interview logic inside a specific application, the methodology is exposed as structured MCP resources and tools that can be consumed by multiple clients.
 
-MCP development is currently in progress.
+Current development focuses on implementing each interview phase as:
+
+- methodology resources
+- structured tools
+- deterministic validation
+- semantic evaluation where appropriate
+- versioned experiments
+
+The existing Lambda orchestration serves as the production baseline while the MCP implementation is developed and evaluated as an alternative orchestration strategy.
 
 ## AI Workflow
 
@@ -112,7 +120,39 @@ Program Initialization
 Generated Program
 ```
 
+```text
+Methodology Resource
+        ↓
+Structured Tool
+        ↓
+Zod Schema
+        ↓
+Deterministic Evaluation
+        ↓
+Semantic Evaluation (when required)
+```
+
 Structured responses allow application code to validate AI output and maintain deterministic application state around probabilistic model behavior.
+
+## Architecture Direction
+
+The project is intentionally separating the Constructional Affection methodology from application-specific orchestration.
+
+Current production flow:
+
+Client
+→ API Gateway
+→ Lambda orchestration
+→ OpenAI
+
+Emerging architecture:
+
+Client
+→ MCP
+→ Constructional Affection methodology
+→ OpenAI
+
+One long-term goal is to evaluate whether the MCP implementation can replace or augment the custom orchestration layer while producing equivalent or improved interview quality.
 
 ## Authentication and Persistence
 
@@ -123,6 +163,45 @@ Interviews can begin before authentication and later be associated with an authe
 Completed programs are persisted in DynamoDB and can be retrieved through authenticated API routes.
 
 A DynamoDB secondary index supports retrieving programs by user and update time.
+
+## Reliability
+
+The application includes resilience mechanisms around AI-assisted workflows, including:
+
+- structured domain-specific error handling
+- deterministic response validation
+- retry handling for recoverable failures
+- interview state preservation
+- CloudWatch application logging
+- API Gateway access logging
+
+These mechanisms allow probabilistic model behavior to be integrated into deterministic application workflows.
+
+## Experimentation
+
+Every interview phase is designed to support controlled experimentation.
+
+Phase outputs are versioned with metadata describing:
+
+- implementation version
+- schema version
+- orchestration strategy
+- OpenAI model
+- experiment identifier
+
+This allows different methodology revisions, schemas, prompting strategies, orchestration approaches, and models to be compared objectively using deterministic and semantic evaluation tools.
+
+## Current Development
+
+Current priorities include:
+
+- Completing the lean MCP implementation of all interview phases.
+- Publishing the Constructional Affection MCP server.
+- Continue building deterministic and semantic evaluation tooling.
+- Comparing MCP orchestration against the existing custom orchestration.
+- Expanding methodology versioning and experiment support.
+- Developing participant-facing program execution and coaching capabilities.
+- Develop program for Constructional Aggression Treatment (distancing contingencies to nearing contingencies)
 
 ## Development
 
