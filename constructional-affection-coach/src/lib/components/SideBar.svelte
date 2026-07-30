@@ -58,7 +58,7 @@
 			program.
 		</p>
 	</div>
-	<div class="flex flex-col justify-center gap-5">
+	<div class="mt-5 flex flex-col justify-center gap-5">
 		{#if isDev && !isInterviewComplete}
 			<button
 				class="button-base button-secondary mt-5"
@@ -70,7 +70,7 @@
 		{/if}
 		{#if isInterviewComplete}
 			<button
-				class="button-base button-primary mt-5"
+				class="button-base button-primary"
 				disabled={areButtonsDisabled}
 				onclick={onRestartInterview}
 			>
