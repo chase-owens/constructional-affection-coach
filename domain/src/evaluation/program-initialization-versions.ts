@@ -8,4 +8,5 @@ export const PROGRAM_INITIALIZATION_BASELINE = {
   experimentId: null,
   modelId: MODEL_IDS.GPT_4_1_MINI,
   orchestration: "custom",
+  rubricVersion: "1.0.0",
 } as const satisfies PhaseVersionMetadata;

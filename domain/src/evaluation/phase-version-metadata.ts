@@ -7,6 +7,9 @@ export type PhaseVersionMetadata = {
   // Prompt, instructions, decision - heuristic rules, and processing logic
   implementationVersion: string;
 
+  // Evaluatoon method
+  rubricVersion: string;
+
   // Phase shape exhanged with UI
   schemaVersion: string;
 
