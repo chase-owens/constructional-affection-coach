@@ -176,19 +176,21 @@ https://constructionalaffectioncoach.com
 
 `mcp/`
 
-The MCP package contains the emerging canonical implementation of the Constructional Affection methodology.
+The MCP package contains the canonical implementation of the Constructional Affection methodology.
 
-Rather than embedding interview logic inside a specific application, the methodology is exposed as structured MCP resources and tools that can be consumed by multiple clients.
+Rather than embedding interview logic inside a single application, the methodology is exposed through the Model Context Protocol (MCP) as reusable resources and tools that can be consumed by multiple clients.
 
-Current development focuses on implementing each interview phase as:
+The implementation currently supports:
 
-- methodology resources
-- structured tools
+- reusable methodology resources
+- structured MCP tools
+- local stdio transport for development
+- AWS Lambda + API Gateway HTTP transport for production
+- shared domain models and Zod schemas
 - deterministic validation
-- semantic evaluation where appropriate
-- versioned experiments
+- versioned methodology experiments
 
-The existing Lambda orchestration serves as the production baseline while the MCP implementation is developed and evaluated as an alternative orchestration strategy.
+The existing Lambda orchestration serves as the production baseline while the MCP implementation is being evaluated as an alternative orchestration strategy using the same interview methodology and evaluation framework.
 
 ## AI Workflow
 
@@ -470,13 +472,12 @@ Secrets and environment-specific credentials are not committed to the repository
 
 ## Current Development
 
-The core application is deployed and functional.
+The core application and MCP server are deployed and functional.
 
 Current priorities include:
 
-- completing the lean MCP implementation of all interview phases
-- publishing the Constructional Affection MCP server
-- continuing deterministic and semantic evaluation tooling
+- expanding MCP tooling for evaluation and methodology analysis
+- building the evaluation runner and experiment framework
 - comparing MCP orchestration with the existing custom orchestration
 - expanding methodology versioning and experiment support
 - developing participant-facing program execution and coaching capabilities
