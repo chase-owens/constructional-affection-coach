@@ -13,3 +13,4 @@ export * from "./schemas/constructional-program.js";
 export * from "./schemas/control-analysis.js";
 export * from "./schemas/program-initialization.js";
 export * from "./schemas/transfer-step.js";
+export * from "./schemas/shared.js";

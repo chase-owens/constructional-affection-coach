@@ -244,6 +244,14 @@ export class InfraStack extends cdk.Stack {
       },
     );
 
+    // Create Lambda for MCP handler
+    const mcpLambda = createNodeLambda(this, "McpLambda", {
+      functionName: "ca-mcp-server",
+      entry: path.join(lambdaProjectRoot, "src/mcp/index.ts"),
+      memorySize: 512,
+      environment: { OPENAI_SECRET_ARN: openAiSecret.secretArn },
+    });
+
     this.interviewsTable.grantWriteData(createInterviewLambda);
     this.interviewsTable.grantReadData(getInterviewsLambda);
     this.interviewsTable.grantReadData(getInterviewLambda);
@@ -286,6 +294,7 @@ export class InfraStack extends cdk.Stack {
           apigatewayv2.CorsHttpMethod.POST,
           apigatewayv2.CorsHttpMethod.OPTIONS,
           apigatewayv2.CorsHttpMethod.GET,
+          apigatewayv2.CorsHttpMethod.DELETE,
         ],
         allowHeaders: ["Content-Type", "Authorization"],
       },
@@ -361,6 +370,16 @@ export class InfraStack extends cdk.Stack {
       ),
     });
 
+    api.addRoutes({
+      path: "/mcp",
+      methods: [apigatewayv2.HttpMethod.ANY],
+      integration: new integrations.HttpLambdaIntegration(
+        "McpIntegration",
+        mcpLambda,
+      ),
+    });
+
+    openAiSecret.grantRead(mcpLambda);
     openAiSecret.grantRead(interviewFunction);
     openAiSecret.grantRead(startProgramLambda);
     startProgramLambda.grantInvoke(interviewFunction);

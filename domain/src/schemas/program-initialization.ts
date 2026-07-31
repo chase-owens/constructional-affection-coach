@@ -1,16 +1,19 @@
 import { z } from "zod";
+import { nonEmptyStringSchema } from "./shared.js";
 
 export const startingInteractionSchema = z.object({
   conditions: z.array(z.string()).min(1),
-  targetPattern: z.string(),
-  reinforcer: z.string(),
-  controlCriterion: z.string(),
+  targetPattern: nonEmptyStringSchema,
+  reinforcer: nonEmptyStringSchema,
+  controlCriterion: nonEmptyStringSchema,
 });
 
 export const programInitializationSchema = z.object({
   startingInteraction: startingInteractionSchema,
-  readinessCriterion: z.string(),
+  readinessCriterion: nonEmptyStringSchema,
 });
+
+// Future possible schema
 
 export const interactionGuidelinesSchema = z.object({
   oneHandRule: z.string(),
