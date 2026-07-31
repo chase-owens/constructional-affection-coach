@@ -1,11 +1,11 @@
 <script lang="ts">
+	import type { ConstructionalProgram } from "@constructional-affection/domain";
+
 	import ContinueToProgramCard from "$lib/components/ContinueToProgramCard.svelte";
 	import DownloadPDFCard from "$lib/components/DownloadPDFCard.svelte";
 	import ProgramPersistenceDisclaimer from "$lib/components/ProgramPersistenceDisclaimer.svelte";
 	import SaveToAccountCard from "$lib/components/SaveToAccountCard.svelte";
 	import type { InterviewIdType } from "$lib/interview/types";
-
-	import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 	let {
 		constructionalProgram,

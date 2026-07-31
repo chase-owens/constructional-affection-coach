@@ -1,12 +1,11 @@
 import { z } from "zod";
+import { nonEmptyStringSchema } from "./shared.js";
 
 export const interactionStepActorSchema = z.enum([
   "person",
   "dog",
   "environment",
 ]);
-
-const nonEmptyStringSchema = z.string().trim().min(1);
 
 export const interactionStepSchema = z.object({
   index: z.number().int().nonnegative(),

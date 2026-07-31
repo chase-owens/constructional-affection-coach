@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type {
+		ConstructionalProgram,
 		InteractionChain,
 		InterviewPhase,
 		TargetOutcome
@@ -25,8 +26,6 @@
 	import type { InterviewIdType, InterviewResponse, Message } from "$lib/interview/types";
 	import { savedProgram } from "$lib/stores/interview-program";
 	import ProgramReadyView from "$lib/views/ProgramReadyView.svelte";
-
-	import type { ConstructionalProgram } from "../../../../lambdas/src/schemas";
 
 	const getPhaseInitializer = (
 		phase: Exclude<InterviewPhase, "revise_target_outcome">

@@ -4,10 +4,9 @@ import {
   constructionalAssetsSchema,
   targetOutcomeSchema,
 } from "@constructional-affection/domain";
-
-import { controlAnalysisSchema } from "./control-analysis";
-import { programPhaseSchema } from "./transfer-step";
-import { programInitializationSchema } from "./program-initialization";
+import { controlAnalysisSchema } from "./control-analysis.js";
+import { programPhaseSchema } from "./transfer-step.js";
+import { programInitializationSchema } from "./program-initialization.js";
 
 export const constructionalProgramSchema = z.object({
   schemaVersion: z.literal("1.0"),

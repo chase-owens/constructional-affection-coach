@@ -9,3 +9,8 @@ export * from "./evaluation/target-outcome-versions.js";
 export * from "./evaluation/assets-versions.js";
 export * from "./evaluation/interaction-chain-versions.js";
 export * from "./evaluation/program-initialization-versions.js";
+export * from "./schemas/constructional-program.js";
+export * from "./schemas/control-analysis.js";
+export * from "./schemas/program-initialization.js";
+export * from "./schemas/transfer-step.js";
+export * from "./schemas/shared.js";

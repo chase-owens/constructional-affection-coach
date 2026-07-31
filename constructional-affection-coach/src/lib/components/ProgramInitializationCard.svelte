@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ProgramPhase } from "../../../../lambdas/src/schemas";
+	import type { ProgramPhase } from "@constructional-affection/domain";
 
 	const { phases, startingPoint }: { phases: ProgramPhase[]; startingPoint: string } = $props();
 </script>

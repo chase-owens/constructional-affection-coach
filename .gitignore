@@ -1,58 +1,5 @@
-# dependencies
-node_modules/
-
-# env
-.env
-.env.*
-!.env.example
-
-# build output
-dist/
-build/
-.svelte-kit/
-.vite/
-
-# testing
-coverage/
-
-# logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS/editor
-.DS_Store
-.vscode/
-.idea/
-
-# AWS CDK
-!infra/jest.config.js
-infra/**/*.d.ts
-
-.cdk.staging/
-cdk.out/
-
-# TypeScript
-*.tsbuildinfo
-
 # Dependencies
 node_modules/
-
-# Lambda build artifacts
-lambdas/dist/
-
-# SvelteKit / deployment output
-.output/
-.vercel/
-.netlify/
-.wrangler/
-.svelte-kit/
-build/
-
-# OS
-.DS_Store
-Thumbs.db
 
 # Environment
 .env
@@ -60,13 +7,50 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# Build outputs
+dist/
+.vite/
+coverage/
+
+client/build/
+client/.svelte-kit/
+domain/dist/
+lambdas/dist/
+mcp/dist/
+infra/cdk.out/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+.svelte-kit/
+build/
+
+# AWS CDK
+!infra/jest.config.js
+infra/**/*.d.ts
+.cdk.staging/
+cdk.out/
+
+# TypeScript
+*.tsbuildinfo
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-
-
-
+# Nx
 .nx/cache
 .nx/workspace-data
 .nx/migrate-runs
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
