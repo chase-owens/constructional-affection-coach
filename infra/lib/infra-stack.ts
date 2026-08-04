@@ -100,7 +100,6 @@ export class InfraStack extends cdk.Stack {
 
     // Create Buckets
     const clientBucket = new s3.Bucket(this, "CaClientBucket", {
-      bucketName: "ca-coach-client",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       autoDeleteObjects: false,
@@ -179,21 +178,11 @@ export class InfraStack extends cdk.Stack {
     });
 
     // Create table
-    this.interviewsTable = new dynamodb.Table(this, "CaProgramTable", {
-      tableName: "ca-program-table",
-      partitionKey: {
-        name: "interviewId",
-        type: dynamodb.AttributeType.STRING,
-      },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
-    });
-
-    this.interviewsTable.addGlobalSecondaryIndex({
-      indexName: "userId-updatedAt-index",
-      partitionKey: { name: "userId", type: dynamodb.AttributeType.STRING },
-      sortKey: { name: "updatedAt", type: dynamodb.AttributeType.STRING },
-    });
+    const caProgramTable = dynamodb.Table.fromTableName(
+      this,
+      "CaProgramTable",
+      "ca-program-table",
+    );
 
     // Create worker lambda
     const startProgramLambda = createNodeLambda(this, "StartProgramLambda", {
@@ -201,7 +190,7 @@ export class InfraStack extends cdk.Stack {
       entry: path.join(lambdaProjectRoot, "src/program/start-program.ts"),
       memorySize: 1024,
       environment: {
-        TABLE_NAME: this.interviewsTable.tableName,
+        TABLE_NAME: caProgramTable.tableName,
         OPENAI_SECRET_ARN: openAiSecret.secretArn,
       },
     });
@@ -240,7 +229,7 @@ export class InfraStack extends cdk.Stack {
           lambdaProjectRoot,
           "src/interview/claim-interview/index.ts",
         ),
-        environment: { TABLE_NAME: this.interviewsTable.tableName },
+        environment: { TABLE_NAME: caProgramTable.tableName },
       },
     );
 
@@ -252,11 +241,11 @@ export class InfraStack extends cdk.Stack {
       environment: { OPENAI_SECRET_ARN: openAiSecret.secretArn },
     });
 
-    this.interviewsTable.grantWriteData(createInterviewLambda);
-    this.interviewsTable.grantReadData(getInterviewsLambda);
-    this.interviewsTable.grantReadData(getInterviewLambda);
-    this.interviewsTable.grantReadWriteData(startProgramLambda);
-    this.interviewsTable.grantWriteData(claimInterviewLambda);
+    caProgramTable.grantWriteData(createInterviewLambda);
+    caProgramTable.grantReadData(getInterviewsLambda);
+    caProgramTable.grantReadData(getInterviewLambda);
+    caProgramTable.grantReadWriteData(startProgramLambda);
+    caProgramTable.grantWriteData(claimInterviewLambda);
 
     // Grant lambdas read/write access to table
     const interviewFunction = new nodejs.NodejsFunction(
