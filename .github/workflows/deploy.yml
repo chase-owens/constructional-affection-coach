@@ -47,11 +47,11 @@ jobs:
         run: |
           aws s3 sync \
             constructional-affection-coach/build/ \
-            s3://ca-coach-client \
+            s3://constructional-affection-co-caclientbucket41bd6443-hivpp3f59bgn \
             --delete
 
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id E21NLA5AQC7P5S \
+            --distribution-id E227UGJU34BMCC \
             --paths "/*"
