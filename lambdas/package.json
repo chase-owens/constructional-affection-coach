@@ -1,8 +1,21 @@
 {
   "name": "lambdas",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "nx": {
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "check": {
+        "dependsOn": [
+          "^build"
+        ]
+      }
+    }
+  },
   "scripts": {
     "build": "tsc --noEmit",
     "precheck": "npm run build -w @constructional-affection/mcp",
@@ -19,7 +32,7 @@
     "@aws-sdk/client-lambda": "^3.1091.0",
     "@aws-sdk/client-secrets-manager": "^3.1085.0",
     "@aws-sdk/lib-dynamodb": "^3.1085.0",
-    "@constructional-affection/mcp": "*",
+    "@constructional-affection/mcp": "1.0.0",
     "openai": "^6.49.0",
     "ts-node": "^10.9.2",
     "zod": "^4.4.3"
